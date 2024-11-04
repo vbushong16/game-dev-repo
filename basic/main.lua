@@ -4,7 +4,7 @@ WINDOW_HEIGHT = 500
 WINDOW_WIDTH = 500
 BOX_SIZE = 100
 
-x =WINDOW_WIDTH/2
+x =WINDOW_WIDTH-BOX_SIZE-10
 y = 0
 counter = 0
 
@@ -46,9 +46,9 @@ function love.update()
 
     y=y+dy
 
-    if y <= 0 then
+    if y <= math.random(0,50) then
         dy = GRAVITY
-    elseif y>= WINDOW_HEIGHT-BOX_SIZE then
+    elseif y>= math.random(WINDOW_HEIGHT-BOX_SIZE-50, WINDOW_HEIGHT-BOX_SIZE) then
         dy = -GRAVITY
     end
 
@@ -73,8 +73,8 @@ function love.update()
     
     if py >= y and py <= y+BOX_SIZE then
         if px >= x and px <= x+BOX_SIZE then
-            py = 0
-            px = 0
+            py = 10
+            px = 10
         end
     end
 
@@ -88,13 +88,21 @@ function love.update()
 
     if projy >= y and projy <= y+BOX_SIZE then
         if projx >= x and projx <= x+BOX_SIZE then
-            pscore = pscore - 1
+            if px > WINDOW_WIDTH/2 then
+                pscore = pscore - 2
+            else
+                pscore = pscore - 1
+            end
             proj = false
         end
     end
 
     if projx == WINDOW_WIDTH then
-        pscore = pscore + 1
+        if px > WINDOW_WIDTH/2 then
+            pscore = pscore + 1
+        else
+            pscore = pscore + 2
+        end
         projx = px
         projy = py
         proj = false
@@ -107,6 +115,11 @@ function love.draw()
     -- love.graphics.clear(40/255, 45/255, 52/255, 255/255)
     love.graphics.rectangle('fill',x,y,BOX_SIZE,BOX_SIZE)
     love.graphics.rectangle('fill',projx,projy,5,10)
-    love.graphics.circle('fill',px,py,10,10)
+    love.graphics.circle('fill',px,py,10)
+    love.graphics.line(WINDOW_WIDTH/2,0,WINDOW_WIDTH/2,WINDOW_HEIGHT)
     love.graphics.printf('Score: ' .. tostring(pscore), 0, 0, WINDOW_WIDTH)
+    love.graphics.printf('2pt Area ' , WINDOW_WIDTH/4-20 , WINDOW_HEIGHT/2, WINDOW_WIDTH)
+    love.graphics.printf('1pt Area ' , WINDOW_WIDTH*3/4-10, WINDOW_HEIGHT/2, WINDOW_WIDTH)
+
+    -- love.graphics.printf(text,x,y,limit,align)
 end
