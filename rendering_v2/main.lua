@@ -115,10 +115,6 @@ function love.keypressed(key)
     end
     -- Timer.every(1/60, function () avalanche_particles:emit(64) end)
     -- :limit(62*3)
-    
-
-    
-
 end
 
 function love.update(dt)

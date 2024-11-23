@@ -4,6 +4,7 @@ mouse ={}
 images = {}
 objectBodies = {}
 objectFixures = {}
+destroyedBodies = {}
 
 dir ='characters'
 files = love.filesystem.getDirectoryItems('characters')
@@ -25,12 +26,12 @@ function love.load()
     bigCircleBody = love.physics.newBody(world,WINDOW_WIDTH/2,WINDOW_HEIGHT/2,'static')
     bigCircleShape = love.physics.newCircleShape(50)
     bigCircleFixture = love.physics.newFixture(bigCircleBody,bigCircleShape)
-    bigCircleFixture:setUserData("circle")
+    bigCircleFixture:setUserData({"circle"})
     
     platformBody = love.physics.newBody(world,WINDOW_WIDTH/3,WINDOW_HEIGHT/2,'kinematic')
     platformShape = love.physics.newRectangleShape(50,10)
     platformFixture = love.physics.newFixture(platformBody,platformShape)
-    platformFixture:setUserData("platform")
+    platformFixture:setUserData({"platform"})
     platformBody:setLinearVelocity(100,0)
 
     Text = ""	  -- we'll use this to put info Text on the screen later
@@ -61,7 +62,7 @@ function love.keypressed(key)
             print(i)
             if obj.col_added == false then
                 table.insert(objectFixures,{love.physics.newFixture(obj[1],objShape,2)})
-                objectFixures[i][1]:setUserData('image')
+                objectFixures[i][1]:setUserData({'image',i})
             end
             obj.col_added = true
         end
@@ -75,10 +76,11 @@ function love.update(dt)
 
     for i,objectBody in pairs(objectBodies) do
         if objectBody[1]:getY() > WINDOW_WIDTH-200 then
-            objectBody[1]:destroy()
+            -- objectBody[1]:destroy()
+            table.insert(destroyedBodies,objectBody[1])
             -- objectFixures[i][i]:destroy()
-            table.remove(objectFixures,i)
-            table.remove(objectBodies,i)
+            -- table.remove(objectFixures,i)
+            -- table.remove(objectBodies,i)
         end
     end
 
@@ -86,6 +88,21 @@ function love.update(dt)
         platformBody:setLinearVelocity(-100,0)
     elseif platformBody:getX() <= 0 then
         platformBody:setLinearVelocity(100,0)
+    end
+
+    for k, body in pairs(destroyedBodies) do
+        if not body:isDestroyed() then 
+            body:destroy()
+        end
+    end
+    
+    destroyedBodies = {}
+
+    -- remove all destroyed obstacles from level
+    for i = #objectBodies, 1, -1 do
+        if objectBodies[i].body:isDestroyed() then
+            table.remove(objectBodies, i)
+        end
     end
 
 end
@@ -152,26 +169,30 @@ end
 function beginContact(a, b, coll)
     Persisting = 1
 	local x, y = coll:getNormal()
-	local textA = a:getUserData()
-	local textB = b:getUserData()
+	local textA = a:getUserData()[1]
+	local textB = b:getUserData()[1]
 -- Get the normal vector of the collision and concatenate it with the collision information
 	Text = Text.."\n 1.)" .. textA.." colliding with "..textB.." with a vector normal of: ("..x..", "..y..")"
 	love.window.setTitle ("Persisting: "..Persisting)
 
     local types = {}
-    types[a:getUserData()] = true
-    types[b:getUserData()] = true
+    types[a:getUserData()[1]] = true
+    types[b:getUserData()[1]] = true
 
     -- if we collided between both the player and an obstacle...
     if types['platform'] and types['image'] then
 
         -- grab the body that belongs to the player
-        local imageFixture = a:getUserData() == 'image' and a or b
-        local platformFixture = a:getUserData() == 'platform' and a or b
+        local imageFixture = a:getUserData()[1] == 'image' and a or b
+        local platformFixture = a:getUserData()[1] == 'platform' and a or b
         
         -- destroy the obstacle if player's combined X/Y velocity is high enough
         -- local velX, velY = imageFixture:getBody():getLinearVelocity()
-        imageFixture:getBody():setLinearVelocity(0,-200)
+        table.insert(destroyedBodies,imageFixture:getBody())
+        -- imageFixture:getBody():setLinearVelocity(0,-200)
+        -- imageFixture:getBody():destroy()
+        -- objectFixures[i][i]:destroy()
+        -- imageFixture:getBody():destroy()
         
     end
 
