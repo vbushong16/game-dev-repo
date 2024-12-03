@@ -12,7 +12,7 @@ counter = 0
 GRAVITY = 15
 dy = 0
 PLAYER_MOV = 500
-SKIER_MOV = 5
+SKIER_MOV = 100
 
 projectiles = {}
 
@@ -23,6 +23,9 @@ px = WINDOW_WIDTH/2
 
 skierx = 0
 skiery = 100
+
+skier_table = {}
+skier_fixtures = {}
 
 
 function love.load()
@@ -88,9 +91,27 @@ function love.keypressed(key)
 
     if key == 'space' then
         --table.insert{projectiles,}
-        proj = true
-        projx = yetiBody:getX()
-        projy = yetiBody:getY()
+        -- proj = true
+        -- projx = yetiBody:getX()
+        -- projy = yetiBody:getY()
+
+        table.insert(skier_table, {
+            ['skierBody'] = love.physics.newBody(world,0, math.random(50,WINDOW_HEIGHT-50),'dynamic'),
+            ['skierShape'] = love.physics.newRectangleShape(25,30),
+            ['isStopped'] = true,
+        })
+
+        for i in pairs(skier_table) do
+            table.insert(skier_fixtures,{
+                ['skierFixture'] = love.physics.newFixture(skier_table[i]['skierBody'],skier_table[i]['skierShape'])
+        })
+            if skier_table[i]['isStopped'] == true then 
+                skier_table[i]['skierBody']:setLinearVelocity(SKIER_MOV,0)
+                skier_table[i]['isStopped'] = false
+            end
+        end
+
+
     end
 end
 
@@ -132,14 +153,14 @@ function love.update(dt)
         yetiAnim = idleYeti
     end
     
-    if py >= skiery and py <= skiery+BOX_SIZE then
-        if px >= skierx and px <= skierx+BOX_SIZE then
-            yetiAnim = eatingYeti
-            skierx = skierx
-        end
-    else
-        skierx = skierx + SKIER_MOV
-    end
+    -- if py >= skiery and py <= skiery+BOX_SIZE then
+    --     if px >= skierx and px <= skierx+BOX_SIZE then
+    --         yetiAnim = eatingYeti
+    --         skierx = skierx
+    --     end
+    -- else
+    --     skierx = skierx + SKIER_MOV
+    -- end
 
 
 
@@ -204,7 +225,13 @@ function love.draw()
     offsetx_yeti = select(3,gFrames['yeti'][1]:getViewport())/2
     offsety_yeti = select(4,gFrames['yeti'][1]:getViewport())/2
 
-    love.graphics.draw(spritesheet,gFrames['skier'][1],skierx,skiery,0,2,2)
+    -- love.graphics.draw(spritesheet,gFrames['skier'][1],skierx,skiery,0,2,2)
+
+    for i in pairs(skier_table) do
+        love.graphics.draw(spritesheet,gFrames['skier'][1],skier_table[i]['skierBody']:getX(),skier_table[i]['skierBody']:getY(),0,2,2)
+    end
+
+
     love.graphics.draw(spritesheet,gFrames['yeti'][yetiAnim:getFrame()],yetiBody:getX(),yetiBody:getY()-offsety_yeti*2,0,left_direction == true and -2 or 2, 2,offsetx_yeti)
  
     -- love.graphics.draw(drawable,x,y,r,sx,sy,ox,oy)
