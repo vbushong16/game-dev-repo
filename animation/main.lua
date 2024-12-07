@@ -1,43 +1,43 @@
 
 Class = require 'class'
 
-WINDOW_HEIGHT = 500
-WINDOW_WIDTH = 500
+WINDOW_HEIGHT = 800
+WINDOW_WIDTH = 800
+
 BOX_SIZE = 100
-
-x =WINDOW_WIDTH-BOX_SIZE-10
+x = WINDOW_WIDTH-BOX_SIZE
 y = 0
-counter = 0
-
-GRAVITY = 15
 dy = 0
-PLAYER_MOV = 500
+GRAVITY = 15
+PLAYER_MOV = 200
 SKIER_MOV = 100
 
-projectiles = {}
-
-projx =0
-projy = 0
 py = WINDOW_HEIGHT/2
 px = WINDOW_WIDTH/2
 
+pscore = 0
+
 skierx = 0
-skiery = 100
+skiery = 200
 
 skier_table = {}
-skier_fixtures = {}
-
+skier_fixture = {}
+contactBodies = {}
 
 function love.load()
-    love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT, {
+
+    love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT,{
         fullscreen = false,
-        resizable = false,
-        vsync = true
+        resizable = false
     })
+
+    world = love.physics.newWorld(0,0)
+    world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
     spritesheet = love.graphics.newImage('SkiFree_-_WIN3_-_Sprite_Sheet.png')
     gFrames = {
-        ['yeti'] = {love.graphics.newQuad(10,52,33,41,spritesheet:getDimensions()),
+        ['yeti'] = {
+            love.graphics.newQuad(10,52,33,41,spritesheet:getDimensions()),
         love.graphics.newQuad(44,50,29,43,spritesheet:getDimensions()),
         love.graphics.newQuad(74,49,26,44,spritesheet:getDimensions()),
         love.graphics.newQuad(101,54,31,39,spritesheet:getDimensions()),
@@ -51,134 +51,137 @@ function love.load()
         ['skier']={love.graphics.newQuad(10,12,23,27,spritesheet:getDimensions()),
         love.graphics.newQuad(34,10,23,29,spritesheet:getDimensions()),
         love.graphics.newQuad(58,7,17,32,spritesheet:getDimensions())}
+        
     }
 
-    
-
-    chasingYeti = Animation{
-        frames = {3,4},
-        interval = 0.2
-    }
     eatingYeti = Animation{
         frames = {5,6,7,8,9,10},
-        interval = 0.2
+        interval =0.2
     }
 
     idleYeti = Animation{
         frames = {1,2},
         interval = 0.2
     }
-
+    runningYeti = Animation{
+        frames = {3,4},
+        interval = 0.2
+    }
 
     yetiAnim = idleYeti
 
-    pscore = 0
 
 
-    world = love.physics.newWorld(0,0)
     yetiBody = love.physics.newBody(world,px,py,'dynamic')
-    yetiShape = love.physics.newRectangleShape(25,30)
+    yetiShape = love.physics.newRectangleShape(50,50)
     yetiFixture = love.physics.newFixture(yetiBody,yetiShape)
-
+    yetiFixture:setUserData({'Yeti'})
 
 end
 
-
 function love.keypressed(key)
-    if key == 'escape' then
+
+    if key=='escape' then
         love.event.quit()
     end
 
     if key == 'space' then
-        --table.insert{projectiles,}
         -- proj = true
-        -- projx = yetiBody:getX()
-        -- projy = yetiBody:getY()
+        -- projx = px
+        -- projy = py
 
-        table.insert(skier_table, {
-            ['skierBody'] = love.physics.newBody(world,0, math.random(50,WINDOW_HEIGHT-50),'dynamic'),
-            ['skierShape'] = love.physics.newRectangleShape(25,30),
-            ['isStopped'] = true,
+        table.insert(skier_table,{
+            ['skierBody'] = love.physics.newBody(world,0,math.random(50, WINDOW_HEIGHT - 50),'dynamic'),
+            ['skierShape'] = love.physics.newRectangleShape(25,25),
+            ['isNew'] = true
         })
 
         for i in pairs(skier_table) do
-            table.insert(skier_fixtures,{
-                ['skierFixture'] = love.physics.newFixture(skier_table[i]['skierBody'],skier_table[i]['skierShape'])
-        })
-            if skier_table[i]['isStopped'] == true then 
+            if skier_table[i]['isNew'] == true then
+                table.insert(skier_fixture,{
+                    ['skierFixture'] = love.physics.newFixture(skier_table[i]['skierBody'],skier_table[i]['skierShape'])
+                })
                 skier_table[i]['skierBody']:setLinearVelocity(SKIER_MOV,0)
-                skier_table[i]['isStopped'] = false
+                skier_table[i]['isNew'] = false
+                skier_fixture[i]['skierFixture']:setUserData({'skier'})
             end
         end
 
+    print(#skier_table)
+    print(#skier_fixture)
 
     end
-end
+    
 
+end
 
 function love.update(dt)
 
     yetiAnim:update(dt)
     world:update(dt)
 
-    y=y+dy
     py = yetiBody:getY()
     px = yetiBody:getX()
- 
 
-    if y <= math.random(0,50) then
+
+    if y<= 0 then
         dy = GRAVITY
-    elseif y>= math.random(WINDOW_HEIGHT-BOX_SIZE-50, WINDOW_HEIGHT-BOX_SIZE) then
+    elseif y>= WINDOW_HEIGHT-BOX_SIZE then
         dy = -GRAVITY
     end
 
+    y = y+dy
 
     if love.keyboard.isDown('down') then
-        -- py = math.min(WINDOW_HEIGHT,py + PLAYER_MOV)
         yetiBody:setLinearVelocity(0,PLAYER_MOV)
-        yetiAnim = chasingYeti
-    elseif love.keyboard.isDown('left') then
-        yetiBody:setLinearVelocity(-PLAYER_MOV,0)
-        yetiAnim = chasingYeti
-        left_direction = true
-    elseif love.keyboard.isDown('right') then
-        yetiBody:setLinearVelocity(PLAYER_MOV,0)
-        yetiAnim = chasingYeti
-        left_direction = false
+        -- py = py + PLAYER_MOV
+        yetiAnim = runningYeti
     elseif love.keyboard.isDown('up') then
         yetiBody:setLinearVelocity(0,-PLAYER_MOV)
-        yetiAnim = chasingYeti
+        -- py = py - PLAYER_MOV
+        yetiAnim = runningYeti
+    elseif love.keyboard.isDown('left') then
+        yetiBody:setLinearVelocity(-PLAYER_MOV,0)
+
+        -- px = px - PLAYER_MOV
+        yetiAnim = runningYeti
+        left_direction  = true
+    elseif love.keyboard.isDown('right') then
+        yetiBody:setLinearVelocity(PLAYER_MOV,0)
+
+        -- px = px + PLAYER_MOV
+        yetiAnim = runningYeti
+        left_direction = false
     else
         yetiBody:setLinearVelocity(0,0)
+    
         yetiAnim = idleYeti
     end
-    
-    -- if py >= skiery and py <= skiery+BOX_SIZE then
-    --     if px >= skierx and px <= skierx+BOX_SIZE then
-    --         yetiAnim = eatingYeti
-    --         skierx = skierx
-    --     end
-    -- else
-    --     skierx = skierx + SKIER_MOV
-    -- end
-
-
-
 
     if py >= y and py <= y+BOX_SIZE then
         if px >= x and px <= x+BOX_SIZE then
-            py = 10
             px = 10
+            py = 10
         end
     end
 
-
     if proj == true then
-        projx = projx+GRAVITY
+        projx = projx +GRAVITY
     else
         projx = px
         projy = py
-    end 
+    end
+
+    if projx >= WINDOW_WIDTH then
+        if px > WINDOW_WIDTH/2 then
+            pscore = pscore + 1
+        else
+            pscore = pscore + 2
+        end
+        projx = px
+        projy = py
+        proj = false
+    end
 
     if projy >= y and projy <= y+BOX_SIZE then
         if projx >= x and projx <= x+BOX_SIZE then
@@ -191,52 +194,70 @@ function love.update(dt)
         end
     end
 
-    if projx >= WINDOW_WIDTH then
-        print('SCORE')
-        if px > WINDOW_WIDTH/2 then
-            pscore = pscore + 1
-        else
-            pscore = pscore + 2
+    -- if skiery+50 >= py and skiery <= py+50 then
+    --     if skierx+50 >= px and skierx <= px+50 then
+    --         skierx = skierx
+    --         yetiAnim = eatingYeti
+    --     end
+    -- else
+    --     skierx = skierx + PLAYER_MOV
+    -- end
+
+    destroyedSkiers = {}
+    if #contactBodies > 0 then
+        if love.keyboard.isDown('return') then
+            table.insert(destroyedSkiers,contactBodies[1])
+           
         end
-        proj = false
+    end
+
+    for k, body in pairs(destroyedSkiers) do
+        if not body:isDestroyed() then
+            body:destroy()
+        end
+    end
+
+    for i = #skier_table, 1,-1 do
+        if skier_table[i].skierBody:isDestroyed() then
+            table.remove(skier_table,i)
+            yetiAnim = eatingYeti
+        end
     end
 
 end
-
 
 function love.draw()
 
     love.graphics.setColor(255,255,255)
     love.graphics.rectangle('fill',0,0,WINDOW_WIDTH,WINDOW_HEIGHT)
     
-    love.graphics.reset()
     love.graphics.setColor(0,0,0)
     love.graphics.rectangle('fill',x,y,BOX_SIZE,BOX_SIZE)
     love.graphics.rectangle('fill',projx,projy,5,10)
     love.graphics.line(WINDOW_WIDTH/2,0,WINDOW_WIDTH/2,WINDOW_HEIGHT)
-    love.graphics.printf('Score: ' .. tostring(pscore), 0, 0, WINDOW_WIDTH)
-    love.graphics.printf('2pt Area ' , WINDOW_WIDTH/4-20 , WINDOW_HEIGHT/2, WINDOW_WIDTH)
-    love.graphics.printf('1pt Area ' , WINDOW_WIDTH*3/4-10, WINDOW_HEIGHT/2, WINDOW_WIDTH)
-    -- love.graphics.circle('fill',px,py,10)
-    love.graphics.rectangle('line',yetiBody:getX(),yetiBody:getY(),10,10)
-    love.graphics.reset()
+    love.graphics.printf('Score: ' ..tostring(pscore),0,0,WINDOW_WIDTH)
+    love.graphics.printf('2pt Area',WINDOW_WIDTH/4 -10,WINDOW_HEIGHT/2,WINDOW_WIDTH)
+    love.graphics.printf('1pt Area',WINDOW_WIDTH*3/4 -10,WINDOW_HEIGHT/2,WINDOW_WIDTH)
 
+    -- love.graphics.rectangle('line',px,py,50,50)
+    -- love.graphics.rectangle('line',skierx,skiery,50,50)
+    love.graphics.reset()
 
     offsetx_yeti = select(3,gFrames['yeti'][1]:getViewport())/2
     offsety_yeti = select(4,gFrames['yeti'][1]:getViewport())/2
 
     -- love.graphics.draw(spritesheet,gFrames['skier'][1],skierx,skiery,0,2,2)
 
+
     for i in pairs(skier_table) do
         love.graphics.draw(spritesheet,gFrames['skier'][1],skier_table[i]['skierBody']:getX(),skier_table[i]['skierBody']:getY(),0,2,2)
     end
 
+    love.graphics.draw(spritesheet,gFrames['yeti'][yetiAnim:getFrame()],yetiBody:getX(),yetiBody:getY(),0,left_direction == true and -2 or 2,2,offsetx_yeti,offsety_yeti)
+    -- love.graphics.draw()
 
-    love.graphics.draw(spritesheet,gFrames['yeti'][yetiAnim:getFrame()],yetiBody:getX(),yetiBody:getY()-offsety_yeti*2,0,left_direction == true and -2 or 2, 2,offsetx_yeti)
- 
-    -- love.graphics.draw(drawable,x,y,r,sx,sy,ox,oy)
 
-    love.graphics.setColor( 1, 0, 0, 1 )
+    love.graphics.setColor(0,0,0)
     for _, body in pairs(world:getBodies()) do
         for _, fixture in pairs(body:getFixtures()) do
             local shape = fixture:getShape()
@@ -253,8 +274,8 @@ function love.draw()
     end
     love.graphics.reset( )
 
-    -- love.graphics.printf(text,x,y,limit,align)
 end
+
 
 Animation = Class{}
 
@@ -270,15 +291,61 @@ end
 function Animation:update(dt)
 
     if #self.frames > 1 then
-        self.timer = self.timer + dt
+        self.timer = self.timer +dt
         if self.timer > self.interval then
             self.timer = self.timer % self.interval
-            self.currentFrame = math.max(1, (self.currentFrame+1)%(#self.frames+1))
+            self.currentFrame = math.max(1, (self.currentFrame+1) % (#self.frames+1))
+        end
+    end
+end
+
+function Animation:getFrame()
+    return self.frames[self.currentFrame]
+end
+
+
+function beginContact(a,b,coll)
+
+    local x,y = coll:getNormal()
+    local types = {}
+    types[a:getUserData()[1]] = true
+    types[b:getUserData()[1]] = true
+    
+    if types['Yeti'] and types['skier'] then
+
+       
+        local yetiFixture = a:getUserData()[1] == 'Yeti' and a or b
+        local skierFixture = a:getUserData()[1] == 'skier' and a or b
+        
+        table.insert(contactBodies, skierFixture:getBody())
+    end
+
+
+end
+
+function endContact(a, b, coll)
+	
+    local x,y = coll:getNormal()
+    local types = {}
+    types[a:getUserData()[1]] = true
+    types[b:getUserData()[1]] = true
+    
+    if types['Yeti'] and types['skier'] then
+
+        local yetiFixture = a:getUserData()[1] == 'Yeti' and a or b
+        local skierFixture = a:getUserData()[1] == 'skier' and a or b
+        
+        if #contactBodies > 0 then
+            table.remove(contactBodies, 1)
         end
     end
 
 end
 
-function Animation:getFrame()
-    return self.frames[self.currentFrame]
+function preSolve(a, b, coll)
+	
+end
+
+function postSolve(a, b, coll, normalimpulse, tangentimpulse)
+	
 end
