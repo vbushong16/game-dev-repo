@@ -9,8 +9,8 @@ x = WINDOW_WIDTH-BOX_SIZE
 y = 0
 dy = 0
 GRAVITY = 15
-PLAYER_MOV = 200
-SKIER_MOV = 100
+PLAYER_MOV = 5
+SKIER_MOV = 2.5
 
 py = WINDOW_HEIGHT/2
 px = WINDOW_WIDTH/2
@@ -181,8 +181,8 @@ function love.draw()
     love.graphics.printf('2pt Area',WINDOW_WIDTH/4 -10,WINDOW_HEIGHT/2,WINDOW_WIDTH)
     love.graphics.printf('1pt Area',WINDOW_WIDTH*3/4 -10,WINDOW_HEIGHT/2,WINDOW_WIDTH)
 
-    -- love.graphics.rectangle('line',px,py,50,50)
-    -- love.graphics.rectangle('line',skierx,skiery,50,50)
+    love.graphics.rectangle('line',px,py,50,50)
+    love.graphics.rectangle('line',skierx,skiery,50,50)
     love.graphics.reset()
 
     love.graphics.draw(spritesheet,gFrames['skier'][1],skierx,skiery,0,2,2)
@@ -194,7 +194,7 @@ function love.draw()
 
     love.graphics.draw(spritesheet,gFrames['yeti'][yetiAnim:getFrame()],px,py,0,left_direction == true and -2 or 2,2)
     -- love.graphics.draw()
-
+end
 
 Animation = Class{}
 
