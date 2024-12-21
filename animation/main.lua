@@ -93,7 +93,7 @@ function love.load()
         interval = 0.2
     }
 
-    -- treeAnim = idleTree
+    treeAnim = idleTree
     yetiAnim = idleYeti
 
 
@@ -108,20 +108,16 @@ function love.load()
         table.insert(treeXY,{
             ['Xtree'] = math.random(100,WINDOW_WIDTH-200),
             ['Ytree'] = math.random(100,WINDOW_HEIGHT - 100),
-            ['treeAnim'] = idleTree,
-            ['id'] = i,
             ['treeState'] = 1,}
         )
         table.insert(treeTable,{
             ['treeBody'] = love.physics.newBody(world,treeXY[i]['Xtree'],treeXY[i]['Ytree'],'static'),
-            ['treeShape'] = love.physics.newRectangleShape(25,50),
-            ['id'] = i,            
+            ['treeShape'] = love.physics.newRectangleShape(25,50),   
         })
         table.insert(treeFixture,{
             ['treeFixture'] = love.physics.newFixture(treeTable[i]['treeBody'],treeTable[i]['treeShape']),
-            ['id'] = i,            
         })
-        treeFixture[i]['treeFixture']:setUserData({'tree',i})
+        treeFixture[i]['treeFixture']:setUserData({'tree'})
     end
     
 
@@ -163,9 +159,8 @@ end
 function love.update(dt)
 
     yetiAnim:update(dt)
-    for i,tree in pairs(treeXY) do
-        tree['treeAnim']:update(dt)
-    end
+
+    treeAnim:update(dt)
     -- treeAnim:update(dt)
     world:update(dt)
 
@@ -175,7 +170,7 @@ function love.update(dt)
     vecX = 0
     vecY = 0
     yetiAnim = idleYeti
-    -- treeAnim = idleTree
+    treeAnim = idleTree
 
     if y<= 0 then
         dy = GRAVITY
@@ -185,33 +180,15 @@ function love.update(dt)
 
     y = y+dy
 
-    for i,tree in pairs(treeXY) do
-        if tree['treeState'] == 1 then
-            tree['treeAnim'] = idleTree
-        else
-            tree['treeAnim'] = burningTree
-        
-            treeTimer = treeTimer + dt
-            if treeTimer >= 1.15 then
-
-                for k, body in pairs(destroyedTrees) do
-                    if not body:isDestroyed() then
-                        body:destroy()
-                    end
-                end
-            
-                for i = #treeTable, 1,-1 do
-                    if treeTable[i].treeBody:isDestroyed() then
-                        table.remove(treeTable,i)
-                        table.remove(treeFixture,i)
-                        table.remove(treeXY,i)
-                        
-                        -- treeXY[i]['treeState'] = 1
-                        -- pscore = pscore + 1
-                    end
-                end
-            end
-           treeTimer = 0
+    if treeState == 1 then
+        treeAnim = idleTree
+    else
+        treeAnim = burningTree
+               
+        treeTimer = treeTimer + dt
+        if treeTimer >= 1.15 then
+            treeState = 1
+            treeTimer = 0
         end        
     end
 
@@ -287,11 +264,26 @@ function love.update(dt)
 
     destroyedTrees = {}
     if #contactBodiesT > 0 then
+        print(#contactBodiesT)
         if love.keyboard.isDown('return') then
-            for i,CBTree in pairs(contactBodiesT) do
-                table.insert(destroyedTrees,treeFixture[CBTree]['treeFixture']:getBody())
-                treeXY[CBTree]['treeState'] = 2 
-            end 
+            table.insert(destroyedTrees,contactBodiesT[1])
+           
+        end
+    end
+
+    for k, body in pairs(destroyedTrees) do
+        if not body:isDestroyed() then
+            body:destroy()
+        end
+    end
+
+    for i = #treeTable, 1,-1 do
+
+        if treeTable[i].treeBody:isDestroyed() then
+            table.remove(treeTable,i)
+            table.remove(treeFixture,i)
+            table.remove(treeXY,i)
+            treeState = 2
         end
     end
 
@@ -330,7 +322,7 @@ function love.draw()
     end
 
     for i,tree in pairs(treeXY) do
-        love.graphics.draw(spritesheet,gFrames['tree'][tree['treeAnim']:getFrame()],treeTable[i]['treeBody']:getX(),treeTable[i]['treeBody']:getY(),0,2,2,offsetx_tree,offsety_tree+5)
+        love.graphics.draw(spritesheet,gFrames['tree'][treeAnim:getFrame()],treeTable[i]['treeBody']:getX(),treeTable[i]['treeBody']:getY(),0,2,2,offsetx_tree,offsety_tree+5)
     end
 
     love.graphics.draw(spritesheet,gFrames['yeti'][yetiAnim:getFrame()],yetiBody:getX(),yetiBody:getY(),0,left_direction == true and -2 or 2,2,offsetx_yeti,offsety_yeti)
@@ -404,9 +396,9 @@ function beginContact(a,b,coll)
 
        
         local treeFixture = a:getUserData()[1] == 'tree' and a or b
-        local skierFixture = a:getUserData()[1] == 'Yeti' and a or b
+        local yetiFixture = a:getUserData()[1] == 'Yeti' and a or b
         
-        table.insert(contactBodiesT, treeFixture:getUserData()[2])
+        table.insert(contactBodiesT, treeFixture:getBody())
     end
 
 
@@ -429,13 +421,14 @@ function endContact(a, b, coll)
         end
     end
 
-    if types['tree'] and types['skier'] then
+    if types['Yeti'] and types['tree'] then
 
-       
+        local yetiFixture = a:getUserData()[1] == 'Yeti' and a or b
         local treeFixture = a:getUserData()[1] == 'tree' and a or b
-        local skierFixture = a:getUserData()[1] == 'skier' and a or b
         
-        skierFixture:setLinearVelocity(SKIER_MOV,0)
+        if #contactBodiesT > 0 then
+            table.remove(contactBodiesT, 1)
+        end
     end
 
 
