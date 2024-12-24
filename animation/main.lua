@@ -27,7 +27,6 @@ contactBodiesT = {}
 treeXY = {}
 treeTable = {}
 treeFixture = {}
-destroyedTrees = {}
 treeNumber = 6
 
 yetiTimer = 0
@@ -191,38 +190,28 @@ function love.update(dt)
             tree['treeAnim'] = idleTree
         else
             tree['treeAnim'] = burningTree
+        
             treeTimer = treeTimer + dt
             if treeTimer >= 1.15 then
-
 
                 for k, body in pairs(destroyedTrees) do
                     if not body:isDestroyed() then
                         body:destroy()
                     end
                 end
-                print('number of trees '.. tostring(#treeTable))
+            
                 for i = #treeTable, 1,-1 do
-                    print('Trees left '.. tostring(treeTable[i].id))
-                end
-                
-                for i = #treeTable, 1,-1 do
-                    -- if treeTable[i].treeBody:isDestroyed() then
                     if treeTable[i].treeBody:isDestroyed() then
-                            print('removing tree #' .. tostring(i))
-                        print('removing tree id ' .. tostring(treeXY[i]['id']))
-                        print('removing treeFixture id ' .. tostring(treeFixture[i]['id']))
-                        print('removing treeBody id ' .. tostring(treeTable[i]['id']))
                         table.remove(treeTable,i)
                         table.remove(treeFixture,i)
                         table.remove(treeXY,i)
-                        destroyedTrees = {}
+                        
                         -- treeXY[i]['treeState'] = 1
                         -- pscore = pscore + 1
                     end
                 end
-                treeTimer = 0
             end
-            
+           treeTimer = 0
         end        
     end
 
@@ -295,18 +284,13 @@ function love.update(dt)
             pscore = pscore + 1
         end
     end
- 
-    if #contactBodiesT > 0 then        
+
+    destroyedTrees = {}
+    if #contactBodiesT > 0 then
         if love.keyboard.isDown('return') then
-            for i,CBTree in pairs(treeFixture) do
-                if CBTree['id'] == contactBodiesT[1] then
-                table.insert(destroyedTrees,CBTree['treeFixture']:getBody())
-                    for i,CBTreeXY in pairs(treeXY) do
-                        if CBTreeXY['id'] == contactBodiesT[1] then
-                            CBTreeXY['treeState'] = 2
-                        end
-                    end            
-                end 
+            for i,CBTree in pairs(contactBodiesT) do
+                table.insert(destroyedTrees,treeFixture[CBTree]['treeFixture']:getBody())
+                treeXY[CBTree]['treeState'] = 2 
             end 
         end
     end
@@ -347,9 +331,6 @@ function love.draw()
 
     for i,tree in pairs(treeXY) do
         love.graphics.draw(spritesheet,gFrames['tree'][tree['treeAnim']:getFrame()],treeTable[i]['treeBody']:getX(),treeTable[i]['treeBody']:getY(),0,2,2,offsetx_tree,offsety_tree+5)
-        love.graphics.setColor(0,0,0)
-        love.graphics.printf('TREE ID: ' ..tostring(tree['id']),treeTable[i]['treeBody']:getX(),treeTable[i]['treeBody']:getY(),WINDOW_WIDTH)
-        love.graphics.reset()
     end
 
     love.graphics.draw(spritesheet,gFrames['yeti'][yetiAnim:getFrame()],yetiBody:getX(),yetiBody:getY(),0,left_direction == true and -2 or 2,2,offsetx_yeti,offsety_yeti)
@@ -423,12 +404,9 @@ function beginContact(a,b,coll)
 
        
         local treeFixture = a:getUserData()[1] == 'tree' and a or b
-        local FixtureFixture = a:getUserData()[1] == 'Yeti' and a or b
-        love.graphics.setColor(0,0,0)
-        print('Collision with tree ID ' .. tostring(treeFixture:getUserData()[2]),50,50,WINDOW_WIDTH)
-        love.graphics.reset()
+        local skierFixture = a:getUserData()[1] == 'Yeti' and a or b
+        
         table.insert(contactBodiesT, treeFixture:getUserData()[2])
-        print('there are '..tostring(#contactBodiesT) .. ' collisions')
     end
 
 
@@ -450,15 +428,14 @@ function endContact(a, b, coll)
             table.remove(contactBodies, 1)
         end
     end
-    
-    if types['Yeti'] and types['tree'] then
 
-        local yetiFixture = a:getUserData()[1] == 'Yeti' and a or b
+    if types['tree'] and types['skier'] then
+
+       
         local treeFixture = a:getUserData()[1] == 'tree' and a or b
+        local skierFixture = a:getUserData()[1] == 'skier' and a or b
         
-        if #contactBodiesT > 0 then
-            table.remove(contactBodiesT, 1)
-        end
+        skierFixture:setLinearVelocity(SKIER_MOV,0)
     end
 
 
