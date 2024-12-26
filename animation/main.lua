@@ -264,7 +264,7 @@ function love.update(dt)
 
     destroyedTrees = {}
     if #contactBodiesT > 0 then
-        print(#contactBodiesT)
+        -- print(#contactBodiesT)
         if love.keyboard.isDown('return') then
             table.insert(destroyedTrees,contactBodiesT[1])
            
