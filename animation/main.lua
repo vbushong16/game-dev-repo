@@ -24,6 +24,8 @@ skier_table = {}
 skier_fixture = {}
 contactBodies = {}
 contactBodiesT = {}
+
+destroyedTrees = {}
 treeXY = {}
 treeTable = {}
 treeFixture = {}
@@ -194,24 +196,30 @@ function love.update(dt)
             treeTimer = treeTimer + dt
             if treeTimer >= 1.15 then
 
+                print(#destroyedTrees)
                 for k, body in pairs(destroyedTrees) do
                     if not body:isDestroyed() then
                         body:destroy()
                     end
                 end
-            
+                -- print('number of trees '.. tostring(#treeTable))
+                -- for i = #treeTable, 1,-1 do
+                --     print('Trees left '.. tostring(treeTable[i].id))
+                -- end
                 for i = #treeTable, 1,-1 do
                     if treeTable[i].treeBody:isDestroyed() then
+                        -- print('removing tree #' .. tostring(i))
+                        -- print('removing tree id ' .. tostring(treeXY[i]['id']))
+                        -- print('removing treeFixture id ' .. tostring(treeFixture[i]['id']))
+                        -- print('removing treeBody id ' .. tostring(treeTable[i]['id']))
                         table.remove(treeTable,i)
                         table.remove(treeFixture,i)
                         table.remove(treeXY,i)
-                        
-                        -- treeXY[i]['treeState'] = 1
-                        -- pscore = pscore + 1
                     end
                 end
+                destroyedTrees = {}
+                treeTimer = 0
             end
-           treeTimer = 0
         end        
     end
 
@@ -285,12 +293,18 @@ function love.update(dt)
         end
     end
 
-    destroyedTrees = {}
     if #contactBodiesT > 0 then
+        -- print(#contactBodiesT)
         if love.keyboard.isDown('return') then
-            for i,CBTree in pairs(contactBodiesT) do
-                table.insert(destroyedTrees,treeFixture[CBTree]['treeFixture']:getBody())
-                treeXY[CBTree]['treeState'] = 2 
+            for i,CBTree in pairs(treeFixture) do
+                if CBTree['id'] == contactBodiesT[1] then
+                    table.insert(destroyedTrees,CBTree['treeFixture']:getBody())
+                    for i,CBTreeXY in pairs(treeXY) do
+                        if CBTreeXY['id'] == contactBodiesT[1] then
+                            CBTreeXY['treeState'] = 2
+                        end
+                    end            
+                end
             end 
         end
     end
@@ -401,11 +415,7 @@ function beginContact(a,b,coll)
     end
 
     if types['tree'] and types['Yeti'] then
-
-       
         local treeFixture = a:getUserData()[1] == 'tree' and a or b
-        local skierFixture = a:getUserData()[1] == 'Yeti' and a or b
-        
         table.insert(contactBodiesT, treeFixture:getUserData()[2])
     end
 
@@ -429,13 +439,11 @@ function endContact(a, b, coll)
         end
     end
 
-    if types['tree'] and types['skier'] then
-
-       
+    if types['tree'] and types['Yeti'] then
         local treeFixture = a:getUserData()[1] == 'tree' and a or b
-        local skierFixture = a:getUserData()[1] == 'skier' and a or b
-        
-        skierFixture:setLinearVelocity(SKIER_MOV,0)
+        if #contactBodiesT > 0 then
+            table.remove(contactBodiesT, 1)
+        end
     end
 
 
