@@ -1,5 +1,7 @@
 
 Class = require 'class'
+Animation = require 'Animation'
+Tree = require 'Tree'
 
 WINDOW_HEIGHT = 800
 WINDOW_WIDTH = 800
@@ -296,31 +298,6 @@ function love.draw()
 end
 
 
-Animation = Class{}
-
-function Animation:init(def)
-
-    self.frames = def.frames
-    self.interval = def.interval
-    self.timer = 0
-    self.currentFrame = 1
-
-end
-
-function Animation:update(dt)
-
-    if #self.frames > 1 then
-        self.timer = self.timer +dt
-        if self.timer > self.interval then
-            self.timer = self.timer % self.interval
-            self.currentFrame = math.max(1, (self.currentFrame+1) % (#self.frames+1))
-        end
-    end
-end
-
-function Animation:getFrame()
-    return self.frames[self.currentFrame]
-end
 
 
 
@@ -330,103 +307,6 @@ end
 
 
 
-
-Tree = Class{}
-
-function Tree:init(world)
-
-    self.Xtree = math.random(100,WINDOW_WIDTH-200)
-    self.Ytree = math.random(100,WINDOW_HEIGHT - 100)
-    -- self.treeAnim = idleTree 
-    self.treeState = 1
-    self.treeTimer = 0
-    
-    self.world = world
-    
-    self.body = love.physics.newBody(world,self.Xtree,self.Ytree,'static')
-    self.shape = love.physice.newRectangleShape(25,50) 
-    self.fixture = love.physics.newFixture(self.body,self.shape)
-    self.fixture:setUserData({'tree'})
-    
-    
-
-end
-
-function Tree:treeAnimation()
-
-    
-end
-
-function Tree:update()
-
-
-    for i,tree in pairs(treeXY) do
-        if tree['treeState'] == 1 then
-            tree['treeAnim'] = idleTree
-        else
-            tree['treeAnim'] = burningTree
-            treeTimer = treeTimer + dt
-            if treeTimer >= 1.15 then
-    
-    
-                for k, body in pairs(destroyedTrees) do
-                    if not body:isDestroyed() then
-                        body:destroy()
-                    end
-                end
-                print('number of trees '.. tostring(#treeTable))
-                for i = #treeTable, 1,-1 do
-                    print('Trees left '.. tostring(treeTable[i].id))
-                end
-                
-                for i = #treeTable, 1,-1 do
-                    -- if treeTable[i].treeBody:isDestroyed() then
-                    if treeTable[i].treeBody:isDestroyed() then
-                            print('removing tree #' .. tostring(i))
-                        print('removing tree id ' .. tostring(treeXY[i]['id']))
-                        print('removing treeFixture id ' .. tostring(treeFixture[i]['id']))
-                        print('removing treeBody id ' .. tostring(treeTable[i]['id']))
-                        table.remove(treeTable,i)
-                        table.remove(treeFixture,i)
-                        table.remove(treeXY,i)
-                        destroyedTrees = {}
-                        -- treeXY[i]['treeState'] = 1
-                        -- pscore = pscore + 1
-                    end
-                end
-                treeTimer = 0
-            end
-            
-        end        
-    end
-    
-
-    if #contactBodiesT > 0 then        
-        if love.keyboard.isDown('return') then
-            for i,CBTree in pairs(treeFixture) do
-                if CBTree['id'] == contactBodiesT[1] then
-                table.insert(destroyedTrees,CBTree['treeFixture']:getBody())
-                    for i,CBTreeXY in pairs(treeXY) do
-                        if CBTreeXY['id'] == contactBodiesT[1] then
-                            CBTreeXY['treeState'] = 2
-                        end
-                    end            
-                end 
-            end 
-        end
-    end
-
-end
-
-function Tree:render()
-
-    for i,tree in pairs(treeXY) do
-        love.graphics.draw(spritesheet,gFrames['tree'][tree['treeAnim']:getFrame()],treeTable[i]['treeBody']:getX(),treeTable[i]['treeBody']:getY(),0,2,2,offsetx_tree,offsety_tree+5)
-        love.graphics.setColor(0,0,0)
-        love.graphics.printf('TREE ID: ' ..tostring(tree['id']),treeTable[i]['treeBody']:getX(),treeTable[i]['treeBody']:getY(),WINDOW_WIDTH)
-        love.graphics.reset()
-    end
-end
 
 
 
