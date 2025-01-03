@@ -11,8 +11,7 @@ function love.load()
         fullscreen = false,
         resizable = false
     })
-    yeti = SpriteManager{atlas = gAtlas['spriteSheet'],x = WINDOW_WIDTH/2,y = WINDOW_HEIGHT/2}
-
+    yeti = Entity(gAtlas['spriteSheet'],WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
     yeti:createAnimation('idleYeti',{1,2},0.2)
 end
 
@@ -33,5 +32,5 @@ end
 function love.draw()
     love.graphics.setColor(255,255,255)
     love.graphics.rectangle('fill',0,0,WINDOW_WIDTH,WINDOW_HEIGHT)
-    yeti:render()
+    yeti:render(10,20)
 end

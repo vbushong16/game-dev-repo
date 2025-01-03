@@ -2,10 +2,7 @@
 
 
 -- Class goals:
--- 1. Load the GameObject data
--- 2. Draw the sprite to the window
--- 3. Cycle through the animation
--- 4. Change the GameObject sprite to new state
+-- 1. Draw the sprite to the window
 
 -- 1. pull SpriteManager object to return Sprite information
 -- 2. Draw the sprite to the window
@@ -19,50 +16,45 @@
 
 SpriteManager = Class{}
 
-function SpriteManager:init(def)
+function SpriteManager:init(atlas,x,y,r,sx,sy,ox,oy)
     -- Spritesheet parameters
-    self.atlas = def.atlas
-    self.x = def.x or 0
-    self.y = def.y or 0
-    self.r = 0 or r
-    self.sx = 2 or sx
-    self.sy = 2 or sy
-    self.ox = 0 or ox
-    self.oy = 0 or oy
+    self.atlas = atlas
+    self.x = x or 0
+    self.y = y or 0
+    self.r = r or 0
+    self.sx = sx or 1
+    self.sy = sy or 1
+    self.ox = ox or 0
+    self.oy = oy or 0
     self.current_animation = ""
     self.animations = {}
-    self.frames = 0
-    self.interval = 0
 end
 
-function SpriteManager:createAnimation(animation_name,frames,interval)
-    if self.animations[animation_name] == nil and self.current_animation ~= animation_name then
-        -- print(#frames)
-        self.animations[animation_name] = Animation{frames = frames,interval = interval}
-        self.current_animation = animation_name
-        self.frames = frames
-        self.interval = interval
+function SpriteManager:render(c_anim,anim,x,y,r,sx,sy,ox,oy)
+
+    if x ~= nil then
+        self.x = x
     end
-    return self.current_animation
-end
-
-function SpriteManager:changeAnimation(new_animation,frames,interval)
-    local current_animation = self.current_animation
-    if new_animation ~= current_animation then
-        self.animations[new_animation] = Animation{frames = frames,interval = interval}
-        self.current_animation = new_animation
+    if y ~= nil then
+        self.y = y
     end
-    return self.current_animation
-end
+    if r ~= nil then
+        self.r = r
+        end
+    if sx ~= nil then
+        self.sx = sx
+    end
+    if sy ~= nil then
+        self.sy = sy
+    end
+    if ox ~= nil then
+        self.ox = ox
+    end
+    if oy ~= nil then
+        self.oy = oy
+    end
 
-function SpriteManager:update(dt)
-    -- print(self.current_animation)
-    -- print(self.animations[self.current_animation].frames)
-    -- print(self.animations[self.current_animation].interval)
-    self.animations[self.current_animation]:update(dt)
-end
-
-function SpriteManager:render()
-    love.graphics.draw(self.atlas,gFrames[self.current_animation][self.animations[self.current_animation]:getFrame()]
+    love.graphics.draw(self.atlas,gFrames[c_anim][anim[c_anim]:getFrame()]
     ,self.x,self.y,self.r,self.sx,self.sy,self.ox,self.oy)
+
 end

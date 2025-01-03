@@ -19,50 +19,44 @@
     -- Return specific frames
 
 
-SpriteManager = Class{}
+Tree = Class{}
 
-function SpriteManager:init(def)
+function Tree:init(def)
 
     -- Spritesheet parameters
-    self.atlas = def.atlas
-    self.w = def.width
-    self.h = def.height
+    self.atlas = atlas
+    self.w = width
+    self.h = height
     -- Drawing parameters
-    self.x = def.x
-    self.y = def.y
-    self.rotation = def.r
-    self.scalex = def.sx
-    self.scaley = def.sy
-    self.offsetx = def.ox
-    self.offsety = def.ox
+    self.x = x
+    self.y = y
+    self.rotation = r
+    self.scalex = sx
+    self.scaley = sy
+    self.offsetx = ox
+    self.offsety = oy
     -- Animate parameters
     self.animations = {}
 
 end
 
-function SpriteManager:createAtlasMap(self.atlas, self.h, self.w)
-    
 
-
-
-end
-
-function SpriteManager:createAnimation(animation_name)
+function Tree:createAnimation(animation_name)
     self.animations[animation_name] = animation
 end
 
-function SpriteManager:changeAnimation(animation_name)
+function Tree:changeAnimation(animation_name)
     local currentAnimation = self.animations
     if animation_name != currentAnimation then
         self.animations[animation_name] = animation_name
     end
 end
 
-function SpriteManager:update()
+function Tree:update()
 
 end
 
-function SpriteManager:render()
+function Tree:render()
     love.graphics.draw(self.atlas,self.animations,self.x,self.y,self.angle,self.scalex,self.scaley,self.offsetx,self.offsety)
 end
 

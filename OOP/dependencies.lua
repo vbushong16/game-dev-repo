@@ -2,6 +2,7 @@
 Class = require 'lib/class'
 require 'lib/Animation'
 require 'lib/SpriteManager'
+require 'lib/Entity'
 
 gAtlas = {
     ['spriteSheet'] = love.graphics.newImage('SkiFree_-_WIN3_-_Sprite_Sheet.png'),
