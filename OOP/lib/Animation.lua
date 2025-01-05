@@ -2,8 +2,8 @@ Animation = Class{}
 
 function Animation:init(def)
 
-    self.frames = def.frames or 1
-    self.interval = def.interval or 1
+    self.frames = def.frames
+    self.interval = def.interval
     self.timer = 0
     self.currentFrame = 1
 

@@ -64,20 +64,24 @@ function Tree:changeAnimation(animation_name)
     end
 end
 
+function Tree:removal()
+
+        self:changeAnimation('burningTree')
+        Timer.every(1.15, function () if not self.body:isDestroyed() then self.body:destroy() end end)
+        :finish(function () self.treeState = 3 end)
+        :limit(1)
+
+end
 
 function Tree:update(dt)
-
     self.animations[self.currentAnimation]:update(dt)
-    -- Entity.update(self,dt)
 end
 
 function Tree:render()
-
     love.graphics.draw(self.atlas,gFrames[self.texture][self.animations[self.currentAnimation]:getFrame()]
     ,self.x,self.y,
     self.angle,self.scalex,self.scaley,self.offsetx,self.offsety
     )
-    -- Entity.render(self)
 
 end
 

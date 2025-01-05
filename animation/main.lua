@@ -71,6 +71,8 @@ end
 
 function love.update(dt)
 
+    Timer.update(dt)
+
     yetiAnim:update(dt)
     world:update(dt)
 
@@ -142,32 +144,15 @@ function love.update(dt)
         end
     end
 
-
-    for i,tree in pairs(treeTable) do
-        if tree.treeState~=1 then
-            tree:changeAnimation('burningTree')
-            tree.treeTimer = tree.treeTimer + dt
-            if tree.treeTimer >= 1.15 then
-                if not tree.body:isDestroyed() then
-                 tree.body:destroy()
-                end
-                table.remove(treeTable,i)
+    for i, tree in pairs(treeTable) do
+        if tree.treeState == 2 then
+            if love.keyboard.isDown('return') then    
+                tree:removal()
             end
-        end
-    end       
-    
-    for i,tree in pairs(treeTable) do
-        for j,conB in pairs(contactBodiesT) do
-            if tree.body == conB then
-                if love.keyboard.isDown('return') then
-                    tree.treeState = 2
-                end
-            end
+        elseif tree.treeState == 3 then
+            table.remove(treeTable,i)
         end
     end
-
-    love.keyboard.keysPressed = {}
-
 
 end
 
@@ -234,7 +219,12 @@ function beginContact(a,b,coll)
     end
     if types['tree'] and types['Yeti'] then
         local treeFixture = a:getUserData()[1] == 'tree' and a or b
-        table.insert(contactBodiesT,treeFixture:getBody())
+        -- table.insert(contactBodiesT,treeFixture:getBody())
+        for i,tree in pairs(treeTable)do
+            if tree.body == treeFixture:getBody() then
+                tree.treeState = 2
+            end
+        end
     end
 end
 
@@ -257,8 +247,10 @@ function endContact(a, b, coll)
     
     if types['Yeti'] and types['tree'] then
         local treeFixture = a:getUserData()[1] == 'tree' and a or b
-        if #contactBodiesT>0 then
-            table.remove(contactBodiesT,1)
+        for i, tree in pairs(treeTable) do
+            if tree.body == treeFixture:getBody() then
+                tree.treeState = 1
+            end
         end
     end
 

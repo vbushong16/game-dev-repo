@@ -2,10 +2,12 @@
 Class = require 'lib/class'
 Timer = require 'lib/knife.timer'
 
-require 'tree_defs'
+require 'entity_defs'
 require 'lib/Entity'
 require 'lib/Animation'
 require 'lib/Tree'
+require 'lib/Yeti'
+require 'lib/Skier'
 
 
 
@@ -18,15 +20,10 @@ SKIER_MOV = 100
 pscore = 0
 
 skier_table = {}
-skier_fixture = {}
 contactBodies = {}
 
 treeTable = {}
-destroyedTrees = {}
-contactBodiesT = {}
 treeNumber = 6
-
-yetiTimer = 0
 
 
 spritesheet = love.graphics.newImage('SkiFree_-_WIN3_-_Sprite_Sheet.png')

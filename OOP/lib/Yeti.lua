@@ -1,81 +1,75 @@
-Yeti = Class{}
 
-function Yeti:init(world)
 
-    self.Xyeti = WINDOW_WIDTH/2
-    self.Yyeti = WINDOW_HEIGHT/2
-    -- self.treeAnim = idleTree 
-    self.yetiState = 1
-    self.yetiTimer = 0
-    
-    self.world = world
-    
-    self.body = love.physics.newBody(self.world,self.Xyeti,self.Yyeti,'dynamic')
-    self.shape = love.physice.newRectangleShape(25,50) 
+Yeti = Class{__includes = Entity}
+
+function Yeti:init(input)
+
+    self.world = input.world
+    self.atlas = input.atlas
+    self.x = WINDOW_WIDTH/2
+    self.y = WINDOW_HEIGHT/2
+    self.body = love.physics.newBody(self.world,self.x,self.y,'dynamic')
+    self.shape = love.physics.newRectangleShape(60,60)
     self.fixture = love.physics.newFixture(self.body,self.shape)
     self.fixture:setUserData({'yeti'})
+    self.state = 1
+    self.direction = true
 
-    self.yeti_entity = Entity{atlas = gAtlas['spriteSheet'], x = self.Xyeti, y = self.Yyeti}
+    def = {atlas = self.atlas,texture = 'yeti',x = self.x,y = self.y}
+    Entity.init(self,def)
 
 end
 
-function Tree:yetiAnimation()
 
-    
+function Yeti:eatingFunction()
+
+    if self.state  == 2 then
+        vecX = 0
+        vecY = 0
+        Entity.changeAnimation(self,'eatingYeti')
+        Timer.after(1.2, function () self.state = 1 end)
+    end
 end
 
-function Tree:update()
+function Yeti:update(dt)
 
     vecX = 0
     vecY = 0
 
-    if self.yetiState == 1 then
+
+    if self.state  == 1 then
+        Entity.changeAnimation(self,'idleYeti')
         if love.keyboard.isDown('down') then
             vecY = PLAYER_MOV
-            -- py = py + PLAYER_MOV
-            -- yetiAnim = runningYeti
+            Entity.changeAnimation(self,'runningYeti')
         end
         if love.keyboard.isDown('up') then
             vecY = -PLAYER_MOV
-            -- py = py - PLAYER_MOV
-            -- yetiAnim = runningYeti
+            Entity.changeAnimation(self,'runningYeti')
         end
         if love.keyboard.isDown('left') then
             vecX = -PLAYER_MOV
-            -- px = px - PLAYER_MOV
-            -- yetiAnim = runningYeti
-            -- left_direction  = true
+            Entity.changeAnimation(self,'runningYeti')
+            self.direction = false
         end
         if love.keyboard.isDown('right') then
             vecX = PLAYER_MOV
-            -- px = px + PLAYER_MOV
-            -- yetiAnim = runningYeti
-            -- left_direction = false
+            Entity.changeAnimation(self,'runningYeti')
+            self.direction = true
         end
-
-    else
-        vecX = 0
-        vecY = 0
-        yeti:changeAnimation('eatingYeti',{1,2,3,4},0.2)
-        
-        self.yetiTimer = self.yetiTimer + dt
-        if self.yetiTimer >= 1.15 then
-            self.yetiState = 1
-            self.yetiTimer = 0
-        end        
     end
 
-    yetiBody:setLinearVelocity(vecX,vecY)
+    self.body:setLinearVelocity(vecX,vecY)
 
+    Entity.update(self,dt)
 end
 
-function Tree:render()
+function Yeti:render()
 
-    for i,tree in pairs(treeXY) do
-        love.graphics.draw(spritesheet,gFrames['tree'][tree['treeAnim']:getFrame()],treeTable[i]['treeBody']:getX(),treeTable[i]['treeBody']:getY(),0,2,2,offsetx_tree,offsety_tree+5)
-        love.graphics.setColor(0,0,0)
-        love.graphics.printf('TREE ID: ' ..tostring(tree['id']),treeTable[i]['treeBody']:getX(),treeTable[i]['treeBody']:getY(),WINDOW_WIDTH)
-        love.graphics.reset()
-    end
+
+    self.x = self.body:getX()
+    self.y = self.body:getY()
+    if self.direction then self.scalex = ENTITY_DEFS[self.texture].scalex  else self.scalex = -ENTITY_DEFS[self.texture].scalex end
+    Entity.render(self)
 end
 
