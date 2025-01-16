@@ -37,6 +37,7 @@ function love.keypressed(key)
     if key == 'space' then
         skier_character = Skier(input)
         skier_character:createAnimation('skiingSkier')
+        skier_character:createAnimation('turningSkier')
         skier_character:changeAnimation('skiingSkier')
         table.insert(skier_table,skier_character)
     end
@@ -57,16 +58,35 @@ function love.update(dt)
         skier:update(dt)
     end
 
+
     for i, skier in pairs(skier_table) do
-        if skier.state == 2 then
-            if love.keyboard.isDown('return') then
-                while yeti_character.state == 1 do
-                    skier.body:destroy()
-                    table.remove(skier_table,i)
-                    yeti_character.state = 2
-                    yeti_character:eatingFunction()
-                    pscore = pscore + 1    
-                end    
+        if skier.state == 4 then
+            for i,bodies in pairs(skier.allBodies) do
+                if 12.5+35 > math.abs(bodies.x - skier.x) then
+                    if (bodies.x - skier.x) < 0 then
+                        mov = SKIER_MOV
+                        skier.scalex = ENTITY_DEFS['skier'].scalex
+                    else
+                        mov = -SKIER_MOV
+                        skier.scalex = -ENTITY_DEFS['skier'].scalex
+                    end
+                    skier:changeAnimation('turningSkier')
+                    skier.body:setLinearVelocity(mov,SKIER_MOV)
+                end
+            end
+            for i,skierFlag in pairs(skierDestroy) do
+                if love.keyboard.isDown('return') then
+                    while yeti_character.state == 1 do
+                        skierFlag.body:destroy()
+                        if skier.body:isDestroyed() then
+                            table.remove(skier_table,j)
+                        end
+                        yeti_character.state = 2
+                        yeti_character:eatingFunction()
+                        pscore = pscore + 1
+                        skierDestroy = {}    
+                    end    
+                end
             end
         end
     end
@@ -133,7 +153,7 @@ function beginContact(a,b,coll)
         local skierFixture = a:getUserData()[1] == 'skier' and a or b
         for i, skier in pairs(skier_table) do
             if skier.body == skierFixture:getBody() then
-                skier.state = 2
+                table.insert(skierDestroy,skier)
             end
         end
     end
@@ -142,6 +162,16 @@ function beginContact(a,b,coll)
         for i,tree in pairs(treeTable)do
             if tree.body == treeFixture:getBody() then
                 tree.state = 2
+            end
+        end
+    end
+    if types['skier_sensor'] and types['tree'] or types['yeti'] then
+        local skier_sensorFixture = a:getUserData()[1] == 'skier_sensor' and a or b
+        local otherBody = a:getUserData()[1] ~= 'skier_sensor' and a or b
+        for i, skier in pairs(skier_table) do
+            if skier.body == skier_sensorFixture:getBody() then
+                skier.state = 4
+                table.insert(skier.detectedBodies,otherBody:getBody())
             end
         end
     end
@@ -158,7 +188,7 @@ function endContact(a, b, coll)
         local skierFixture = a:getUserData()[1] == 'skier' and a or b
         for i, skier in pairs(skier_table) do
             if skier.body == skierFixture:getBody() then
-                skier.state = 1
+                table.remove(skierDestroy,i)
             end
         end
     end
@@ -171,4 +201,25 @@ function endContact(a, b, coll)
             end
         end
     end
+    if types['skier_sensor'] and types['tree'] or types['yeti'] then
+        local skier_sensorFixture = a:getUserData()[1] == 'skier_sensor' and a or b
+        local otherBody = a:getUserData()[1] ~= 'skier_sensor' and a or b
+        for i, skier in pairs(skier_table) do
+            if skier.body == skier_sensorFixture:getBody() then
+                skier.state = 1
+                for i,bodies in pairs(skier.detectedBodies) do
+                    if bodies == otherBody:getBody() then
+                        table.remove(skier.detectedBodies,i)
+                    end
+                end
+            end
+        end
+    end
+end
+
+
+function distanceBetweenBodies(x1,y1,x2,y2)
+    local distance = 0
+    distance = math.sqrt((math.abs(x2-x1)^2)+(math.abs(y2-y1))^2)
+    return distance
 end

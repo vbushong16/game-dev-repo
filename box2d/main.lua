@@ -23,30 +23,41 @@ function love.load()
     objects.left_wall.shape = love.physics.newEdgeShape(0,0,0,WINDOW_HEIGHT)
     objects.left_wall.fixture = love.physics.newFixture(objects.left_wall.body,objects.left_wall.shape)
 
+    objects.right_wall = {}
+    objects.right_wall.body = love.physics.newBody(world,0-5,0,'static')
+    objects.right_wall.shape = love.physics.newEdgeShape(WINDOW_WIDTH,0,WINDOW_WIDTH,WINDOW_HEIGHT)
+    objects.right_wall.fixture = love.physics.newFixture(objects.right_wall.body,objects.right_wall.shape)
+
     objects.ball = {}
     objects.ball.body = love.physics.newBody(world,100,100,'dynamic')
     objects.ball.shape = love.physics.newCircleShape(60)
     objects.ball.fixture = love.physics.newFixture(objects.ball.body, objects.ball.shape,10)
-    objects.ball.fixture:setRestitution(0.8)
+    objects.ball.fixture:setRestitution(1)
 
     playerBody = love.physics.newBody(world,WINDOW_WIDTH/2,WINDOW_HEIGHT/2,'dynamic')
     playerShape = love.physics.newRectangleShape(30, 30)
-    platerFixture = love.physics.newFixture(playerBody, playerShape,20)
+    playerFixture = love.physics.newFixture(playerBody, playerShape,20)
+    playerFixture:setRestitution(1)
     playerBody:setFixedRotation(true)
 
-    player2Body = love.physics.newBody(world,WINDOW_WIDTH/3,WINDOW_HEIGHT/3,'dynamic')
-    player2Shape = love.physics.newRectangleShape(30, 30)
-    plater2Fixture = love.physics.newFixture(player2Body, player2Shape,20)
-    playerBody:setFixedRotation(true)
+    -- player2Body = love.physics.newBody(world,WINDOW_WIDTH/3,WINDOW_HEIGHT/3,'dynamic')
+    -- player2Shape = love.physics.newRectangleShape(30, 30)
+    -- plater2Fixture = love.physics.newFixture(player2Body, player2Shape,20)
+    -- playerBody:setFixedRotation(true)
 
-    spikeBody = love.physics.newBody(world,200,300,'kinematic')
-    spikeShape = love.physics.newPolygonShape(0,0,25,0,12,25)
-    spikeFixture = love.physics.newFixture(spikeBody,spikeShape)
-    spikeBody:setAngularVelocity(360 * DEGREES_TO_RADIANS)
+    -- spikeBody = love.physics.newBody(world,200,300,'kinematic')
+    -- spikeShape = love.physics.newPolygonShape(0,0,25,0,12,25)
+    -- spikeFixture = love.physics.newFixture(spikeBody,spikeShape)
+    -- spikeBody:setAngularVelocity(360 * DEGREES_TO_RADIANS)
 
-    bombsBodies = {}
-    bombsFixtures = {}
-    bombsShape = love.physics.newCircleShape(20)
+    -- bombsBodies = {}
+    -- bombsFixtures = {}
+    -- bombsShape = love.physics.newCircleShape(20)
+
+
+
+
+
 
 end
 
@@ -72,29 +83,43 @@ end
 
 function love.update(dt)
     
+    ray = nil
+    -- r1nx, r1ny, r1f = 0,0,0
+    if love.keyboard.isDown('return') then
+        ray = lineRay(playerFixture)
+        r1nx, r1ny, r1f = objects.ball.fixture:rayCast(ray.point1.x, ray.point1.y, ray.point2.x, ray.point2.y, ray.scale)
+    end
+
+    -- if love.keyboard.isDown('a') then
+    --     ray = squareRay(playerFixture)
+    --     r1nx, r1ny, r1f = objects.ball.fixture:rayCast(ray.point1_left.x, ray.point1_left.y, ray.point2_left.x, ray.point2_left.y, ray.scale)
+    --     r2nx, r2ny, r2f = objects.ball.fixture:rayCast(ray.point1_right.x, ray.point1_right.y, ray.point2_right.x, ray.point2_right.y, ray.scale)
+    -- end
+
+
     local vx = 0
     local vy = 0
 
-    local vx2 = 0
-    local vy2 = 0
+    -- local vx2 = 0
+    -- local vy2 = 0
     if love.keyboard.isDown('down') then
         vy = PLAYER_SPEED
-        vy2 = PLAYER_SPEED
+        -- vy2 = PLAYER_SPEED
     end
     if love.keyboard.isDown('up') then
         vy = -PLAYER_SPEED
-        vy2 = -PLAYER_SPEED
+        -- vy2 = -PLAYER_SPEED
     end
     if love.keyboard.isDown('left') then
         vx = -PLAYER_SPEED
-        vx2 = -PLAYER_SPEED
+        -- vx2 = -PLAYER_SPEED
     end
     if love.keyboard.isDown('right') then
         vx = PLAYER_SPEED
-        vx2 = PLAYER_SPEED
+        -- vx2 = PLAYER_SPEED
     end
     playerBody:setLinearVelocity(vx,vy)
-    player2Body:setLinearVelocity(vx2,vy2)
+    -- player2Body:setLinearVelocity(vx2,vy2)
     
     world:update(dt)
 
@@ -102,7 +127,7 @@ end
 
 function love.draw()
 
-    -- love.graphics.setColor(1, 0, 0, 1)
+    love.graphics.setColor(1, 1, 1, 1)
     -- love.graphics.setLineWidth(2)
     -- love.graphics.line(objects.ground.body:getWorldPoints(objects.ground.shape:getPoints()))
     
@@ -115,6 +140,27 @@ function love.draw()
     --         objects.ball.body:getY(),
     --         objects.ball.shape:getRadius()
     --     )
+
+    -- love.graphics.setColor(1, 0, 0)
+    -- love.graphics.line(Ray1.point1.x, Ray1.point1.y, Ray1.point2.x, Ray1.point2.y)
+
+    if ray then
+        love.graphics.setColor(1, 0, 0)
+        love.graphics.line(ray.point1.x, ray.point1.y, ray.point2.x, ray.point2.y)
+        if r1f then
+	    -- 	-- Calculating the world position where the ray hit.
+	    	local r1HitX = ray.point1.x + (ray.point2.x - ray.point1.x) * r1f
+	    	local r1HitY = ray.point1.y + (ray.point2.y - ray.point1.y) * r1f
+
+	    -- 	-- Drawing the ray from the starting point to the position on the shape.
+	    	love.graphics.setColor(1, 0, 0)
+	    	love.graphics.line(ray.point1.x, ray.point1.y, r1HitX, r1HitY)
+
+	    -- 	-- We also get the surface normal of the edge the ray hit. Here drawn in green
+	    	love.graphics.setColor(0, 1, 0)
+	    	love.graphics.line(r1HitX, r1HitY, r1HitX + r1nx * 25, r1HitY + r1ny * 25)
+	    end
+    end
     for _, body in pairs(world:getBodies()) do
         for _, fixture in pairs(body:getFixtures()) do
             local shape = fixture:getShape()
@@ -131,4 +177,19 @@ function love.draw()
     end
 
 end
+
+function lineRay(fixture)
+
+	Ray1 = {
+		point1 = {},
+		point2 = {},
+	}
+	Ray1.point1.x, Ray1.point1.y = fixture:getBody():getX(),fixture:getBody():getY()
+	Ray1.point2.x, Ray1.point2.y = fixture:getBody():getX(), fixture:getBody():getY() + 50
+	Ray1.scale = 1
+
+    return Ray1 
+end
+
+
 

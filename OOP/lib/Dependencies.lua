@@ -15,12 +15,12 @@ WINDOW_HEIGHT = 800
 WINDOW_WIDTH = 800
 
 PLAYER_MOV = 200
-SKIER_MOV = 100
+SKIER_MOV = 50
 
 pscore = 0
 
 skier_table = {}
-contactBodies = {}
+skierDestroy = {}
 
 treeTable = {}
 treeNumber = 6
@@ -42,7 +42,12 @@ gFrames = {
 
     ['skier']={love.graphics.newQuad(10,12,23,27,spritesheet:getDimensions()),
     love.graphics.newQuad(34,10,23,29,spritesheet:getDimensions()),
-    love.graphics.newQuad(58,7,17,32,spritesheet:getDimensions())},
+    love.graphics.newQuad(58,7,17,32,spritesheet:getDimensions()),
+    love.graphics.newQuad(76,6,16,33,spritesheet:getDimensions()),
+    love.graphics.newQuad(93,6,33,33,spritesheet:getDimensions()),
+    love.graphics.newQuad(127,6,30,33,spritesheet:getDimensions()),
+    love.graphics.newQuad(128,6,32,33,spritesheet:getDimensions()),
+},
 
     ['tree']={love.graphics.newQuad(296,188,29,33,spritesheet:getDimensions()),
     love.graphics.newQuad(328,188,29,33,spritesheet:getDimensions()),

@@ -8,8 +8,10 @@ function Tree:init(input)
     self.atlas = input.atlas
     self.x = math.random(100,WINDOW_WIDTH-100)
     self.y = math.random(100,WINDOW_HEIGHT-100)
+    self.w = 25
+    self.h = 50
     self.body = love.physics.newBody(self.world,self.x,self.y,'static')
-    self.shape = love.physics.newRectangleShape(25,50)
+    self.shape = love.physics.newRectangleShape(self.w,self.h)
     self.fixture = love.physics.newFixture(self.body,self.shape)
     self.fixture:setUserData({'tree'})
     self.state = 1
