@@ -34,8 +34,49 @@ function love.load()
     objects.ball.fixture = love.physics.newFixture(objects.ball.body, objects.ball.shape,10)
     objects.ball.fixture:setRestitution(1)
 
+
+
+-- local body = love.physics.newBody(world, 100, 100)
+
+-- local halfCircleShape = createHalfCircleShape(20, 20) -- Adjust radius and segments as needed
+
+-- body:createFixture(halfCircleShape)
+
+    -- objects.other_ball = {}
+    -- objects.other_ball.body = love.physics.newBody(world, 100, 100)
+    -- objects.other_ball.shape = createHalfCircleShape(20, 18) -- Adjust radius and segments as needed
+    -- objects.other_ball.fixture = love.physics.newFixture(objects.other_ball.body, objects.other_ball.shape,10)
+
     playerBody = love.physics.newBody(world,WINDOW_WIDTH/2,WINDOW_HEIGHT/2,'dynamic')
-    playerShape = love.physics.newRectangleShape(30, 30)
+    -- playerShape = love.physics.newRectangleShape(30, 30)
+
+    -- triangleShape = {-20,10,  20,10,  0,-10}
+    -- triangleShape = {10,10,  20,10,  10,20,20,20}
+    local vertices = {}
+    segments = 6
+    radius = 20
+    x_val = true
+    for i = 1, segments do
+
+        local angle = math.pi * 2 * i / segments
+        print(math.cos(angle)*radius)
+        
+        if x_val then
+            local point = math.cos(angle) * radius
+            x_val = false
+        else
+            local point = math.sin(angle) * radius
+            x_val = true
+        end
+        table.insert(vertices, point)
+        point = nil 
+    end
+
+    print(unpack(vertices))
+
+    
+
+    playerShape = love.physics.newPolygonShape(unpack(vertices))
     playerFixture = love.physics.newFixture(playerBody, playerShape,20)
     playerFixture:setRestitution(1)
     playerBody:setFixedRotation(true)
@@ -193,3 +234,44 @@ end
 
 
 
+-- Function to create a half circle shape
+
+function createHalfCircleShape(radius, segments)
+
+    local vertices = {}
+
+    for i = 1, segments do
+
+        local angle = math.pi * 2 * i / segments
+
+        local x = math.cos(angle) * radius
+
+        local y = math.sin(angle) * radius
+
+        table.insert(vertices, {x, y})
+
+    end
+
+    
+
+    -- Remove the bottom points to form a half circle
+
+    table.remove(vertices, #vertices)
+
+    table.remove(vertices, 1)
+
+    
+
+    return love.physics.newPolygonShape(vertices)
+
+end
+
+
+
+-- In your main loop:
+
+-- local body = love.physics.newBody(world, 100, 100)
+
+-- local halfCircleShape = createHalfCircleShape(20, 20) -- Adjust radius and segments as needed
+
+-- body:createFixture(halfCircleShape)

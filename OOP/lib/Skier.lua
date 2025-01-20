@@ -37,7 +37,7 @@ function Skier:senseBodies()
     local allSensedBodies = {}
     local distance = 0
 
-    if self.detectedBodies == nil then return false end
+    if self.detectedBodies == nil then self.state = 1 return false end
     for i, bodies in pairs(self.detectedBodies) do
         distance = distanceBetweenBodies(x,y,bodies:getX(),bodies:getY())
         sensedBody = {body = bodies,
@@ -53,29 +53,31 @@ end
 
 function Skier:update(dt)    
     
+    -- print(#self.detectedBodies)
     if self.state == 4 then
         self.allBodies = self:senseBodies()
     else
         self.allBodies = {}
     end
-    -- if not self.body:isDestroyed() then
+    if not self.body:isDestroyed() then
         self.body:setLinearVelocity(0,SKIER_MOV)
         Entity.changeAnimation(self,'skiingSkier')
         Entity.update(self,dt)
         self.x = self.body:getX()
         self.y = self.body:getY()
-    -- end
+    end
 end
 
 function Skier:render()
 
     Entity.render(self)
 
-
+    -- print('SKIER STATE IS:' .. self.state)
     if self.state == 4 then
         local val = self.allBodies
         love.graphics.setColor(1, 0, 0)
-        -- print(#val)
+
+        -- print('NUMBER OF BODIES ' .. #val)
     -- if detectedBodies ~= false then
         for i,bodies in pairs(val) do
             -- print(bodies.distance)
