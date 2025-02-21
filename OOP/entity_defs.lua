@@ -42,7 +42,11 @@ ENTITY_DEFS = {
     ['skier'] = {
         anims = {
             ['skiingSkier'] = {
-                frames = {1,2},
+                frames = {4},
+                interval = 0.2
+            },
+            ['turningSkier'] = {
+                frames = {3},
                 interval = 0.2
             },
         },
