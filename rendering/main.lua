@@ -55,16 +55,17 @@ function love.keypressed(key)
         img = love.graphics.newImage('characters/'..file_name),
         imgX = mouse.x,
         imgY = mouse.y,
-        col_added = false,
+        col_added = true,
         })
+
         
         for i, obj in pairs(objectBodies) do
             print(i)
-            if obj.col_added == false then
+            if obj.col_added == true then
                 table.insert(objectFixures,{love.physics.newFixture(obj[1],objShape,2)})
                 objectFixures[i][1]:setUserData({'image',i})
+                obj.col_added = false
             end
-            obj.col_added = true
         end
 
     end
@@ -100,7 +101,7 @@ function love.update(dt)
 
     -- remove all destroyed obstacles from level
     for i = #objectBodies, 1, -1 do
-        if objectBodies[i].body:isDestroyed() then
+        if objectBodies[i][1]:isDestroyed() then
             table.remove(objectBodies, i)
         end
     end
