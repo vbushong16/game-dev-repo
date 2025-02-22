@@ -6,8 +6,8 @@ function Tree:init(input)
 
     self.world = input.world
     self.atlas = input.atlas
-    self.x = math.random(100,WINDOW_WIDTH-100)
-    self.y = math.random(100,WINDOW_HEIGHT-100)
+    self.x = input.x
+    self.y = input.y
     self.w = 25
     self.h = 50
     self.body = love.physics.newBody(self.world,self.x,self.y,'static')
