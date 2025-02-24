@@ -1,6 +1,10 @@
 
 require 'lib/Dependencies'
 
+print(love._version) 
+print(love._version_string)
+print(love._version_codename)
+
 function love.load()
 
     love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT,{

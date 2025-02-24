@@ -15,7 +15,16 @@ function Skier:init(def)
     self.fixture = love.physics.newFixture(self.body,self.shape)
     self.fixture:setUserData({'skier'})
     self.state = 1
-    self.sensorShape = love.physics.newCircleShape(100)
+    -- self.sensorShape = love.physics.newCircleShape(100)
+    vertices = {0,0
+    ,-80,100
+    ,-50,110
+    ,-20,120
+    , 10,130
+    ,30,120
+    ,60,110
+    ,90,100}
+    self.sensorShape = love.physics.newPolygonShape(vertices)
     self.sensorFixture = love.physics.newFixture(self.body,self.sensorShape)
     self.sensorFixture:setSensor(true)
     self.sensorFixture:setUserData({'skier_sensor'})
