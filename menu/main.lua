@@ -75,6 +75,12 @@ function love.mousepressed(x, y, button, istouch)
     end
 end
 
+function love.mousereleased(x, y, button, istouch)
+    if button == 1 then -- Versions prior to 0.10.0 use the MouseConstant 'l'
+        mouse_pressed = false
+    end
+end
+
 function love.update(dt)
     menu:update(dt)
 

@@ -27,7 +27,11 @@ function Button:init(def)
 end
 
 function Button:buttonCallback(callback)
-    callback()
+    if self.button_state then
+        if mouse_pressed then
+            callback()
+        end
+    end
 end
 
 
@@ -35,9 +39,11 @@ function Button:update(dt)
     local mx, my = love.mouse.getPosition()
     if mx > self.x and mx < self.x + self.width then
         if my > self.y and my < self.y + self.height then
-            self.button_state = true
+            if mouse_pressed then
+                self.button_state = true
             -- currentlyFocused = self
             -- print("a ui button is hot")
+            end
         else
             self.button_state = false
         end
@@ -64,12 +70,7 @@ end
 
 function Button:render()
 
-
-    if self.button_state then
-        if mouse_pressed then
-            self:buttonCallback(self.callback)
-        end
-    end
+    self:buttonCallback(self.callback)
 
     love.graphics.setColor(1,1,1)
     love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
