@@ -4,18 +4,18 @@ Panel = Class{}
 
 function Panel:init(def)
 
-    self.theme = 0
-    self.shape = 0
-    self.width = def.width
-    self.height = def.height
-    self.radius = 0
-    self.x = def.x
-    self.y = def.y
-    self.rotation = 0
-    self.scale_x = 0
-    self.scale_y = 0
-    self.offset_x = 5
-    self.offset_y = 5
+    self.theme = def.theme or 0
+    self.shape = def.theme or 0
+    self.width = def.width or 90
+    self.height = def.height or 90
+    self.radius = def.theme or 0
+    self.x = def.x or 5
+    self.y = def.y or 5
+    self.rotation = def.rotation or 0
+    self.scale_x = def.scale_x or 0
+    self.scale_y = def.scale_y or 0
+    self.offset_x = def.offset_x or 0
+    self.offset_y = def.offset_y or 0
     self.r,self.g,self.b = def.r,def.g,def.b
 
     self.panel_id = def.panel_id
@@ -32,7 +32,7 @@ function Panel:init(def)
     self.panel_state = false
     self.panel_layout = self:layoutInit(def)
 
-   
+   print()
 
 
 end

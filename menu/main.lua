@@ -61,7 +61,7 @@ function love.keypressed(key)
             menu:addPanel(new_panel)
             print('number of panels: ' .. #menu.panels)
             print('current panel: ' .. menu.current_panel)
-            print('new panel id : ' .. tostring(menu.panels[2]['panel'].panel_state))
+            print('new panel id : ' .. tostring(menu.panels[1]['panel'].panel_state))
         end
         
 

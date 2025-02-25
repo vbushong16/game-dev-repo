@@ -4,20 +4,20 @@ Menu = Class{}
 
 function Menu:init(def)
 
-    self.theme = 0
-    self.shape = 0
-    self.width = def.width
-    self.height = def.height
-    self.radius = 0
-    self.x = def.x
-    self.y = def.y
-    self.rotation = 0
-    self.scale_x = 0
-    self.scale_y = 0
-    self.offset_x = 0
-    self.offset_y = 0
+    self.theme = def.theme or 0
+    self.shape = def.shape or 0
+    self.width = def.width or 100
+    self.height = def.height or 100
+    self.radius = def.radius or 0
+    self.x = def.x or 0
+    self.y = def.y or 0
+    self.rotation = def.rotation or 0
+    self.scale_x = def.scale_x or 0
+    self.scale_y = def.scale_y or 0
+    self.offset_x = def.offset_x or 0
+    self.offset_y = def.offset_y or 0
 
-    self.number_panels = def.num_panels
+    self.number_panels = def.num_panels or 0
     if self.number_panels > 1 then self.scrollabe_status = true else self.scrollabe_status = false end
     if self.scrollabe_status then 
         self.scrollabe_direction = 'horizontal'
@@ -28,7 +28,7 @@ function Menu:init(def)
     end
 
     self.menu_state = false
-
+    self.current_panel = 1
     self.panels = {}
 
 
@@ -37,12 +37,16 @@ function Menu:init(def)
         self.panels[i] = {id = i, panel = Panel({x = self.x+5,y = self.y+5,width = self.width-10, height = self.height-10, panel_id = i, panel_number = i,r=1,g= 1,b=0,panel_row_number = 4,panel_col_number=1})}
     end
 
-    self.current_panel = 1
-    self.panels[self.current_panel]['panel'].panel_state = true
+    if #self.panels > 0 then 
+        self.panels[self.current_panel]['panel'].panel_state = true
+    end
 end
 
 function Menu:update(dt)
-    self.panels[self.current_panel]['panel']:update(dt)
+
+    if #self.panels > 0 then 
+        self.panels[self.current_panel]['panel']:update(dt)
+    end
     if #self.panels >= 2 then
         self.scrollabe_status = true
         -- self.scrollabe_direction = 'horizontal'
@@ -140,7 +144,9 @@ function Menu:render()
             end
         end
         -- print(self.panels[self.current_panel]['panel'].panel_state)
-        self.panels[self.current_panel]['panel']:render()
+        if #self.panels > 0 then 
+            self.panels[self.current_panel]['panel']:render()
+        end
 
     end
 end
