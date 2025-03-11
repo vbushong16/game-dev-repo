@@ -1,20 +1,20 @@
 
 
-Class = require 'src/class'
-require 'src/Menu'
-require 'src/Panel'
-require 'src/Button'
-
-
-WINDOW_HEIGHT = 500
-WINDOW_WIDTH = 500
-
+require 'src/Dependencies'
 
 function love.load()
 
     love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
 
-    input = {width = 100, height = 100, x = 50, y = 50,num_panels = 2}
+    w,h = spritesheet:getDimensions()
+
+    w,h = select(3,gFrames['menu'][1]:getViewport()),select(4,gFrames['menu'][1]:getViewport())
+
+
+    print(w,h)
+
+
+    input = {width = w, height = h, x = 50, y = 50,num_panels = 2,scale_x=300/w,scale_y=300/h}
     menu = Menu(input)
     -- print('number of panels:' .. menu.number_panels)
     -- for i,panels in pairs(menu.panels) do
@@ -54,7 +54,7 @@ function love.keypressed(key)
         end
     
         if key == 'f' then
-            new_panel = Panel({x = menu.x+5,y = menu.y+5,width = menu.width-10, height = menu.height-10, panel_id = #menu.panels+1, panel_number = #menu.panels+1,r=0,g= 1,b=0,panel_row_number = 2,panel_col_number=2})
+            new_panel = Panel({x = menu.x+5,y = menu.y+5,width = menu.width-10, height = menu.height-10, panel_id = #menu.panels+1, panel_number = #menu.panels+1,r=0,g= 1,b=0,panel_row_number = 3,panel_col_number=2})
             -- print('panel row layout: ' .. new_panel.panel_row_number)
             -- print('panel col layout: ' .. new_panel.panel_col_number)
             

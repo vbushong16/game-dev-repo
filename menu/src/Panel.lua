@@ -64,6 +64,8 @@ function Panel:layoutInit(def)
                                         y = (self.y+(5*i))+(button_height * (i-1)),
                                     width = button_length,
                                     height = button_height,
+                                    scale_x = self.scale_x,
+                                    scale_y = self.scale_y,
                                     button_number = button_number})
             button_number = button_number + 1
 
@@ -96,7 +98,7 @@ function Panel:render()
     -- love.graphics.printf(text,x,y,limit,align)
     if self.panel_state then
         love.graphics.setColor(self.r,self.g,self.b)
-        love.graphics.rectangle('fill',self.x,self.y,self.width,self.height,self.rotation,self.scale_x,self.scale_y)
+        love.graphics.rectangle('fill',self.x,self.y,self.width*self.scale_x,self.height*self.scale_y)
         love.graphics.reset()
 
         

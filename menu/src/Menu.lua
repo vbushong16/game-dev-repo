@@ -34,7 +34,9 @@ function Menu:init(def)
 
     for i = 1,self.number_panels,1 do
         -- table.insert(self.panels,{id = i, panel = 'Panel'})
-        self.panels[i] = {id = i, panel = Panel({x = self.x+5,y = self.y+5,width = self.width-10, height = self.height-10, panel_id = i, panel_number = i,r=1,g= 1,b=0,panel_row_number = 4,panel_col_number=1})}
+        self.panels[i] = {id = i, panel = Panel({x = self.x+5,y = self.y+5,
+        width = self.width-10, height = self.height-10, 
+        panel_id = i, panel_number = i,r=1,g= 1,b=0,panel_row_number = 4,panel_col_number=1,scale_x = self.scale_x,scale_y = self.scale_y})}
     end
 
     if #self.panels > 0 then 
@@ -131,8 +133,11 @@ end
 function Menu:render()
     -- love.graphics.rectangle(mode,x,y,width,height)
     -- love.graphics.circle(mode,x,y,radius)
+    -- love.graphics.draw(drawable,x,y,r,sx,sy,ox,oy)
     if self.menu_state then
-        love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+
+        love.graphics.draw(spritesheet,gFrames['menu'][1],self.x,self.y,self.rotation,self.scale_x,self.scale_y)
+        -- love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
     
         if self.scrollabe_status then
             if self.scrollabe_direction == 'horizontal' then

@@ -90,10 +90,10 @@ function Button:render()
     else
         love.graphics.setColor(1,1,1)
     end
-    love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+    love.graphics.rectangle('fill',self.x,self.y,self.width*self.scale_x,self.height*self.scale_y)
     love.graphics.reset()
     love.graphics.setColor(0,0,0)
-    love.graphics.printf(tostring(self.button_number),self.x,self.y,self.width)
+    love.graphics.printf(tostring(self.button_number),self.x,self.y,self.width*self.scale_x)
     love.graphics.reset()
 
 end
