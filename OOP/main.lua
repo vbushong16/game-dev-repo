@@ -16,11 +16,14 @@ function love.load()
     world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
     input = {world = world, atlas = spritesheet}
+    input.x = WINDOW_WIDTH/2
+    input.y = WINDOW_HEIGHT/2
     yeti_character = Yeti(input)
     yeti_character:createAnimation('idleYeti')
     yeti_character:createAnimation('runningYeti')
     yeti_character:createAnimation('eatingYeti')
     yeti_character:changeAnimation('idleYeti')
+    table.insert(yetiTable,yeti_character)
 
     for i =1,treeNumber,1 do
         input.x = math.random(100,WINDOW_WIDTH-100)
@@ -37,8 +40,8 @@ end
 
 function love.mousepressed(x, y, button, istouch)
     if button == 1 then -- Versions prior to 0.10.0 use the MouseConstant 'l'
-       printx = x
-       printy = y
+       mousex = x
+       mousey = y
     end
 end
 
@@ -55,6 +58,8 @@ function love.keypressed(key)
     end 
 
     if key == 'space' then
+        input.x = math.random(50,WINDOW_HEIGHT-50)
+        input.y = 0
         skier_character = Skier(input)
         skier_character:createAnimation('skiingSkier')
         skier_character:createAnimation('turningSkier')
@@ -62,7 +67,7 @@ function love.keypressed(key)
         table.insert(skier_table,skier_character)
     end
 
-    if pause_status and key == 't' and printx <= 65 and printx >= 15 and printy <= 40 and printy >=15 then
+    if pause_status and key == 't' and mousex <= 70 and mousex >= 15 and mousey <= 40 and mousey >=15 then
         input.x = mouse.x
         input.y = mouse.y
         new_tree = Tree(input)
@@ -70,6 +75,33 @@ function love.keypressed(key)
         new_tree:createAnimation('burningTree')
         new_tree:changeAnimation('idleTree')
         table.insert(treeTable,new_tree)
+
+    elseif pause_status and key == 't' and mousex <= 130 and mousex >= 75 and mousey <= 40 and mousey >=15 then
+        input.x = mouse.x
+        input.y = mouse.y
+        new_sign = Sign(input)
+        new_sign:createAnimation('signAnim')
+        new_sign:changeAnimation('signAnim')
+        table.insert(signTable,new_sign)
+
+    elseif pause_status and key == 't' and mousex <= 190 and mousex >= 135 and mousey <= 40 and mousey >=15 then
+        input.x = mouse.x
+        input.y = mouse.y
+        new_skier = Skier(input)
+        new_skier:createAnimation('skiingSkier')
+        new_skier:createAnimation('turningSkier')
+        new_skier:changeAnimation('skiingSkier')
+        table.insert(skier_table,new_skier)
+
+    elseif pause_status and key == 't' and mousex <= 250 and mousex >= 195 and mousey <= 40 and mousey >=15 and #yetiTable<2 then
+        input.x = mouse.x
+        input.y = mouse.y
+        new_yeti = Yeti(input)
+        new_yeti:createAnimation('idleYeti')
+        new_yeti:createAnimation('runningYeti')
+        new_yeti:createAnimation('eatingYeti')
+        new_yeti:changeAnimation('idleYeti')
+        table.insert(yetiTable,new_yeti)
     end
 end
 
@@ -80,9 +112,18 @@ function love.update(dt)
         Timer.update(dt)
         world:update(dt)
 
-        yeti_character:update(dt)
+        -- yeti_character:update(dt)
+
+        for i,yeti in pairs(yetiTable) do
+            yeti:update(dt)
+        end
+
         for i,tree in pairs(treeTable) do
             tree:update(dt)
+        end
+
+        for i,sign in pairs(signTable) do
+            sign:update(dt)
         end
 
         for i,skier in pairs(skier_table) do
@@ -168,7 +209,13 @@ function love.draw()
         menu:render()
     end
 
-    yeti_character:render()
+    for i,yeti in pairs(yetiTable) do
+        yeti:render()
+    end
+
+    for i,sign in pairs(signTable) do
+        sign:render()
+    end
 
     love.graphics.setColor(0,0,0)
     for _, body in pairs(world:getBodies()) do

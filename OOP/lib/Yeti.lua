@@ -6,8 +6,8 @@ function Yeti:init(input)
 
     self.world = input.world
     self.atlas = input.atlas
-    self.x = WINDOW_WIDTH/2
-    self.y = WINDOW_HEIGHT/2
+    self.x = input.x
+    self.y = input.y
     self.w = 10
     self.h = 10
     self.body = love.physics.newBody(self.world,self.x,self.y,'dynamic')

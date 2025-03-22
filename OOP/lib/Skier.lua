@@ -6,8 +6,8 @@ function Skier:init(def)
 
     self.world = input.world
     self.atlas = input.atlas
-    self.x = math.random(50,WINDOW_HEIGHT-50)
-    self.y = 0
+    self.x = input.x
+    self.y = input.y
     self.w = 25
     self.h = 25
     self.body = love.physics.newBody(self.world,self.x,self.y,'dynamic')
