@@ -1,6 +1,10 @@
 
 require 'lib/Dependencies'
 
+print(love._version) 
+print(love._version_string)
+print(love._version_codename)
+
 function love.load()
 
     love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT,{
@@ -19,20 +23,36 @@ function love.load()
     yeti_character:changeAnimation('idleYeti')
 
     for i =1,treeNumber,1 do
+        input.x = math.random(100,WINDOW_WIDTH-100)
+        input.y = math.random(100,WINDOW_HEIGHT-100)
         table.insert(treeTable,Tree(input))
         treeTable[i]:createAnimation('idleTree')
         treeTable[i]:createAnimation('burningTree')
         treeTable[i]:changeAnimation('idleTree')
     end
 
+    menu = Menu()
+
 end
 
+function love.mousepressed(x, y, button, istouch)
+    if button == 1 then -- Versions prior to 0.10.0 use the MouseConstant 'l'
+       printx = x
+       printy = y
+    end
+end
 
 function love.keypressed(key)
 
     if key=='escape' then
         love.event.quit()
     end
+
+    if key == 'p' and pause_status == false then
+        pause_status = true
+    elseif key == 'p' and pause_status == true then
+        pause_status = false
+    end 
 
     if key == 'space' then
         skier_character = Skier(input)
@@ -41,68 +61,85 @@ function love.keypressed(key)
         skier_character:changeAnimation('skiingSkier')
         table.insert(skier_table,skier_character)
     end
+
+    if pause_status and key == 't' and printx <= 65 and printx >= 15 and printy <= 40 and printy >=15 then
+        input.x = mouse.x
+        input.y = mouse.y
+        new_tree = Tree(input)
+        new_tree:createAnimation('idleTree')
+        new_tree:createAnimation('burningTree')
+        new_tree:changeAnimation('idleTree')
+        table.insert(treeTable,new_tree)
+    end
 end
 
 
 function love.update(dt)
 
-    Timer.update(dt)
-    world:update(dt)
+    if not pause_status then 
+        Timer.update(dt)
+        world:update(dt)
 
-    yeti_character:update(dt)
-    for i,tree in pairs(treeTable) do
-        tree:update(dt)
-    end
-
-    for i,skier in pairs(skier_table) do
-        skier:update(dt)
-    end
-
-    for j,skierFlag in pairs(skierDestroy) do
-        if love.keyboard.isDown('return') then
-            while yeti_character.state == 1 do
-                skierFlag.body:destroy()
-                for i,skier in pairs(skier_table) do
-                    if skier.body:isDestroyed() then
-                        table.remove(skier_table,i)
-                    end
-                end
-                yeti_character.state = 2
-                yeti_character:eatingFunction()
-                pscore = pscore + 1
-                skierDestroy = {}    
-            end    
+        yeti_character:update(dt)
+        for i,tree in pairs(treeTable) do
+            tree:update(dt)
         end
-    end
 
-    for i, skier in pairs(skier_table) do
-        if not skier.body:isDestroyed() then
-            if skier.state == 4 then
-                for i,bodies in pairs(skier.allBodies) do
-                    if 12.5+35 > math.abs(bodies.x - skier.x) then
-                        if (bodies.x - skier.x) < 0 then
-                            mov = SKIER_MOV
-                            skier.scalex = ENTITY_DEFS['skier'].scalex
-                        else
-                            mov = -SKIER_MOV
-                            skier.scalex = -ENTITY_DEFS['skier'].scalex
+        for i,skier in pairs(skier_table) do
+            skier:update(dt)
+        end
+
+        for j,skierFlag in pairs(skierDestroy) do
+            if love.keyboard.isDown('return') then
+                while yeti_character.state == 1 do
+                    skierFlag.body:destroy()
+                    for i,skier in pairs(skier_table) do
+                        if skier.body:isDestroyed() then
+                            table.remove(skier_table,i)
                         end
-                        skier:changeAnimation('turningSkier')
-                        skier.body:setLinearVelocity(mov,SKIER_MOV)
+                    end
+                    yeti_character.state = 2
+                    yeti_character:eatingFunction()
+                    pscore = pscore + 1
+                    skierDestroy = {}    
+                end    
+            end
+        end
+
+        for i, skier in pairs(skier_table) do
+            if not skier.body:isDestroyed() then
+                if skier.state == 4 then
+                    for i,bodies in pairs(skier.allBodies) do
+                        if 12.5+35 > math.abs(bodies.x - skier.x) then
+                            if (bodies.x - skier.x) < 0 then
+                                mov = SKIER_MOV
+                                skier.scalex = ENTITY_DEFS['skier'].scalex
+                            else
+                                mov = -SKIER_MOV
+                                skier.scalex = -ENTITY_DEFS['skier'].scalex
+                            end
+                            skier:changeAnimation('turningSkier')
+                            skier.body:setLinearVelocity(mov,SKIER_MOV)
+                        end
                     end
                 end
             end
         end
-    end
 
-    for i, tree in pairs(treeTable) do
-        if tree.state == 2 then
-            if love.keyboard.isDown('return') then    
-                tree:removal()
+        for i, tree in pairs(treeTable) do
+            if tree.state == 2 then
+                if love.keyboard.isDown('return') then    
+                    tree:removal()
+                end
+            elseif tree.state == 3 then
+                table.remove(treeTable,i)
             end
-        elseif tree.state == 3 then
-            table.remove(treeTable,i)
         end
+    else
+
+        mouse.x,mouse.y = love.mouse.getPosition()
+
+    
     end
 
 end
@@ -125,6 +162,10 @@ function love.draw()
 
     for i,tree in pairs(treeTable) do
         tree:render()
+    end
+
+    if pause_status then
+        menu:render()
     end
 
     yeti_character:render()
