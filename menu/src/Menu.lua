@@ -4,16 +4,32 @@ Menu = Class{}
 
 function Menu:init(def)
 
-    self.theme = def.theme or 0
-    self.shape = def.shape or 0
-    self.width = def.width or 100
-    self.height = def.height or 100
-    self.radius = def.radius or 0
-    self.x = def.x or 0
-    self.y = def.y or 0
+    -- MENU GRAPHICS INIT
+    self.render_type = def['graphics']['render_type']
+    self.rgb = def['graphics']['rgb']
+    self.image = def['graphics']['image']
+    self.shape = def['graphics']['shape']
+    self.edges = {}
+    self.edges.images = def['graphics']['edges']['image']
+    self.edges.dimensions = def['graphics']['edges']['dimensions']
+    
+
+    -- MENU SIZE INIT
+    if self.shape == 'rectangle' then
+        self.width = def['size']['width']
+        self.height = def['size']['height']
+    elseif self.shape == 'circle' then
+        self.radius = def['size']['radius']
+    end
+
+    -- MENU POSITION INIT
+    self.x = def['position']['x']
+    self.y = def['position']['y']
+    
+    self.scale = self:scaleXY()
+    -- print(self.scale.top.sw)
+    
     self.rotation = def.rotation or 0
-    self.scale_x = def.scale_x or 0
-    self.scale_y = def.scale_y or 0
     self.offset_x = def.offset_x or 0
     self.offset_y = def.offset_y or 0
 
@@ -28,7 +44,7 @@ function Menu:init(def)
     end
 
     self.menu_state = false
-    self.current_panel = 1
+    -- self.current_panel = 1
     self.panels = {}
 
 
@@ -42,7 +58,46 @@ function Menu:init(def)
     if #self.panels > 0 then 
         self.panels[self.current_panel]['panel'].panel_state = true
     end
+
+
 end
+
+
+
+function Menu:scaleXY()
+    local scale_table = {}
+    if self.render_type == 'image' then
+        sw,sh = select(3,self.image:getViewport()),select(4,self.image:getViewport())
+        scale_table.sw,scale_table.sh = self.width/sw,self.height/sh
+    elseif self.render_type == 'edges' then
+        scale_table.top = {sw = self.width/select(3,self.edges.images['top']:getViewport()), sh = self.edges.dimensions.height/select(4,self.edges.images['top']:getViewport())}
+        scale_table.bottom = {sw = self.width/select(3,self.edges.images['bottom']:getViewport()),sh = self.edges.dimensions.height/select(4,self.edges.images['bottom']:getViewport())}
+        scale_table.left = {sw = self.edges.dimensions.width/select(3,self.edges.images['left']:getViewport()),sh = self.height/select(4,self.edges.images['left']:getViewport())}
+        scale_table.right = {sw = self.edges.dimensions.width/select(3,self.edges.images['right']:getViewport()),sh = self.height/select(4,self.edges.images['right']:getViewport())} 
+    else
+        scale_table.sw,scale_table.sh = 0,0
+    end
+    return scale_table
+end
+
+
+
+-- function Menu:findCorners()
+--     local corners_table = {}
+--     if self.render_type == image then
+--         x1 = self.x - self.width/2
+--         x2 = self.x + self.width/2
+--         y1 = self.y - self.height/2
+--         y2 = self.y + self.height/2
+--     else
+--         x1 = self.x
+--         x2 = self.x + self.width
+--         y1 = self.y
+--         y2 = self.y + self.height
+--     end
+--     corners_table{x1=x1,x2=x2,y1=y1,y2=y2}
+--     return corners_table
+-- end
 
 function Menu:update(dt)
 
@@ -136,22 +191,36 @@ function Menu:render()
     -- love.graphics.draw(drawable,x,y,r,sx,sy,ox,oy)
     if self.menu_state then
 
-        love.graphics.draw(spritesheet,gFrames['menu'][1],self.x,self.y,self.rotation,self.scale_x,self.scale_y)
-        -- love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+        if self.render_type == 'image' then
+            love.graphics.draw(spritesheet,self.image,self.x,self.y,self.rotation,self.scale.sw,self.scale.sh)
+        elseif self.render_type == 'edges' then
+            love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
+            love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+            love.graphics.reset()
+            print(self.scale.top.sw)
+            love.graphics.draw(spritesheet,self.edges.images['top'],self.x,self.y,self.rotation,self.scale.top.sw,self.scale.top.sh)
+            love.graphics.draw(spritesheet,self.edges.images['bottom'],self.x,self.y+self.height,self.rotation,self.scale.bottom.sw,self.scale.bottom.sh)
+            love.graphics.draw(spritesheet,self.edges.images['left'],self.x,self.y,self.rotation,self.scale.left.sw,self.scale.left.sh)
+            love.graphics.draw(spritesheet,self.edges.images['right'],self.x+self.width,self.y,self.rotation,self.scale.right.sw,self.scale.right.sh)
+        elseif self.render_type == 'rgb' then
+            love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
+            love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+            love.graphics.reset()
+        end
     
-        if self.scrollabe_status then
-            if self.scrollabe_direction == 'horizontal' then
-                love.graphics.circle('fill',self.scroller_direction,self.scroller_anchor,10)
-                love.graphics.circle('fill',self.scroller_direction_2,self.scroller_anchor,10)
-            else
-                love.graphics.circle('fill',self.scroller_anchor,self.scroller_direction,10)
-                love.graphics.circle('fill',self.scroller_anchor,self.scroller_direction_2,10)
-            end
-        end
-        -- print(self.panels[self.current_panel]['panel'].panel_state)
-        if #self.panels > 0 then 
-            self.panels[self.current_panel]['panel']:render()
-        end
+        -- if self.scrollabe_status then
+        --     if self.scrollabe_direction == 'horizontal' then
+        --         love.graphics.circle('fill',self.scroller_direction,self.scroller_anchor,10)
+        --         love.graphics.circle('fill',self.scroller_direction_2,self.scroller_anchor,10)
+        --     else
+        --         love.graphics.circle('fill',self.scroller_anchor,self.scroller_direction,10)
+        --         love.graphics.circle('fill',self.scroller_anchor,self.scroller_direction_2,10)
+        --     end
+        -- end
+        -- -- print(self.panels[self.current_panel]['panel'].panel_state)
+        -- if #self.panels > 0 then 
+        --     self.panels[self.current_panel]['panel']:render()
+        -- end
 
     end
 end

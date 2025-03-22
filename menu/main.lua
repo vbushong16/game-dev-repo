@@ -6,16 +6,11 @@ function love.load()
 
     love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
 
-    w,h = spritesheet:getDimensions()
-
     w,h = select(3,gFrames['menu'][1]:getViewport()),select(4,gFrames['menu'][1]:getViewport())
 
 
-    print(w,h)
-
-
-    input = {width = w, height = h, x = 50, y = 50,num_panels = 2,scale_x=300/w,scale_y=300/h}
-    menu = Menu(input)
+    input = {width = 10, height = 10, x = 50, y = 50,num_panels = 2,scale_x=200/w,scale_y=200/h}
+    menu = Menu(menu3)
     -- print('number of panels:' .. menu.number_panels)
     -- for i,panels in pairs(menu.panels) do
     --     print('panel ID:' .. i)
