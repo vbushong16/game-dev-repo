@@ -9,8 +9,8 @@ function love.load()
     w,h = select(3,gFrames['menu'][1]:getViewport()),select(4,gFrames['menu'][1]:getViewport())
 
 
-    input = {width = 10, height = 10, x = 50, y = 50,num_panels = 2,scale_x=200/w,scale_y=200/h}
-    menu = Menu(menu3)
+    input = {width = 10, height = 10, x = 50, y = 50,num_panels = 2,scale_x=100/w,scale_y=100/h}
+    menu = Menu(menu1)
     -- print('number of panels:' .. menu.number_panels)
     -- for i,panels in pairs(menu.panels) do
     --     print('panel ID:' .. i)
