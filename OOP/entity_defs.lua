@@ -55,4 +55,16 @@ ENTITY_DEFS = {
         r = 0,
 
     },
+    ['sign'] = {
+        anims = {
+            ['signAnim'] = {
+                frames = {1,2},
+                interval = 0.2
+            },
+        },
+        scalex = 2,
+        scaley = 2,
+        r = 0,
+
+    },
 }

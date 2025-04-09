@@ -8,6 +8,7 @@ require 'lib/Animation'
 require 'lib/Tree'
 require 'lib/Yeti'
 require 'lib/Skier'
+require 'lib/Sign'
 require 'lib/Menu'
 
 
@@ -20,8 +21,8 @@ SKIER_MOV = 50
 
 pscore = 0
 
-printx = 0
-printy = 0
+mousex = 0
+mousey = 0
 mouse ={}
 
 skier_table = {}
@@ -29,22 +30,14 @@ skierDestroy = {}
 
 treeTable = {}
 treeNumber = 6
+
+yetiTable = {}
+
+signTable = {}
+
+
 pause_status = false
 
-
-
-panel_items = {
-    ['panel_1'] = {
-        x = 15,
-        y = 15,
-        image = 'tree'
-    },
-    ['panel_2'] = {
-        x = 75,
-        y = 15,
-        image = 'sign'
-    },
-}
 
 
 
@@ -79,5 +72,40 @@ gFrames = {
 
     ['sign']={love.graphics.newQuad(129,102,13,25,spritesheet:getDimensions()),
     love.graphics.newQuad(143,102,13,25,spritesheet:getDimensions())}
+
+}
+
+
+
+panel_items = {
+
+    ['panel_1'] = {
+
+        x=15,
+        y=15,
+        image = 'tree',
+
+    },
+    ['panel_2'] = {
+
+        x=75,
+        y=15,
+        image = 'sign',
+
+    },
+    ['panel_3'] = {
+
+        x=135,
+        y=15,
+        image = 'skier',
+
+    },
+    ['panel_4'] = {
+
+        x=195,
+        y=15,
+        image = 'yeti',
+
+    },
 
 }
