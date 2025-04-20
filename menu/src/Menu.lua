@@ -9,9 +9,10 @@ function Menu:init(def)
     self.rgb = def['graphics']['rgb']
     self.image = def['graphics']['image']
     self.shape = def['graphics']['shape']
-    self.edges = {}
-    self.edges.images = def['graphics']['edges']['image']
-    self.edges.dimensions = def['graphics']['edges']['dimensions']
+    self.frame = {}
+    self.frame.images = def['frame']['image']
+    self.frame.dimensions = def['frame']['dimensions']
+    self.frame.rgb = def['frame']['rgb']
     
 
     -- MENU SIZE INIT
@@ -69,11 +70,11 @@ function Menu:scaleXY()
     if self.render_type == 'image' then
         sw,sh = select(3,self.image:getViewport()),select(4,self.image:getViewport())
         scale_table.sw,scale_table.sh = self.width/sw,self.height/sh
-    elseif self.render_type == 'edges' then
-        scale_table.top = {sw = self.width/select(3,self.edges.images['top']:getViewport()), sh = self.edges.dimensions.height/select(4,self.edges.images['top']:getViewport())}
-        scale_table.bottom = {sw = self.width/select(3,self.edges.images['bottom']:getViewport()),sh = self.edges.dimensions.height/select(4,self.edges.images['bottom']:getViewport())}
-        scale_table.left = {sw = self.edges.dimensions.width/select(3,self.edges.images['left']:getViewport()),sh = self.height/select(4,self.edges.images['left']:getViewport())}
-        scale_table.right = {sw = self.edges.dimensions.width/select(3,self.edges.images['right']:getViewport()),sh = self.height/select(4,self.edges.images['right']:getViewport())} 
+    elseif self.render_type == 'frame' then
+        scale_table.top = {sw = self.width/select(3,self.frame.images['top']:getViewport()), sh = self.frame.dimensions.height/select(4,self.frame.images['top']:getViewport())}
+        scale_table.bottom = {sw = self.width/select(3,self.frame.images['bottom']:getViewport()),sh = self.frame.dimensions.height/select(4,self.frame.images['bottom']:getViewport())}
+        scale_table.left = {sw = self.frame.dimensions.width/select(3,self.frame.images['left']:getViewport()),sh = self.height/select(4,self.frame.images['left']:getViewport())}
+        scale_table.right = {sw = self.frame.dimensions.width/select(3,self.frame.images['right']:getViewport()),sh = self.height/select(4,self.frame.images['right']:getViewport())} 
     else
         scale_table.sw,scale_table.sh = 0,0
     end
@@ -100,7 +101,6 @@ end
 -- end
 
 function Menu:update(dt)
-
     if #self.panels > 0 then 
         self.panels[self.current_panel]['panel']:update(dt)
     end
@@ -193,21 +193,30 @@ function Menu:render()
 
         if self.render_type == 'image' then
             love.graphics.draw(spritesheet,self.image,self.x,self.y,self.rotation,self.scale.sw,self.scale.sh)
-        elseif self.render_type == 'edges' then
+            -- love.graphics.setFilter("nearest", "nearest")
+        elseif self.render_type == 'frame' then
             love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
             love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
             love.graphics.reset()
-            print(self.scale.top.sw)
-            love.graphics.draw(spritesheet,self.edges.images['top'],self.x,self.y,self.rotation,self.scale.top.sw,self.scale.top.sh)
-            love.graphics.draw(spritesheet,self.edges.images['bottom'],self.x,self.y+self.height,self.rotation,self.scale.bottom.sw,self.scale.bottom.sh)
-            love.graphics.draw(spritesheet,self.edges.images['left'],self.x,self.y,self.rotation,self.scale.left.sw,self.scale.left.sh)
-            love.graphics.draw(spritesheet,self.edges.images['right'],self.x+self.width,self.y,self.rotation,self.scale.right.sw,self.scale.right.sh)
+            love.graphics.draw(spritesheet,self.frame.images['top'],self.x,self.y,self.rotation,self.scale.top.sw,self.scale.top.sh)
+            love.graphics.draw(spritesheet,self.frame.images['bottom'],self.x,self.y+self.height-self.frame.dimensions.height,self.rotation,self.scale.bottom.sw,self.scale.bottom.sh)
+            love.graphics.draw(spritesheet,self.frame.images['left'],self.x,self.y,self.rotation,self.scale.left.sw,self.scale.left.sh)
+            love.graphics.draw(spritesheet,self.frame.images['right'],self.x+self.width-self.frame.dimensions.width,self.y,self.rotation,self.scale.right.sw,self.scale.right.sh)
         elseif self.render_type == 'rgb' then
             love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
             love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
             love.graphics.reset()
+            love.graphics.setColor(self.frame.rgb.r,self.frame.rgb.g,self.frame.rgb.b)
+            love.graphics.rectangle('fill',self.x,self.y,self.frame.dimensions.width,self.height)
+            love.graphics.rectangle('fill',self.x,self.y,self.width,self.frame.dimensions.height)
+            love.graphics.rectangle('fill',self.width,self.y,self.frame.dimensions.width,self.height)
+            love.graphics.rectangle('fill',self.x,self.height,self.width,self.frame.dimensions.height)
+            love.graphics.reset()
         end
-    
+
+        -- love.graphics.setColor(0,0,0)
+        -- love.graphics.line(self.x,self.y+20,self.x+self.scale.sw*2,self.y+20)
+        -- love.graphics.reset()
         -- if self.scrollabe_status then
         --     if self.scrollabe_direction == 'horizontal' then
         --         love.graphics.circle('fill',self.scroller_direction,self.scroller_anchor,10)
