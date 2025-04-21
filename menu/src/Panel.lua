@@ -132,21 +132,37 @@ function Panel:scaleXY()
     return scale_table
 end
 
-
+function Panel:buttonDim(length,frame_dim,offset,layout)
+    spacing = length-(offset*2)-((1+layout)*frame_dim)
+    return spacing/layout
+end
 
 
 function Panel:layoutInit()
 
-    x_usable_space = self.width-2*self.offset.offset_x - ((1+self.layout.cols)*self.frame.dimensions.width)
-    button_length = x_usable_space/self.layout.cols
-    y_usable_space = self.height-2*self.offset.offset_y - ((1+self.layout.rows)*self.frame.dimensions.height)
-    button_height = y_usable_space/self.layout.rows
+    -- local x_usable_space = self.width-2*self.offset.offset_x - ((1+self.layout.cols)*self.frame.dimensions.width)
+    -- local y_usable_space = self.height-2*self.offset.offset_y - ((1+self.layout.rows)*self.frame.dimensions.height)
+
+    local button_width = self:buttonDim(self.width,self.frame_width,self.offset.offset_x,self.layout.cols)
+    local button_height = self:buttonDim(self.height,self.frame_height,self.offset.offset_y,self.layout.rows)
+
+    
+    button_init = {
+        position = {
+            x = (self.x+self.offset.offset_x +(self.frame_width*j))+(button_width * (j-1))
+            ,y = (self.y+self.offset.offset_y +(self.frame_height*i))+(button_height * (i-1))
+        }
+        ,size = {width = button_width,height = button_height}
+        ,components = {},
+        ,button_id = nil
+        ,button_number = nil
+    }
 
     -- print(self.width)
     -- print(self.height)
     -- print('base x:' .. self.x)
     -- print('usable x space:' .. x_usable_space)
-    -- print('button_length:' .. button_length)
+    -- print('button_width:' .. button_width)
     -- print('usable y space:' .. y_usable_space)
     -- print('button_height:' .. button_height)
 
@@ -158,27 +174,27 @@ function Panel:layoutInit()
         -- print(i)
         for j = 1, self.layout.cols,1 do
             -- print(j)
-            -- panel_layout[i][j] = Button({x = (self.x+(5*j))+(button_length * (j-1)),
+            -- panel_layout[i][j] = Button({x = (self.x+(5*j))+(button_width * (j-1)),
             --                             y = (self.y+(5*i))+(button_height * (i-1)),
-            --                         width = button_length,
+            --                         width = button_width,
             --                         height = button_height,
             --                         scale_x = self.scale_x,
             --                         scale_y = self.scale_y,
             --                         button_number = button_number})
-            panel_layout[i][j] = {x = (self.x+self.offset.offset_x +(self.frame.dimensions.width*j))+(button_length * (j-1)),
-                                y = (self.y+self.offset.offset_y +(self.frame.dimensions.height*i))+(button_height * (i-1)),
-                                width = button_length,
+            panel_layout[i][j] = {x = (self.x+self.offset.offset_x +(self.frame_width*j))+(button_width * (j-1)),
+                                y = (self.y+self.offset.offset_y +(self.frame_height*i))+(button_height * (i-1)),
+                                width = button_width,
                                 height = button_height,
                                 button_number = button_number}
 
             button_number = button_number + 1
 
-            -- print('Button '..i*j .. ' location - '..'x:' ..(self.x+(5*j))+(button_length*(j-1))..' y:' ..(self.y+(5*i))+(button_height*(i-1)))
+            -- print('Button '..i*j .. ' location - '..'x:' ..(self.x+(5*j))+(button_width*(j-1))..' y:' ..(self.y+(5*i))+(button_height*(i-1)))
 
             
         end
     end
-    return(panel_layout)
+    return panel_layout
 end
 
 function Panel:update()
@@ -206,7 +222,7 @@ function Panel:render()
             -- love.graphics.setFilter("nearest", "nearest")
         elseif self.render_type == 'frame' then
             love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
-            love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+            love.graphics.rectangle('fill',self.x+self.offset.offset_x,self.y+self.offset.offset_y,self.width-2*self.offset.offset_x,self.height-2*self.offset.offset_y)
             love.graphics.reset()
             -- print('PANEL TOP FRAME: ',self.frame_render.top.sw)
             love.graphics.draw(spritesheet,self.frame.images['top'],self.frame_render.top.x,self.frame_render.top.y,self.rotation,self.frame_render.top.sw,self.frame_render.top.sh) --TOP
@@ -215,7 +231,7 @@ function Panel:render()
             love.graphics.draw(spritesheet,self.frame.images['right'],self.frame_render.right.x,self.frame_render.right.y,self.rotation,self.frame_render.right.sw,self.frame_render.right.sh) --RIGHT
         elseif self.render_type == 'rgb' then
             love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
-            love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+            love.graphics.rectangle('fill',self.x+self.offset.offset_x,self.y+self.offset.offset_y,self.width-2*self.offset.offset_x,self.height-2*self.offset.offset_y)
             love.graphics.reset()
             love.graphics.setColor(self.frame.rgb.r,self.frame.rgb.g,self.frame.rgb.b)
             love.graphics.rectangle('fill',self.frame_render.top.x,self.frame_render.top.y,self.frame_render.top.sw,self.frame_render.top.sh) --TOP
@@ -231,14 +247,14 @@ function Panel:render()
             for j = 1, self.layout.cols,1 do
                 -- print(j)
                 -- self.panel_layout[i][j]:render()
-                -- love.graphics.setColor(1,1,1)
-                -- -- love.graphics.rectangle(mode,x,y,width,height)
-                -- love.graphics.rectangle('fill'
-                -- ,self.panel_layout[i][j].x
-                -- ,self.panel_layout[i][j].y
-                -- ,self.panel_layout[i][j].width
-                -- ,self.panel_layout[i][j].height)
-                -- love.graphics.reset()
+                love.graphics.setColor(1,1,1)
+                -- love.graphics.rectangle(mode,x,y,width,height)
+                love.graphics.rectangle('fill'
+                ,self.panel_layout[i][j].x
+                ,self.panel_layout[i][j].y
+                ,self.panel_layout[i][j].width
+                ,self.panel_layout[i][j].height)
+                love.graphics.reset()
 
             end
         end
