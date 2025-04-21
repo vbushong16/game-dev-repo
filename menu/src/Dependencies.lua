@@ -113,4 +113,5 @@ new_button = {
     ['frame'] = {dimensions = {width = 10,height = 10}, rgb = {r=1,g=1,b = 1}, image = nil},
     ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
     ['callback'] = pressed_button
+    ['display'] = nil
     }
