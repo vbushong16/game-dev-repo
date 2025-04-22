@@ -60,6 +60,7 @@ function Button:init(def)
     self.callback = def['components']['callback']
     self.display = def['components']['display']
 
+    print(self.callback)
 end
 
 function Button:frameRender()
@@ -139,6 +140,8 @@ function Button:update(dt)
         if mx > self.x and mx < self.x + self.width then
             if my > self.y and my < self.y + self.height then
                 self.button_state = true
+                -- print('BUTTON: ',self.button_number,' IS PRESSED')
+                -- print(self.button_state)
             else
                 self.button_state = false
                 self.button_selected = false

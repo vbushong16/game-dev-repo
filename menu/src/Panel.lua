@@ -133,6 +133,7 @@ end
 
 function Panel:buttonDim(length,frame_dim,offset,layout)
     spacing = length-(offset*2)-((1+layout)*frame_dim)
+    -- spacing = length-(offset)-((1+layout)*frame_dim)
     return spacing/layout
 end
 
@@ -191,7 +192,7 @@ function Panel:layoutInit()
             --                     height = button_height,
             --                     button_number = button_number}
 
-            -- button_number = button_number + 1
+            button_number = button_number + 1
 
             -- print('Button '..i*j .. ' location - '..'x:' ..(self.x+(5*j))+(button_width*(j-1))..' y:' ..(self.y+(5*i))+(button_height*(i-1)))
 
@@ -204,7 +205,7 @@ end
 function Panel:update()
     for i = 1, self.layout.rows, 1 do
         for j = 1, self.layout.cols,1 do
-            -- self.panel_layout[i][j]:update(dt)
+            self.panel_layout[i][j]:update(dt)
         end
     end
 end

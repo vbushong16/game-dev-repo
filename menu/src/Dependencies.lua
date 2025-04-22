@@ -20,6 +20,13 @@ gFrames = {
     ['bottom'] = love.graphics.newQuad(6,3,22,2,spritesheet:getDimensions()),}
 }
 
+pressed_button = function()
+    -- print('a ui button is pressed')
+    love.graphics.setColor(1,1,1)
+    love.graphics.circle('fill',WINDOW_WIDTH/2,WINDOW_HEIGHT/2,5)
+    love.graphics.reset()
+end
+
 button_list = {
     ['button1'] = {
         ['graphics'] = {shape = 'rectangle',render_type = 'rgb',rgb = {r=0,g=0,b=1},image = nil},
@@ -38,10 +45,10 @@ button_list = {
 }
 
 menu1 = {
-    ['position'] = {x = 220, y=10},
+    ['position'] = {x = 10, y=10},
     ['graphics'] = {shape = 'rectangle',render_type = 'image', rgb = nil,image = gFrames['menu'][1]},
     ['frame'] = {dimensions = {width = 2, height =2},rgb = nil,image = nil},
-    ['size'] = {width = 125, height = 205},
+    ['size'] = {width = 400, height = 400},
     ['components'] = {number_of_panels = 1},
     ['panels'] = {
         -- ['panel1'] = {
@@ -56,7 +63,25 @@ menu1 = {
             ['layout'] = {rows = 1, cols = 2},
             ['graphics'] = {shape = 'rectangle',render_type = 'image',rgb = nil,image = gFrames['menu'][1]},
             ['frame'] = {dimensions = {width = 2,height = 2}, rgb = nil, image = nil},
-            ['position'] = { offsets = {offset_x = 5, offset_y = 5}}
+            ['position'] = { offsets = {offset_x = 5, offset_y = 5}},
+            ['buttons'] = {
+                ['button1'] = {
+                    button_number = 1,
+                    ['graphics'] = {shape = 'rectangle',render_type = 'image',rgb = nil,image = gFrames['menu'][1]},
+                    ['frame'] = {dimensions = {width = 2,height = 2}, rgb = nil, image = nil},
+                    ['position'] = { offsets = {offset_x = 5, offset_y = 5}},
+                    ['callback'] = pressed_button,
+                    ['display'] = 'test'
+                },
+                ['button2'] = {
+                    button_number = 2,
+                    ['graphics'] = {shape = 'rectangle',render_type = 'image',rgb = nil,image = gFrames['menu'][1]},
+                    ['frame'] = {dimensions = {width = 2,height = 2}, rgb = nil, image = nil},
+                    ['position'] = { offsets = {offset_x = 5, offset_y = 5}},
+                    ['callback'] = pressed_button,
+                    ['display'] = 'test2'
+                },
+            }
             },
         -- ['panel3'] = {
         --     panel_order = 3,
@@ -72,29 +97,29 @@ menu2 = {
     ['position'] = {x = 10, y=10},
     ['graphics'] = {shape = 'rectangle',render_type = 'rgb', rgb = {r=0,g=0,b=0},image = nil},
     ['frame'] = {dimensions = {width = 20, height =1},rgb = {r=1,g=0,b=0},image = nil},
-    ['size'] = {width = 400, height = 400},
+    ['size'] = {width = 200, height = 200},
     ['components'] = {number_of_panels = 1},
     ['panels'] = {
         ['panel1'] = {
             panel_order = 1,
             ['layout'] = {rows = 1, cols = 2},
-            ['graphics'] = {shape = 'rectangle',render_type = 'image',rgb = nil,image = gFrames['menu'][1]},
-            ['frame'] = {dimensions = {width = 2,height = 2}, rgb = nil, image = nil},
-            ['position'] = { offsets = {offset_x = 5, offset_y = 5}},
+            ['graphics'] = {shape = 'rectangle',render_type = 'rgb',rgb = {r=1,g=1,b =1},image = nil},
+            ['frame'] = {dimensions = {width = 20,height = 1}, rgb = {r=1,g=1,b =1}, image = nil},
+            ['position'] = { offsets = {offset_x = 0, offset_y = 0}},
             ['buttons'] = {
                 ['button1'] = {
                     button_number = 1,
                     ['graphics'] = {shape = 'rectangle',render_type = 'rgb',rgb = {r=0,g=0,b=1},image = nil},
-                    ['frame'] = {dimensions = {width = 10,height = 10}, rgb = {r=1,g=1,b = 1}, image = nil},
-                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
+                    ['frame'] = {dimensions = {width = 0,height = 10}, rgb = {r=1,g=1,b = 1}, image = nil},
+                    ['position'] = { offsets = {offset_x = 0, offset_y = 0}},
                     ['callback'] = pressed_button,
                     ['display'] = 'test'
                 },
                 ['button2'] = {
                     button_number = 2,
                     ['graphics'] = {shape = 'rectangle',render_type = 'rgb',rgb = {r=0,g=0,b=1},image = nil},
-                    ['frame'] = {dimensions = {width = 10,height = 10}, rgb = {r=1,g=1,b = 1}, image = nil},
-                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
+                    ['frame'] = {dimensions = {width = 5,height = 5}, rgb = {r=0,g=1,b = 0}, image = nil},
+                    ['position'] = { offsets = {offset_x = 20, offset_y = 0}},
                     ['callback'] = pressed_button,
                     ['display'] = 'test2'
                 },
