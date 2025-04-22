@@ -64,6 +64,10 @@ function Panel:init(def)
     self.panel_state = false
     self.panel_layout = self:layoutInit()
 
+    --BUTTONS INIT
+    self.button_interface = def['components']['buttons']
+    print('BUTTON DATA: ',self.button_interface)
+
 end
 
 -- ,self.x + self.offset.offset_x
@@ -149,11 +153,11 @@ function Panel:layoutInit()
     
     button_init = {
         position = {
-            x = (self.x+self.offset.offset_x +(self.frame_width*j))+(button_width * (j-1))
-            ,y = (self.y+self.offset.offset_y +(self.frame_height*i))+(button_height * (i-1))
+            x = nil
+            ,y = nil
         }
         ,size = {width = button_width,height = button_height}
-        ,components = {},
+        ,components = {}
         ,button_id = nil
         ,button_number = nil
     }
@@ -173,6 +177,16 @@ function Panel:layoutInit()
         panel_layout[i] = {}
         -- print(i)
         for j = 1, self.layout.cols,1 do
+
+            button_init.position.x = (self.x+self.offset.offset_x +(self.frame_width*j))+(button_width * (j-1))
+            button_init.position.y = (self.y+self.offset.offset_y +(self.frame_height*i))+(button_height * (i-1))
+            button_init.button_number = button_number
+            button_init.button_id = button_number
+            button_init.components = self.button_interface[button_number]
+
+
+
+
             -- print(j)
             -- panel_layout[i][j] = Button({x = (self.x+(5*j))+(button_width * (j-1)),
             --                             y = (self.y+(5*i))+(button_height * (i-1)),
