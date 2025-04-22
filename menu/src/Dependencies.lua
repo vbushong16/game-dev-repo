@@ -26,15 +26,15 @@ button_list = {
         ['frame'] = {dimensions = {width = 10,height = 10}, rgb = {r=1,g=1,b = 1}, image = nil},
         ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
         ['callback'] = pressed_button,
-        ['display'] = nil
+        ['display'] = 'test'
     },
-    ['button2'] = {
-        ['graphics'] = {shape = 'rectangle',render_type = 'rgb',rgb = {r=0,g=0,b=1},image = nil},
-        ['frame'] = {dimensions = {width = 10,height = 10}, rgb = {r=1,g=1,b = 1}, image = nil},
-        ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
-        ['callback'] = pressed_button,
-        ['display'] = nil
-    }
+    -- ['button2'] = {
+    --     ['graphics'] = {shape = 'rectangle',render_type = 'rgb',rgb = {r=0,g=0,b=1},image = nil},
+    --     ['frame'] = {dimensions = {width = 10,height = 10}, rgb = {r=1,g=1,b = 1}, image = nil},
+    --     ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
+    --     ['callback'] = pressed_button,
+    --     ['display'] = nil
+    -- }
 }
 
 menu1 = {
@@ -72,7 +72,7 @@ menu2 = {
     ['position'] = {x = 10, y=10},
     ['graphics'] = {shape = 'rectangle',render_type = 'rgb', rgb = {r=0,g=0,b=0},image = nil},
     ['frame'] = {dimensions = {width = 20, height =1},rgb = {r=1,g=0,b=0},image = nil},
-    ['size'] = {width = 200, height = 200},
+    ['size'] = {width = 400, height = 400},
     ['components'] = {number_of_panels = 1},
     ['panels'] = {
         ['panel1'] = {
@@ -81,8 +81,25 @@ menu2 = {
             ['graphics'] = {shape = 'rectangle',render_type = 'image',rgb = nil,image = gFrames['menu'][1]},
             ['frame'] = {dimensions = {width = 2,height = 2}, rgb = nil, image = nil},
             ['position'] = { offsets = {offset_x = 5, offset_y = 5}},
-            ['buttons'] = button_list
-            },
+            ['buttons'] = {
+                ['button1'] = {
+                    button_number = 1,
+                    ['graphics'] = {shape = 'rectangle',render_type = 'rgb',rgb = {r=0,g=0,b=1},image = nil},
+                    ['frame'] = {dimensions = {width = 10,height = 10}, rgb = {r=1,g=1,b = 1}, image = nil},
+                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
+                    ['callback'] = pressed_button,
+                    ['display'] = 'test'
+                },
+                ['button2'] = {
+                    button_number = 2,
+                    ['graphics'] = {shape = 'rectangle',render_type = 'rgb',rgb = {r=0,g=0,b=1},image = nil},
+                    ['frame'] = {dimensions = {width = 10,height = 10}, rgb = {r=1,g=1,b = 1}, image = nil},
+                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
+                    ['callback'] = pressed_button,
+                    ['display'] = 'test2'
+                },
+            }
+        },
         -- ['panel2'] = {
         --     panel_order = 2,
         --     ['layout'] = {rows = 3, cols = 1},

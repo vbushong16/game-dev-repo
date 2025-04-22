@@ -51,7 +51,7 @@ function Menu:init(def)
         for i,interface in pairs(def['panels']) do 
             self.panel_init.components = interface
             self.panel_init.panel_id = i
-            self.panel_init.panel_number = interface.panel_order 
+            self.panel_init.panel_number = interface.panel_order
             table.insert(self.panels, {id = i,panel_number = interface.panel_order, panel = Panel(self.panel_init)
         })
         end

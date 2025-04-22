@@ -50,23 +50,18 @@ function Panel:init(def)
     self.frame_width = self.frame.dimensions.width * self.scale.sw
     self.frame_height = self.frame.dimensions.height * self.scale.sh
 
-    print('PANEL TOP FRAME: ',self.frame_render.top.sw)
-    
-
+    -- PANEL SET UP 
     self.panel_id = def.panel_id
     self.panel_number = def.panel_number
-
-    -- self.number_buttons = 0
-    
-    -- print('Number of rows: '..self.layout['rows'])
-    -- print('Number of cols: '..self.layout['cols'])
-
     self.panel_state = false
+
+    self.button_interface = def['components']['buttons']
+    -- for i,button in pairs(self.button_interface) do
+    --     print('BUTTON NUMBER: ', button.button_number)
+    -- end
     self.panel_layout = self:layoutInit()
 
-    --BUTTONS INIT
-    self.button_interface = def['components']['buttons']
-    print('BUTTON DATA: ',self.button_interface)
+
 
 end
 
@@ -182,26 +177,21 @@ function Panel:layoutInit()
             button_init.position.y = (self.y+self.offset.offset_y +(self.frame_height*i))+(button_height * (i-1))
             button_init.button_number = button_number
             button_init.button_id = button_number
-            button_init.components = self.button_interface[button_number]
+            for k, button in pairs(self.button_interface) do
+                if button.button_number == button_number then
+                    button_init.components = button
+                    break
+                end
+            end 
 
+            panel_layout[i][j] = Button(button_init)
+            -- panel_layout[i][j] = {x = (self.x+self.offset.offset_x +(self.frame_width*j))+(button_width * (j-1)),
+            --                     y = (self.y+self.offset.offset_y +(self.frame_height*i))+(button_height * (i-1)),
+            --                     width = button_width,
+            --                     height = button_height,
+            --                     button_number = button_number}
 
-
-
-            -- print(j)
-            -- panel_layout[i][j] = Button({x = (self.x+(5*j))+(button_width * (j-1)),
-            --                             y = (self.y+(5*i))+(button_height * (i-1)),
-            --                         width = button_width,
-            --                         height = button_height,
-            --                         scale_x = self.scale_x,
-            --                         scale_y = self.scale_y,
-            --                         button_number = button_number})
-            panel_layout[i][j] = {x = (self.x+self.offset.offset_x +(self.frame_width*j))+(button_width * (j-1)),
-                                y = (self.y+self.offset.offset_y +(self.frame_height*i))+(button_height * (i-1)),
-                                width = button_width,
-                                height = button_height,
-                                button_number = button_number}
-
-            button_number = button_number + 1
+            -- button_number = button_number + 1
 
             -- print('Button '..i*j .. ' location - '..'x:' ..(self.x+(5*j))+(button_width*(j-1))..' y:' ..(self.y+(5*i))+(button_height*(i-1)))
 
@@ -260,15 +250,15 @@ function Panel:render()
             -- print(self.panel_row_number)
             for j = 1, self.layout.cols,1 do
                 -- print(j)
-                -- self.panel_layout[i][j]:render()
-                love.graphics.setColor(1,1,1)
+                self.panel_layout[i][j]:render()
+                -- love.graphics.setColor(1,1,1)
                 -- love.graphics.rectangle(mode,x,y,width,height)
-                love.graphics.rectangle('fill'
-                ,self.panel_layout[i][j].x
-                ,self.panel_layout[i][j].y
-                ,self.panel_layout[i][j].width
-                ,self.panel_layout[i][j].height)
-                love.graphics.reset()
+                -- love.graphics.rectangle('fill'
+                -- ,self.panel_layout[i][j].x
+                -- ,self.panel_layout[i][j].y
+                -- ,self.panel_layout[i][j].width
+                -- ,self.panel_layout[i][j].height)
+                -- love.graphics.reset()
 
             end
         end

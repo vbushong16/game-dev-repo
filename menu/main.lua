@@ -72,7 +72,7 @@ function love.keypressed(key)
             -- print('panel col layout: ' .. new_panel.panel_col_number)
             
             -- menu1:addPanel(new_panel)
-            -- menu2:addPanel(new_panel)
+            menu2:addPanel(new_panel)
             -- menu3:addPanel(new_panel)
             -- print('Menu3 panel count: ', #menu3.panels)
             -- print('Menu3 current panel: ', menu3.current_panel)
