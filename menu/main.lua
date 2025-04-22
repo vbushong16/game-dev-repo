@@ -14,7 +14,7 @@ function love.load()
     input = {width = 10, height = 10, x = 50, y = 50,num_panels = 2}
     menu1 = Menu(menu1)
     menu2 = Menu(menu2)
-    -- menu3 = Menu(menu3)
+    menu3 = Menu(menu3)
 
     -- print('number of panels:' .. menu.number_panels)
     -- for i,panels in pairs(menu.panels) do
@@ -30,7 +30,7 @@ function love.keypressed(key)
     if key == 'p' then
         menu1:openClose()
         menu2:openClose()
-        -- menu3:openClose()
+        menu3:openClose()
     end
     -- if menu.menu_state then
 
@@ -44,12 +44,12 @@ function love.keypressed(key)
             print('changing')
             menu1:navigation(1)
             menu2:navigation(1)
-            -- menu3:navigation(1)
+            menu3:navigation(1)
         end
         if key == 'q' then
             menu1:navigation(-1)
             menu2:navigation(-1)
-            -- menu3:navigation(-1)
+            menu3:navigation(-1)
         end
     
         if key == 'd' then
@@ -101,7 +101,7 @@ end
 function love.update(dt)
     menu1:update(dt)
     menu2:update(dt)
-    -- menu3:update(dt)
+    menu3:update(dt)
 
 
 end
@@ -111,8 +111,8 @@ function love.draw()
     love.graphics.setColor(1,1,1)
     love.graphics.rectangle('fill',0,0,WINDOW_WIDTH,WINDOW_HEIGHT)
     menu1:render()
-    -- menu2:render()
-    -- menu3:render()
+    menu2:render()
+    menu3:render()
     love.graphics.reset()
     -- love.graphics.rectangle(mode,x,y,width,height)
 end

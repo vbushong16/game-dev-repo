@@ -22,7 +22,7 @@ function Button:init(def)
 
     -- BUTTON GRAPHICS INIT
     self.render_type = def['components']['graphics']['render_type']
-    self.rgb = def['components']['graphics']['rgb']
+    self.rgb = def['components']['graphics']['rgb'] 
     self.image = def['components']['graphics']['image']
     self.shape = def['components']['graphics']['shape']
     self.frame = {}
@@ -188,14 +188,14 @@ function Button:render()
     if self.button_selected then
         love.graphics.setColor(1,0,0)
     else
-        love.graphics.setColor(1,1,1)
+        love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
     end
     
     if self.render_type == 'image' then
         love.graphics.draw(spritesheet,self.image,self.x+self.offset.offset_x,self.y+self.offset.offset_y,self.rotation,self.scale.sw,self.scale.sh)
         -- love.graphics.setFilter("nearest", "nearest")
     elseif self.render_type == 'frame' then
-        love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
+        -- love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
         love.graphics.rectangle('fill',self.x+self.offset.offset_x,self.y+self.offset.offset_y,self.width-2*self.offset.offset_x,self.height-2*self.offset.offset_y)
         love.graphics.reset()
         -- print('PANEL TOP FRAME: ',self.frame_render.top.sw)
@@ -204,7 +204,7 @@ function Button:render()
         love.graphics.draw(spritesheet,self.frame.images['left'],self.frame_render.left.x,self.frame_render.left.y,self.rotation,self.frame_render.left.sw,self.frame_render.left.sh) --LEFT
         love.graphics.draw(spritesheet,self.frame.images['right'],self.frame_render.right.x,self.frame_render.right.y,self.rotation,self.frame_render.right.sw,self.frame_render.right.sh) --RIGHT
     elseif self.render_type == 'rgb' then
-        love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
+        -- love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
         love.graphics.rectangle('fill',self.x+self.offset.offset_x,self.y+self.offset.offset_y,self.width-2*self.offset.offset_x,self.height-2*self.offset.offset_y)
         love.graphics.reset()
         love.graphics.setColor(self.frame.rgb.r,self.frame.rgb.g,self.frame.rgb.b)

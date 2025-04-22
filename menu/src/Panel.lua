@@ -2,7 +2,7 @@
 -- def = 
 
 -- position = {x = self.x+self.frame_width, y = self.y+self.frame_height},
--- size = { width = self.width-self.frame_width, height = self.height-self.frame_height},
+-- size = { width = self.width-self.frame_width*2, height = self.height-self.frame_height*2},
 -- scale = {self.scale.sw, self.scale.sh}
 -- components =  {
 -- ['layout'] = {rows = 1, cols = 2},
@@ -132,9 +132,10 @@ function Panel:scaleXY()
 end
 
 function Panel:buttonDim(length,frame_dim,offset,layout)
-    spacing = length-(offset*2)-((1+layout)*frame_dim)
+
+    spacing = length-(offset*2)-(2*frame_dim)
     -- spacing = length-(offset)-((1+layout)*frame_dim)
-    return spacing/layout
+    return (spacing/layout) + (offset/2)
 end
 
 
@@ -143,8 +144,8 @@ function Panel:layoutInit()
     -- local x_usable_space = self.width-2*self.offset.offset_x - ((1+self.layout.cols)*self.frame.dimensions.width)
     -- local y_usable_space = self.height-2*self.offset.offset_y - ((1+self.layout.rows)*self.frame.dimensions.height)
 
-    local button_width = self:buttonDim(self.width,self.frame_width,self.offset.offset_x,self.layout.cols)
-    local button_height = self:buttonDim(self.height,self.frame_height,self.offset.offset_y,self.layout.rows)
+    local button_width = self:buttonDim(self.width,self.frame_width,self.offset.offset_x,self.layout.cols)-self.offset.offset_x
+    local button_height = self:buttonDim(self.height,self.frame_height,self.offset.offset_y,self.layout.rows)-self.offset.offset_y
 
     
     button_init = {
@@ -174,8 +175,10 @@ function Panel:layoutInit()
         -- print(i)
         for j = 1, self.layout.cols,1 do
 
-            button_init.position.x = (self.x+self.offset.offset_x +(self.frame_width*j))+(button_width * (j-1))
-            button_init.position.y = (self.y+self.offset.offset_y +(self.frame_height*i))+(button_height * (i-1))
+            -- button_init.position.x = (self.x+self.offset.offset_x +(self.frame_width*j))+(button_width * (j-1))
+            -- button_init.position.y = (self.y+self.offset.offset_y +(self.frame_height*i))+(button_height * (i-1))
+            button_init.position.x = (self.x+self.frame_width+(self.offset.offset_x *j))+(button_width * (j-1))
+            button_init.position.y = (self.y+self.frame_height+(self.offset.offset_y *i))+(button_height * (i-1))
             button_init.button_number = button_number
             button_init.button_id = button_number
             for k, button in pairs(self.button_interface) do
