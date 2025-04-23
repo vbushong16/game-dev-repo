@@ -33,7 +33,7 @@ function Menu:init(def)
     self.frame_width = self.frame.dimensions.width * self.scale.sw
     self.frame_height = self.frame.dimensions.height * self.scale.sh
 
-    -- MENU LOGIC INIT
+    -- MENU LOGIC INIT0
     self.menu_state = false
 
     self.panels = {}

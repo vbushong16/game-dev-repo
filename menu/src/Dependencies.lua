@@ -11,13 +11,28 @@ WINDOW_WIDTH = 500
 
 spritesheet = love.graphics.newImage('img/Menu Border.png')
 spritesheet:setFilter('nearest','nearest')
+spritesheet2 = love.graphics.newImage('img/Menu Border Circle.png')
+spritesheet2:setFilter('nearest','nearest')
 
 gFrames = {
-    ['menu'] = {love.graphics.newQuad(6,3,22,24,spritesheet:getDimensions()),},
-    ['frame'] = {['left'] = love.graphics.newQuad(6,3,2,24,spritesheet:getDimensions()),
-    ['top'] = love.graphics.newQuad(6,3,20,2,spritesheet:getDimensions()),
-    ['right'] = love.graphics.newQuad(6,3,2,24,spritesheet:getDimensions()),
-    ['bottom'] = love.graphics.newQuad(6,3,22,2,spritesheet:getDimensions()),}
+    ['menu'] = {
+        love.graphics.newQuad(6,1,22,27,spritesheet:getDimensions()),
+        love.graphics.newQuad(38,1,22,27,spritesheet:getDimensions()),
+        love.graphics.newQuad(70,1,22,27,spritesheet:getDimensions()),
+        love.graphics.newQuad(102,1,22,27,spritesheet:getDimensions()),
+    },
+    ['frame'] = {
+        ['left'] = love.graphics.newQuad(6,3,2,24,spritesheet:getDimensions()),
+        ['top'] = love.graphics.newQuad(6,3,20,2,spritesheet:getDimensions()),
+        ['right'] = love.graphics.newQuad(6,3,2,24,spritesheet:getDimensions()),
+        ['bottom'] = love.graphics.newQuad(6,3,22,2,spritesheet:getDimensions()),
+    },
+    ['fireframe'] = {
+        ['left'] = love.graphics.newQuad(6,3,2,24,spritesheet:getDimensions()),
+        ['top'] = love.graphics.newQuad(38,1,24,4,spritesheet:getDimensions()),
+        ['right'] = love.graphics.newQuad(6,3,2,24,spritesheet:getDimensions()),
+        ['bottom'] = love.graphics.newQuad(38,23,24,4,spritesheet:getDimensions()),
+    }
 }
 
 -- Circle dim: x = 2, y =2, w= 27, h= 27, x2 = 34 ...
@@ -187,10 +202,12 @@ menu3 = {
 }
 
 menu4 = {
-    ['position'] = {x = 150, y=150},
-    ['graphics'] = {shape = 'circle',render_type = 'rgb', rgb = {r=1,g=1,b=1},image = nil,frame = {image = nil,dimensions = nil}},
+    ['position'] = {x = 220, y=220},
+    ['graphics'] = {shape = 'circle',render_type = 'rgb', rgb = {r=0,g=1,b=1},image = nil},
+    ['frame'] = {dimensions = {width = 10},rgb = {r=1,g=0,b=0},image = nil},
     ['size'] = {radius = 100},
-    ['panels'] = nil
+    ['components'] = {number_of_panels = 1},
+    ['panels'] = {}
 }
 
 
