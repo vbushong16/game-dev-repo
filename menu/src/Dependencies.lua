@@ -20,6 +20,12 @@ gFrames = {
     ['bottom'] = love.graphics.newQuad(6,3,22,2,spritesheet:getDimensions()),}
 }
 
+-- Circle dim: x = 2, y =2, w= 27, h= 27, x2 = 34 ...
+-- Fire dim: x = 6,y=1, w = 22, h = 26, x2 = 38
+-- fire top: x = 38, y = 1 , w=22, h =4
+-- fire bot: x = 38, y = 23 , w=22, h =4
+
+
 pressed_button = function()
     -- print('a ui button is pressed')
     love.graphics.setColor(1,1,1)
