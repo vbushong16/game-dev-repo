@@ -60,7 +60,21 @@ function Button:init(def)
     self.callback = def['components']['callback']
     self.display = def['components']['display']
 
-    print(self.callback)
+    self.sw = select(3,self.display:getViewport())
+    self.sh = select(4,self.display:getViewport())
+    print(self.width)
+
+    self.button_middle = self:middle()
+    -- print(self.callback)
+end
+
+function Button:middle()
+    middle_point = {
+        x = self.x + (self.width / 2)
+        ,y = self.y + (self.height / 2)
+        
+    }
+    return(middle_point)
 end
 
 function Button:frameRender()
@@ -215,6 +229,18 @@ function Button:render()
         love.graphics.reset()
     end
     
+    love.graphics.reset()
+    love.graphics.draw(
+        spritesheet4,self.display
+        ,self.button_middle.x
+        ,self.button_middle.y
+        ,0
+        ,math.min(self.width/self.sw,self.height/self.sh)
+        ,math.min(self.width/self.sw,self.height/self.sh)
+        ,math.min(self.width/self.sw,self.height/self.sh)
+        ,math.min(self.width/self.sw,self.height/self.sh)
+    )
+
     love.graphics.reset()
     love.graphics.setColor(0,0,0)
     love.graphics.printf(tostring(self.button_number)

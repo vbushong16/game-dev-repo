@@ -76,6 +76,21 @@ function Menu:init(def)
     -- else 
     --     self.scrollabe_direction = false 
     -- end
+
+    self.points = self:objectCoord()
+    -- print('FRAME x: ', self.frame_render.top.x)
+    -- print('FRAME WIDTH: ', self.frame_render.top.sw)
+    -- print('SCALE WIDTH: ', self.frame_render.top.sw)
+    -- print('GRAPHICS TRANSFORM: ', self.scale.top.sw * 22)
+    -- print('GRAPHICS X: ', self.frame_render.top.x + self.frame_render.top.sw - self.scale.top.sw * 22)
+
+    -- print('FRAME y: ', self.frame_render.top.y)
+    -- print('FRAME HEIGHT: ', self.frame_render.top.sh)
+    -- print('SCALE HEIGHT: ', self.frame_render.top.sh)
+    -- print('GRAPHICS TRANSFORM: ', self.scale.top.sh * 4)
+    -- print('GRAPHICS Y: ', self.frame_render.top.y + self.frame_render.top.sh - self.scale.top.sh * 4)
+
+
 end
 
 
@@ -110,6 +125,27 @@ function Menu:frameRender()
     return frame_table
 end
 
+function Menu:objectCoord()
+
+    points = {
+            {x = self.x, y = self.y}
+            ,{x = self.x + self.width, y = self.y}
+            ,{x = self.x, y = self.y + self.height}
+            ,{x = self.x + self.width, y = self.y + self.height}
+            ,{x = self.x + self.frame_width, y = self.y+self.frame_height}
+            ,{x = self.x + self.width - self.frame_width, y = self.y+self.frame_height}
+            ,{x = self.x + self.frame_width, y = self.y+self.height - self.frame_height}
+            ,{x = self.x + self.width - self.frame_width, y = self.y+self.height - self.frame_height}
+        }
+
+    -- for i, point in ipairs(points) do
+    --     print('P',i,' COORDINATES: ', point.x,', ', point.y)
+    -- end
+
+    return points
+end
+
+
 function Menu:scaleXY()
     local scale_table = {}
     if self.render_type == 'image' then
@@ -141,7 +177,6 @@ function Menu:scaleXY()
 end
 
 
-
 function Menu:render()
     -- love.graphics.rectangle(mode,x,y,width,height)
     -- love.graphics.circle(mode,x,y,radius)
@@ -149,16 +184,16 @@ function Menu:render()
     if self.menu_state then
 
         if self.render_type == 'image' then
-            love.graphics.draw(spritesheet,self.image,self.x,self.y,self.rotation,self.scale.sw,self.scale.sh)
+            love.graphics.draw(spritesheet6,self.image,self.x,self.y,self.rotation,self.scale.sw,self.scale.sh)
             -- love.graphics.setFilter("nearest", "nearest")
         elseif self.render_type == 'frame' then
             love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
             love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
             love.graphics.reset()
-            love.graphics.draw(spritesheet,self.frame.images['top'],self.frame_render.top.x,self.frame_render.top.y,self.rotation,self.frame_render.top.sw,self.frame_render.top.sh) --TOP
-            love.graphics.draw(spritesheet,self.frame.images['bottom'],self.frame_render.bottom.x,self.frame_render.bottom.y,self.rotation,self.frame_render.bottom.sw,self.frame_render.bottom.sh) --BOTTOM
-            love.graphics.draw(spritesheet,self.frame.images['left'],self.frame_render.left.x,self.frame_render.left.y,self.rotation,self.frame_render.left.sw,self.frame_render.left.sh) --LEFT
-            love.graphics.draw(spritesheet,self.frame.images['right'],self.frame_render.right.x,self.frame_render.right.y,self.rotation,self.frame_render.right.sw,self.frame_render.right.sh) --RIGHT
+            love.graphics.draw(spritesheet6,self.frame.images['top'],self.frame_render.top.x,self.frame_render.top.y,self.rotation,self.frame_render.top.sw,self.frame_render.top.sh) --TOP
+            love.graphics.draw(spritesheet6,self.frame.images['bottom'],self.frame_render.bottom.x,self.frame_render.bottom.y,self.rotation,self.frame_render.bottom.sw,self.frame_render.bottom.sh) --BOTTOM
+            love.graphics.draw(spritesheet6,self.frame.images['left'],self.frame_render.left.x,self.frame_render.left.y,self.rotation,self.frame_render.left.sw,self.frame_render.left.sh) --LEFT
+            love.graphics.draw(spritesheet6,self.frame.images['right'],self.frame_render.right.x,self.frame_render.right.y,self.rotation,self.frame_render.right.sw,self.frame_render.right.sh) --RIGHT
         elseif self.render_type == 'rgb' then
             love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
             love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
@@ -171,7 +206,11 @@ function Menu:render()
             love.graphics.reset()
         end
 
-
+        for i, point in ipairs(self.points) do
+            love.graphics.setColor(1,1,0)
+            love.graphics.circle('fill',point.x,point.y,10)
+            love.graphics.reset()
+        end
 
         -- love.graphics.setColor(0,0,0)
         -- love.graphics.line(self.x,self.y+20,self.x+self.scale.sw*2,self.y+20)
