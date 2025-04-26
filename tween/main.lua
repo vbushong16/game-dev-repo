@@ -1,4 +1,4 @@
-
+require 'src/Dependencies'
 Timer = require 'knife.timer'
 
 MOVE_SPEED = 200
@@ -59,10 +59,22 @@ end
 
 function love.draw()
 
-    love.graphics.rectangle('fill',px,py,50,50)
-    -- iterate over bird table for drawing
-    for k, bubble in pairs(bubbles) do
-        love.graphics.circle('fill', bubble.bubblex, bubble.bubbley,bubble.size)
-    end
+
+
+    love.graphics.stencil(function ()
+        love.graphics.rectangle("fill", 10, 10, 20, 20)
+        -- love.graphics.rectangle('fill',px,py,50,50)
+        love.graphics.draw(spritesheet, gFrames['menu'][1], px, py,0,4,4)
+        love.graphics.draw(spritesheet, gFrames['menu'][2], px, py,0,3,3)
+        -- iterate over bird table for drawing
+        for k, bubble in pairs(bubbles) do
+            love.graphics.circle('fill', bubble.bubblex, bubble.bubbley,bubble.size)
+        end
+        
+      end,
+      "replace", 1, false)
+    love.graphics.setStencilTest("greater", 0)
+    love.graphics.circle("fill", 50,100,100)
+
 
 end
