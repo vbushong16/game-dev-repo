@@ -117,7 +117,7 @@ menu1 = {
         ['panel1'] = {
             debug = false,
             panel_order = 1,
-            ['layout'] = {rows = 3, cols = 3},
+            ['layout'] = {priority = 'cols', rows = {1,1,1}, cols = {2,3,3}},
             ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=1,g=0,b=0},atlas = spritesheet6},
             ['frame'] = {
                 ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
@@ -300,7 +300,7 @@ menu1 = {
         ['panel2'] = {
             debug = false,
             panel_order = 2,
-            ['layout'] = {rows = 2, cols = 2},
+            ['layout'] = {priority = 'rows', rows = {2,1}, cols = {1,1}},
             ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=1,g=0,b=0},atlas = spritesheet6},
             ['frame'] = {
                 ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
@@ -315,12 +315,12 @@ menu1 = {
                     button_number = 1,
                     ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
                     ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =0},rgb = nil,image = gFrames['frame3']['top']}
-                        ,['bottom'] = {dimensions = {width = nil, height =0},rgb = nil,image = gFrames['frame3']['bottom']}
-                        ,['left'] = {dimensions = {width = 0, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                        ,['right'] = {dimensions = {width = 0, height =nil},rgb = nil,image = gFrames['frame3']['right']}
+                        ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
+                        ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
+                        ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
+                        ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
                     },
-                    ['position'] = { offsets = {offset_x = 0, offset_y = 0}},
+                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
                     ['callback'] = menu_clickthrough,
                     ['display'] = {atlas= spritesheet4, image = gFrames['button'][1]}
                 },
@@ -329,12 +329,12 @@ menu1 = {
                     button_number = 2,
                     ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
                     ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =0},rgb = nil,image = gFrames['frame3']['top']}
-                        ,['bottom'] = {dimensions = {width = nil, height =0},rgb = nil,image = gFrames['frame3']['bottom']}
-                        ,['left'] = {dimensions = {width = 0, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                        ,['right'] = {dimensions = {width = 0, height =nil},rgb = nil,image = gFrames['frame3']['right']}
+                        ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
+                        ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
+                        ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
+                        ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
                     },
-                    ['position'] = { offsets = {offset_x = 0, offset_y = 0}},
+                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
                     ['callback'] = pressed_button,
                     ['display'] = {atlas= spritesheet4, image = gFrames['button'][1]}
                 },

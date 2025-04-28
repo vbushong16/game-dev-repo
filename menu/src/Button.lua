@@ -197,8 +197,8 @@ function Button:render()
         ,self.points[5].x
         ,self.points[5].y
         ,0
-        ,math.min(self.display.scale.sw,self.display.scale.sh)
-        ,math.min(self.display.scale.sw,self.display.scale.sh)
+        ,self.display.scale.sw
+        ,self.display.scale.sh
     )
 
     for i, point in ipairs(self.points) do
