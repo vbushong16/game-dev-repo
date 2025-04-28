@@ -192,7 +192,7 @@ function Panel:layoutInit()
 
         if k>1 then
             if self.layout.priority == 'cols' then
-                if (self.panel_layout[k-1].button[1].x + button_width - self.offset.offset_x) > self.panel_width then
+                if (self.panel_layout[k-1].button[1].x + button_width - self.offset.offset_x) >= self.panel_width then
                     button_init.position.x = (self.points[5].x)
                     button_init.position.y = (self.panel_layout[k-1].button[1].y)+(button_height) - self.offset.offset_y
                 else
@@ -200,7 +200,7 @@ function Panel:layoutInit()
                     button_init.position.y = self.panel_layout[k-1].button[1].y - self.offset.offset_y
                 end
             else 
-                if (self.panel_layout[k-1].button[1].y + button_height - self.offset.offset_y) > self.panel_height then
+                if (self.panel_layout[k-1].button[1].y + button_height - self.offset.offset_y) >= self.panel_height then
                     button_init.position.x = (self.panel_layout[k-1].button[1].x )+(button_width)- self.offset.offset_x
                     button_init.position.y = (self.points[5].y)
                 else
