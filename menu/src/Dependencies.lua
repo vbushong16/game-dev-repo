@@ -111,7 +111,7 @@ menu1 = {
         ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame']['left']}
         ,['right'] = {dimensions = {width = 50, height =nil},rgb = nil,image = gFrames['frame']['right']}
     },
-    ['size'] = {width = 800, height = 800},
+    ['size'] = {width = 450, height = 450},
     ['components'] = {number_of_panels = 2},
     ['panels'] = {
         ['panel1'] = {
