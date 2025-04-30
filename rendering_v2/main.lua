@@ -13,6 +13,8 @@ bubbles = {}
 bubbleFixtures = {}
 sizeAvalanch = 5
 
+testing_table = {['key1']={x=1,y=2,z=3},['key2']={a='d',w=2,c='val'}}
+
 paletteColors = {
     -- blue
     [1] = {
@@ -69,6 +71,16 @@ function love.load()
      paletteColors[1].b / 255,
      0
     )
+
+    print('TEST TABLE KEY1 x:',testing_table.key1.x)
+    testing_table.key1.t = 'testing'
+    print('TEST TABLE KEY1 t:',testing_table.key1.t)
+    testing_table.key3 = {1,2,3,4}
+    print('TEST TABLE KEY3 val1:',testing_table.key3[1])
+    
+    
+
+
 
 end
 

@@ -4,47 +4,88 @@ Menu = Class{}
 
 function Menu:init(def)
 
-    -- MENU GRAPHICS INIT
-    self.render_type = def['graphics']['render_type']
-    self.rgb = def['graphics']['rgb']
-    self.image = def['graphics']['image']
-    self.shape = def['graphics']['shape']
-    self.frame = {}
-    self.frame.images = def['frame']['image']
-    self.frame.dimensions = def['frame']['dimensions']
-    self.frame.rgb = def['frame']['rgb']
+    -- MENU PRESETS
+    self.scale = {}
+    self.position={}
+    -- MENU DEBUG
+    self.debug = def['metadata']['debug']
+    self.menu_name = def['metadata']['name']
 
-    -- MENU POSITION INIT
+    -- MENU POSITION INIT 
     self.x = def['position']['x']
     self.y = def['position']['y']
     self.rotation = def.rotation or 0
+    self.width = def['size']['width']
+    self.height = def['size']['height']
+
+    if self.debug then self:menuDebug() end
     
-    -- MENU SIZE INIT
-    if self.shape == 'rectangle' then
-        self.width = def['size']['width']
-        self.height = def['size']['height']
-    elseif self.shape == 'circle' then
-        self.radius = def['size']['radius']
-    end 
+    -- MENU GRAPHICS INIT
+    self.render_type = def['graphics']['render_type']
+    self.rgb = def['graphics']['rgb']
+    self.atlas = def['graphics']['atlas']
 
-    -- MENU RENDERING DIMS
-    self.scale = self:scaleXY()
-    self.frame_render = self:frameRender()
-    self.frame_width = self.frame.dimensions.width * self.scale.sw
-    self.frame_height = self.frame.dimensions.height * self.scale.sh
+    self.shape = def['graphics']['shape']
+    self.frame = def['frame']
+    self.edge_names = {'top','bottom','left','right'}
+    -- local w,h = nil, nil
+    for i,edge in pairs(self.edge_names) do
+        self.frame[edge].image_dimensions = getImageDims(self.frame[edge].image)
 
-    -- MENU LOGIC INIT0
-    self.menu_state = false
+        local w,h = nil,nil
+        if edge == 'top' then
+            w,h = self.width,self.frame[edge].dimensions.height
+        elseif edge == 'bottom' then
+            w,h = self.width,self.frame[edge].dimensions.height
+        elseif edge == 'left' then
+            w,h = self.frame[edge].dimensions.width,self.height
+        elseif edge == 'right' then
+            w,h = self.frame[edge].dimensions.width,self.height
+        end
 
+        self.scale[edge] = scaleXY(
+            w
+            ,h
+            ,self.frame[edge].image_dimensions.width
+            ,self.frame[edge].image_dimensions.height
+
+        )
+
+        local frame_adjustment = nil
+        if edge == 'bottom' then
+            frame_adjustment = self.frame[edge].dimensions.height
+        elseif edge == 'right' then
+            frame_adjustment = self.frame[edge].dimensions.width
+        else
+            frame_adjustment = nil
+        end
+        self.position[edge] = frameRender(edge,self.x,self.y,self.width,self.height,self.scale[edge].sw,self.scale[edge].sh,frame_adjustment)
+
+        if self.debug then self:frameDebug(edge) end
+
+    end
+
+    -- MENU POSITIONS
+    local frame_offsets = {
+        ['top'] = self.frame.top.dimensions.height
+        ,['bottom'] = self.frame.bottom.dimensions.height
+        ,['left'] = self.frame.left.dimensions.width
+        ,['right'] = self.frame.right.dimensions.width
+    }
+    self.points = objectCoord(self.x,self.y,self.width,self.height,frame_offsets)
+    
+    if self.debug then self:MenuPositionDebug() end
+
+    -- PANEL INIT
     self.panels = {}
     self.panels_to_build = def['components']['number_of_panels']
     self.panel_init = {
-        position = {x = self.x+self.frame_width, y = self.y+self.frame_height},
-        size = { width = self.width-self.frame_width*2, height = self.height-self.frame_height*2},
-        -- scale = self.scale,
+        position = {x = self.points[5].x, y = self.points[5].y},
+        size = {width = self.points[6].x-self.points[5].x, height = self.points[7].y-self.points[5].y},
         components = {},
         panel_id = nil, 
         panel_number = nil,
+        menu_name = self.menu_name
     }
 
     if self.panels_to_build >= 1 then
@@ -59,6 +100,14 @@ function Menu:init(def)
     -- sort = function(a,b) return a.panel_number<b.panel_number end
     table.sort(self.panels,function(a,b) return a.panel_number<b.panel_number end)
         
+
+    -- MENU LOGIC INIT0
+    self.menu_state = false
+
+    -- for i,panel in pairs(self.panels) do
+    --     print('PANEL: ',panel.id,' STATE',panel.panel.panel_state)
+    -- end
+    
     self.current_panel = 1
     if #self.panels > 0 then 
         self.panels[self.current_panel]['panel'].panel_state = true
@@ -77,156 +126,29 @@ function Menu:init(def)
     --     self.scrollabe_direction = false 
     -- end
 
-    self.points = self:objectCoord()
-    -- print('FRAME x: ', self.frame_render.top.x)
-    -- print('FRAME WIDTH: ', self.frame_render.top.sw)
-    -- print('SCALE WIDTH: ', self.frame_render.top.sw)
-    -- print('GRAPHICS TRANSFORM: ', self.scale.top.sw * 22)
-    -- print('GRAPHICS X: ', self.frame_render.top.x + self.frame_render.top.sw - self.scale.top.sw * 22)
-
-    -- print('FRAME y: ', self.frame_render.top.y)
-    -- print('FRAME HEIGHT: ', self.frame_render.top.sh)
-    -- print('SCALE HEIGHT: ', self.frame_render.top.sh)
-    -- print('GRAPHICS TRANSFORM: ', self.scale.top.sh * 4)
-    -- print('GRAPHICS Y: ', self.frame_render.top.y + self.frame_render.top.sh - self.scale.top.sh * 4)
 
 
 end
-
-
-
-function Menu:frameRender()
-
-    local frame_table = {}
-    frame_table.top = {
-        x = self.x
-        ,y = self.y
-        ,sw = self.scale.top.sw
-        ,sh = self.scale.top.sh
-    }
-    frame_table.bottom = {
-        x = self.x
-        ,y =self.y+self.height-self.frame.dimensions.height
-        ,sw = self.scale.bottom.sw
-        ,sh = self.scale.bottom.sh
-    }
-    frame_table.left = {
-        x = self.x
-        ,y = self.y
-        ,sw = self.scale.left.sw
-        ,sh = self.scale.left.sh
-    }
-    frame_table.right = {
-        x = self.x + self.width - self.frame.dimensions.width
-        ,y = self.y
-        ,sw = self.scale.right.sw
-        ,sh = self.scale.right.sh
-    }
-    return frame_table
-end
-
-function Menu:objectCoord()
-
-    points = {
-            {x = self.x, y = self.y}
-            ,{x = self.x + self.width, y = self.y}
-            ,{x = self.x, y = self.y + self.height}
-            ,{x = self.x + self.width, y = self.y + self.height}
-            ,{x = self.x + self.frame_width, y = self.y+self.frame_height}
-            ,{x = self.x + self.width - self.frame_width, y = self.y+self.frame_height}
-            ,{x = self.x + self.frame_width, y = self.y+self.height - self.frame_height}
-            ,{x = self.x + self.width - self.frame_width, y = self.y+self.height - self.frame_height}
-        }
-
-    -- for i, point in ipairs(points) do
-    --     print('P',i,' COORDINATES: ', point.x,', ', point.y)
-    -- end
-
-    return points
-end
-
-
-function Menu:scaleXY()
-    local scale_table = {}
-    if self.render_type == 'image' then
-        local sw,sh = select(3,self.image:getViewport()),select(4,self.image:getViewport())
-        scale_table.sw,scale_table.sh = self.width/sw,self.height/sh
-        scale_table.top = {sw = scale_table.sw,sh = scale_table.sh}
-        scale_table.bottom = {sw = scale_table.sw,sh = scale_table.sh}
-        scale_table.left = {sw = scale_table.sw,sh = scale_table.sh}
-        scale_table.right = {sw = scale_table.sw,sh = scale_table.sh}
-    elseif self.render_type == 'frame' then
-        scale_table.sw,scale_table.sh = 1,1
-        scale_table.top = {sw = self.width/select(3,self.frame.images['top']:getViewport()), sh = self.frame.dimensions.height/select(4,self.frame.images['top']:getViewport())}
-        scale_table.bottom = {sw = self.width/select(3,self.frame.images['bottom']:getViewport()),sh = self.frame.dimensions.height/select(4,self.frame.images['bottom']:getViewport())}
-        scale_table.left = {sw = self.frame.dimensions.width/select(3,self.frame.images['left']:getViewport()),sh = self.height/select(4,self.frame.images['left']:getViewport())}
-        scale_table.right = {sw = self.frame.dimensions.width/select(3,self.frame.images['right']:getViewport()),sh = self.height/select(4,self.frame.images['right']:getViewport())} 
-        -- print('THIS IS THE EDGE SCALE TOP: ', scale_table.top.sw ,' & ', scale_table.top.sh)
-        -- print('THIS IS THE EDGE SCALE BOT: ', scale_table.bottom.sw ,' & ', scale_table.bottom.sh)
-        -- print('THIS IS THE EDGE SCALE LEFT: ', scale_table.left.sw ,' & ', scale_table.left.sh)
-        -- print('THIS IS THE EDGE SCALE RIGHT: ', scale_table.right.sw ,' & ', scale_table.right.sh)
-    else
-        scale_table.sw,scale_table.sh = 1,1
-        scale_table.top = {sw = self.width, sh = self.frame.dimensions.height}
-        scale_table.bottom = {sw = self.width, sh = self.frame.dimensions.height}
-        scale_table.left = {sw = self.frame.dimensions.width, sh = self.height}
-        scale_table.right = {sw = self.frame.dimensions.width, sh = self.height}
-
-    end
-    return scale_table
-end
-
 
 function Menu:render()
     -- love.graphics.rectangle(mode,x,y,width,height)
     -- love.graphics.circle(mode,x,y,radius)
     -- love.graphics.draw(drawable,x,y,r,sx,sy,ox,oy)
     if self.menu_state then
-
-        if self.render_type == 'image' then
-            love.graphics.draw(spritesheet6,self.image,self.x,self.y,self.rotation,self.scale.sw,self.scale.sh)
-            -- love.graphics.setFilter("nearest", "nearest")
-        elseif self.render_type == 'frame' then
-            love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
-            love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
-            love.graphics.reset()
-            love.graphics.draw(spritesheet6,self.frame.images['top'],self.frame_render.top.x,self.frame_render.top.y,self.rotation,self.frame_render.top.sw,self.frame_render.top.sh) --TOP
-            love.graphics.draw(spritesheet6,self.frame.images['bottom'],self.frame_render.bottom.x,self.frame_render.bottom.y,self.rotation,self.frame_render.bottom.sw,self.frame_render.bottom.sh) --BOTTOM
-            love.graphics.draw(spritesheet6,self.frame.images['left'],self.frame_render.left.x,self.frame_render.left.y,self.rotation,self.frame_render.left.sw,self.frame_render.left.sh) --LEFT
-            love.graphics.draw(spritesheet6,self.frame.images['right'],self.frame_render.right.x,self.frame_render.right.y,self.rotation,self.frame_render.right.sw,self.frame_render.right.sh) --RIGHT
-        elseif self.render_type == 'rgb' then
-            love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
-            love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
-            love.graphics.reset()
-            love.graphics.setColor(self.frame.rgb.r,self.frame.rgb.g,self.frame.rgb.b)
-            love.graphics.rectangle('fill',self.frame_render.top.x,self.frame_render.top.y,self.frame_render.top.sw,self.frame_render.top.sh) --TOP
-            love.graphics.rectangle('fill',self.frame_render.bottom.x,self.frame_render.bottom.y,self.frame_render.bottom.sw,self.frame_render.bottom.sh) --BOTTOM
-            love.graphics.rectangle('fill',self.frame_render.left.x,self.frame_render.left.y,self.frame_render.left.sw,self.frame_render.left.sh) --LEFT
-            love.graphics.rectangle('fill',self.frame_render.right.x,self.frame_render.right.y,self.frame_render.right.sw,self.frame_render.right.sh) --RIGHT
-            love.graphics.reset()
+        love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
+        love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+        love.graphics.reset()
+        for i,edge in pairs(self.edge_names) do
+            love.graphics.draw(self.atlas,self.frame[edge].image,self.position[edge].x,self.position[edge].y,self.rotation,self.position[edge].sw,self.position[edge].sh)
         end
-
         for i, point in ipairs(self.points) do
             love.graphics.setColor(1,1,0)
             love.graphics.circle('fill',point.x,point.y,10)
             love.graphics.reset()
         end
 
-        -- love.graphics.setColor(0,0,0)
-        -- love.graphics.line(self.x,self.y+20,self.x+self.scale.sw*2,self.y+20)
-        -- love.graphics.reset()
-        -- if self.scrollabe_status then
-        --     if self.scrollabe_direction == 'horizontal' then
-        --         love.graphics.circle('fill',self.scroller_direction,self.scroller_anchor,10)
-        --         love.graphics.circle('fill',self.scroller_direction_2,self.scroller_anchor,10)
-        --     else
-        --         love.graphics.circle('fill',self.scroller_anchor,self.scroller_direction,10)
-        --         love.graphics.circle('fill',self.scroller_anchor,self.scroller_direction_2,10)
-        --     end
-        -- end
-        -- -- print(self.panels[self.current_panel]['panel'].panel_state)
+
         if #self.panels > 0 then 
-            -- print('CURRENT PANEL: ', self.current_panel)
             self.panels[self.current_panel]['panel']:render()
         end
 
@@ -236,6 +158,7 @@ end
 function Menu:update(dt)
     if #self.panels > 0 then 
         self.panels[self.current_panel]['panel']:update(dt)
+
     end
     if #self.panels >= 2 then
         self.scrollabe_status = true
@@ -319,8 +242,44 @@ function Menu:navigation(input)
     -- print('number of panels: ' .. #self.panels)
     if self.current_panel+input > 0 and self.current_panel+input <= #self.panels then
         self.panels[self.current_panel]['panel'].panel_state = false
+        self.panels[self.current_panel]['panel']:resetButton()
+        -- print('OLD PANEL:' .. self.current_panel,'IS:'.. tostring(self.panels[self.current_panel]['panel'].panel_state))
         self.current_panel = self.current_panel + input
         self.panels[self.current_panel]['panel'].panel_state = true
-        -- print('new panel: '.. self.current_panel)
+        -- print('NEW PANEL:' .. self.current_panel,'IS:'..tostring(self.panels[self.current_panel]['panel'].panel_state))
     end
+end
+
+function Menu:menuDebug()
+    print('\n','MENU DEBUG ----------------------------------------------------')
+    print('MENU NAME: ',self.menu_name)
+    print('MENU X: ',self.x)
+    print('MENU Y: ',self.x)
+    print('MENU WIDTH: ', self.width)
+    print('MENU HEIGHT: ', self.height)
+end
+
+function Menu:frameDebug(edge)
+    print('\n','FRAME DEBUG: ',edge, ' -------------')
+    print('FRAME IMAGE x: ',self.frame[edge].image_dimensions.x)
+    print('FRAME IMAGE y: ',self.frame[edge].image_dimensions.y)
+    print('FRAME IMAGE width: ',self.frame[edge].image_dimensions.width)
+    print('FRAME IMAGE height: ',self.frame[edge].image_dimensions.height)
+    print('INPUT INTO SCALEXY')
+    print('FOR EDGE: ',edge,' WIDTH IS: ',w)
+    print('FOR EDGE: ',edge,' HEIGHT IS: ',h)
+    print('FRAME IMAGE SW: ',self.scale[edge].sw)
+    print('FRAME IMAGE SH: ',self.scale[edge].sh)
+end
+
+function Menu:MenuPositionDebug()
+    print('\n','MENU POSITIONS:')
+    print('OUTTER P1 - X,Y: ', self.points[1].x,' ',self.points[1].y)
+    print('OUTTER P2 - X,Y: ', self.points[2].x,' ',self.points[2].y)
+    print('OUTTER P3 - X,Y: ', self.points[3].x,' ',self.points[3].y)
+    print('OUTTER P4 - X,Y: ', self.points[4].x,' ',self.points[4].y)
+    print('INNER P5 - X,Y: ', self.points[5].x,' ',self.points[5].y)
+    print('INNER P6 - X,Y: ', self.points[6].x,' ',self.points[6].y)
+    print('INNER P7 - X,Y: ', self.points[7].x,' ',self.points[7].y)
+    print('INNER P8 - X,Y: ', self.points[8].x,' ',self.points[8].y) 
 end

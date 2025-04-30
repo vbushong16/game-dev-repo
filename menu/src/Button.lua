@@ -20,142 +20,120 @@ Button = Class{}
 
 function Button:init(def)
 
-    -- BUTTON GRAPHICS INIT
-    self.render_type = def['components']['graphics']['render_type']
-    self.rgb = def['components']['graphics']['rgb'] 
-    self.image = def['components']['graphics']['image']
-    self.shape = def['components']['graphics']['shape']
-    self.frame = {}
-    self.frame.images = def['components']['frame']['image']
-    self.frame.dimensions = def['components']['frame']['dimensions']
-    self.frame.rgb = def['components']['frame']['rgb']
+    -- BUTTON PRESETS
+    self.scale = {}
+    self.position={}
+    -- BUTTON DEBUG
+    self.debug = def['components']['debug']
+    self.menu_name = def['menu_name']
 
     -- BUTTON POSITION INIT
-    self.x = def['position']['x']
-    self.y = def['position']['y']
-    self.rotation = def.rotation or 0
     self.offset = def['components']['position']['offsets']
+    self.x = def['position']['x'] + 1*self.offset.offset_x
+    self.y = def['position']['y'] + 1*self.offset.offset_y
+    self.rotation = def.rotation or 0
+    self.width = def['size']['width'] - 1*self.offset.offset_x
+    self.height = def['size']['height'] - 1*self.offset.offset_y
 
-   -- BUTTON SIZE INIT
-    if self.shape == 'rectangle' then
-        self.width = def['size']['width']
-        self.height = def['size']['height']
-    elseif self.shape == 'circle' then
-        self.radius = def['size']['radius']
-    end 
+    if self.debug then self:buttonDebug() end
 
-    -- BUTTON RENDERING DIMS
-    -- self.scale = def['scale']
-    self.scale = self:scaleXY()
-    self.frame_render = self:frameRender()
-    self.frame_width = self.frame.dimensions.width * self.scale.sw
-    self.frame_height = self.frame.dimensions.height * self.scale.sh
+    -- BUTTON GRAPHICS INIT
+    self.render_type = def['components']['graphics']['render_type']
+    self.rgb = def['components']['graphics']['rgb']
+    self.atlas = def['components']['graphics']['atlas']
 
-    -- BUTTON SET UP
-    self.button_id = def.button_id 
-    self.button_number = def.button_number 
+    self.shape = def['components']['graphics']['shape']
+    self.frame = def['components']['frame']
+    self.edge_names = {'top','bottom','left','right'}
 
+    local w,h = nil, nil 
+    for i,edge in pairs(self.edge_names) do
+        self.frame[edge].image_dimensions = getImageDims(self.frame[edge].image)
+
+        local w,h = nil,nil
+        if edge == 'top' then
+            w,h = self.width,self.frame[edge].dimensions.height
+        elseif edge == 'bottom' then
+            w,h = self.width,self.frame[edge].dimensions.height
+        elseif edge == 'left' then
+            w,h = self.frame[edge].dimensions.width,self.height
+        elseif edge == 'right' then
+            w,h = self.frame[edge].dimensions.width,self.height
+        end
+        self.scale[edge] = scaleXY(
+            w
+            ,h
+            ,self.frame[edge].image_dimensions.width
+            ,self.frame[edge].image_dimensions.height
+        )
+
+        local frame_adjustment = nil
+        if edge == 'bottom' then
+            frame_adjustment = self.frame[edge].dimensions.height
+        elseif edge == 'right' then
+            frame_adjustment = self.frame[edge].dimensions.width
+        else
+            frame_adjustment = nil
+        end
+        self.position[edge] = frameRender(edge,self.x,self.y,self.width,self.height,self.scale[edge].sw,self.scale[edge].sh,frame_adjustment)
+    
+        if self.debug then self:frameDebug(edge) end    
+    end
+ 
+    -- BUTTON POSITIONS
+    local frame_offsets = {
+        ['top'] = self.frame.top.dimensions.height
+        ,['bottom'] = self.frame.bottom.dimensions.height
+        ,['left'] = self.frame.left.dimensions.width
+        ,['right'] = self.frame.right.dimensions.width
+    }
+    self.points = objectCoord(self.x,self.y,self.width,self.height,frame_offsets)
+    -- self.button_middle = middleXY(self.x,self.y,self.width,self.height)
+    
+    if self.debug then self:positionDebug() end
+    
+    -- BUTTON SET UP 
+    self.button_id = def.button_id
+    self.button_number = def.button_number
+    -- self.panel_state = def.panel_state
     self.button_state = false
     self.button_selected = false
     self.callback = def['components']['callback']
+
     self.display = def['components']['display']
+    self.display.image_dimensions = getImageDims(self.display.image)
+    self.display.scale = scaleXY(self.points[6].x-self.points[5].x,self.points[7].y-self.points[5].y
+        ,self.display.image_dimensions.width
+        ,self.display.image_dimensions.height
+    )
 
-    self.sw = select(3,self.display:getViewport())
-    self.sh = select(4,self.display:getViewport())
-    print(self.width)
+    if self.debug then self:displayDebug() end 
 
-    self.button_middle = self:middle()
-    -- print(self.callback)
 end
-
-function Button:middle()
-    middle_point = {
-        x = self.x + (self.width / 2)
-        ,y = self.y + (self.height / 2)
-        
-    }
-    return(middle_point)
-end
-
-function Button:frameRender()
-
-    local frame_table = {}
-    frame_table.top = {
-        x = self.x + self.offset.offset_x
-        ,y = self.y + self.offset.offset_y
-        ,sw = self.scale.top.sw
-        ,sh = self.scale.top.sh
-    }
-    frame_table.bottom = {
-        x = self.x + self.offset.offset_x
-        ,y =self.y+self.height-self.frame.dimensions.height - self.offset.offset_y
-        ,sw = self.scale.bottom.sw
-        ,sh = self.scale.bottom.sh
-    }
-    frame_table.left = {
-        x = self.x + self.offset.offset_x
-        ,y = self.y + self.offset.offset_y
-        ,sw = self.scale.left.sw
-        ,sh = self.scale.left.sh
-    }
-    frame_table.right = {
-        x = self.x + self.width - self.frame.dimensions.width - self.offset.offset_x
-        ,y = self.y + self.offset.offset_y
-        ,sw = self.scale.right.sw
-        ,sh = self.scale.right.sh
-    }
-    return frame_table
-end
-
-function Button:scaleXY()
-    local scale_table = {}
-    if self.render_type == 'image' then
-        local sw,sh = select(3,self.image:getViewport()),select(4,self.image:getViewport())
-        scale_table.sw,scale_table.sh = (self.width-2*self.offset.offset_x)/sw,(self.height-2*self.offset.offset_y)/sh
-        scale_table.top = {sw = scale_table.sw,sh = scale_table.sh}
-        scale_table.bottom = {sw = scale_table.sw,sh = scale_table.sh}
-        scale_table.left = {sw = scale_table.sw,sh = scale_table.sh}
-        scale_table.right = {sw = scale_table.sw,sh = scale_table.sh}
-    elseif self.render_type == 'frame' then
-        scale_table.sw,scale_table.sh = 1,1
-        scale_table.top = {sw = (self.width-2*self.offset.offset_x)/select(3,self.frame.images['top']:getViewport()), sh = self.frame.dimensions.height/select(4,self.frame.images['top']:getViewport())}
-        scale_table.bottom = {sw = (self.width-2*self.offset.offset_x)/select(3,self.frame.images['bottom']:getViewport()),sh = self.frame.dimensions.height/select(4,self.frame.images['bottom']:getViewport())}
-        scale_table.left = {sw = self.frame.dimensions.width/select(3,self.frame.images['left']:getViewport()),sh = (self.height-2*self.offset.offset_y)/select(4,self.frame.images['left']:getViewport())}
-        scale_table.right = {sw = self.frame.dimensions.width/select(3,self.frame.images['right']:getViewport()),sh = (self.height-2*self.offset.offset_y)/select(4,self.frame.images['right']:getViewport())} 
-        -- print('THIS IS THE EDGE SCALE TOP: ', scale_table.top.sw ,' & ', scale_table.top.sh)
-        -- print('THIS IS THE EDGE SCALE BOT: ', scale_table.bottom.sw ,' & ', scale_table.bottom.sh)
-        -- print('THIS IS THE EDGE SCALE LEFT: ', scale_table.left.sw ,' & ', scale_table.left.sh)
-        -- print('THIS IS THE EDGE SCALE RIGHT: ', scale_table.right.sw ,' & ', scale_table.right.sh)
-    else
-        scale_table.sw,scale_table.sh = 1,1
-        scale_table.top = {sw = self.width-2*self.offset.offset_x, sh = self.frame.dimensions.height}
-        scale_table.bottom = {sw = self.width-2*self.offset.offset_x, sh = self.frame.dimensions.height}
-        scale_table.left = {sw = self.frame.dimensions.width, sh = self.height-2*self.offset.offset_y}
-        scale_table.right = {sw = self.frame.dimensions.width, sh = self.height-2*self.offset.offset_y}
-
-    end
-    return scale_table
-end
-
 
 
 function Button:buttonCallback(callback)
     if self.button_state then
         if mouse_pressed then
-            callback()
             self.button_selected = true
+            callback()
+            mouse_pressed = nil
         end
     end
 end
 
-function Button:update(dt)
+function Button:reset(dt)
+    print('PANEL RESET')
+    self.button_state = false
+    self.button_selected = false
+end
+
+function Button:update(dt,panel_status)
     local mx, my = love.mouse.getPosition()
     if mouse_pressed then
         if mx > self.x and mx < self.x + self.width then
             if my > self.y and my < self.y + self.height then
                 self.button_state = true
-                -- print('BUTTON: ',self.button_number,' IS PRESSED')
-                -- print(self.button_state)
             else
                 self.button_state = false
                 self.button_selected = false
@@ -165,6 +143,7 @@ function Button:update(dt)
             self.button_selected = false
         end
     end
+
 end
 
 -- function Button:changeImage()
@@ -201,45 +180,32 @@ function Button:render()
 
     if self.button_selected then
         love.graphics.setColor(1,0,0)
+        love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+        love.graphics.reset()  
     else
         love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
+        love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+        love.graphics.reset()    
     end
     
-    if self.render_type == 'image' then
-        love.graphics.draw(spritesheet,self.image,self.x+self.offset.offset_x,self.y+self.offset.offset_y,self.rotation,self.scale.sw,self.scale.sh)
-        -- love.graphics.setFilter("nearest", "nearest")
-    elseif self.render_type == 'frame' then
-        -- love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
-        love.graphics.rectangle('fill',self.x+self.offset.offset_x,self.y+self.offset.offset_y,self.width-2*self.offset.offset_x,self.height-2*self.offset.offset_y)
-        love.graphics.reset()
-        -- print('PANEL TOP FRAME: ',self.frame_render.top.sw)
-        love.graphics.draw(spritesheet,self.frame.images['top'],self.frame_render.top.x,self.frame_render.top.y,self.rotation,self.frame_render.top.sw,self.frame_render.top.sh) --TOP
-        love.graphics.draw(spritesheet,self.frame.images['bottom'],self.frame_render.bottom.x,self.frame_render.bottom.y,self.rotation,self.frame_render.bottom.sw,self.frame_render.bottom.sh) --BOTTOM
-        love.graphics.draw(spritesheet,self.frame.images['left'],self.frame_render.left.x,self.frame_render.left.y,self.rotation,self.frame_render.left.sw,self.frame_render.left.sh) --LEFT
-        love.graphics.draw(spritesheet,self.frame.images['right'],self.frame_render.right.x,self.frame_render.right.y,self.rotation,self.frame_render.right.sw,self.frame_render.right.sh) --RIGHT
-    elseif self.render_type == 'rgb' then
-        -- love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
-        love.graphics.rectangle('fill',self.x+self.offset.offset_x,self.y+self.offset.offset_y,self.width-2*self.offset.offset_x,self.height-2*self.offset.offset_y)
-        love.graphics.reset()
-        love.graphics.setColor(self.frame.rgb.r,self.frame.rgb.g,self.frame.rgb.b)
-        love.graphics.rectangle('fill',self.frame_render.top.x,self.frame_render.top.y,self.frame_render.top.sw,self.frame_render.top.sh) --TOP
-        love.graphics.rectangle('fill',self.frame_render.bottom.x,self.frame_render.bottom.y,self.frame_render.bottom.sw,self.frame_render.bottom.sh) --BOTTOM
-        love.graphics.rectangle('fill',self.frame_render.left.x,self.frame_render.left.y,self.frame_render.left.sw,self.frame_render.left.sh) --LEFT
-        love.graphics.rectangle('fill',self.frame_render.right.x,self.frame_render.right.y,self.frame_render.right.sw,self.frame_render.right.sh) --RIGHT
-        love.graphics.reset()
+    for i,edge in pairs(self.edge_names) do
+        love.graphics.draw(self.atlas,self.frame[edge].image,self.position[edge].x,self.position[edge].y,self.rotation,self.position[edge].sw,self.position[edge].sh)
     end
     
-    love.graphics.reset()
     love.graphics.draw(
-        spritesheet4,self.display
-        ,self.button_middle.x
-        ,self.button_middle.y
+        self.display.atlas,self.display.image
+        ,self.points[5].x
+        ,self.points[5].y
         ,0
-        ,math.min(self.width/self.sw,self.height/self.sh)
-        ,math.min(self.width/self.sw,self.height/self.sh)
-        ,math.min(self.width/self.sw,self.height/self.sh)
-        ,math.min(self.width/self.sw,self.height/self.sh)
+        ,self.display.scale.sw
+        ,self.display.scale.sh
     )
+
+    for i, point in ipairs(self.points) do
+        love.graphics.setColor(0.2,0.5,0.4)
+        love.graphics.circle('fill',point.x,point.y,10)
+        love.graphics.reset()
+    end
 
     love.graphics.reset()
     love.graphics.setColor(0,0,0)
@@ -250,6 +216,46 @@ function Button:render()
 
 end
 
+function Button:buttonDebug()
+    print('\n','BUTTON DEBUG ----------------------------------------------------')
+    print('MENU NAME: ',self.menu_name)
+    print('BUTTON X: ', self.x)
+    print('BUTTON y: ', self.y)
+    print('BUTTON WIDTH: ', self.width)
+    print('BUTTON HEIGHT: ', self.height)
+    print('BUTTON OFFSET X: ', self.offset.offset_x)
+    print('BUTTON OFFSET Y: ', self.offset.offset_y)
+end
 
+function Button:frameDebug(edge)
+    print('\n','FRAME VALUE: ',edge, ' -------------')
+    print('FRAME IMAGE x: ',self.frame[edge].image_dimensions.x)
+    print('FRAME IMAGE y: ',self.frame[edge].image_dimensions.y)
+    print('FRAME IMAGE width: ',self.frame[edge].image_dimensions.width)
+    print('FRAME IMAGE height: ',self.frame[edge].image_dimensions.height)
+    print('INPUT INTO SCALEXY')
+    print('FOR FRAME: ',edge,' WIDTH IS: ',w)
+    print('FOR FRAME: ',edge,' HEIGHT IS: ',h)
+    print('FRAME IMAGE SW: ',self.scale[edge].sw)
+    print('FRAME IMAGE SH: ',self.scale[edge].sh)
+end
 
-    
+function Button:positionDebug()
+    print('\n','BUTTON POSITIONS:')
+    print('OUTTER P1 - X,Y: ', self.points[1].x,' ',self.points[1].y)
+    print('OUTTER P2 - X,Y: ', self.points[2].x,' ',self.points[2].y)
+    print('OUTTER P3 - X,Y: ', self.points[3].x,' ',self.points[3].y)
+    print('OUTTER P4 - X,Y: ', self.points[4].x,' ',self.points[4].y)
+    print('INNER P5 - X,Y: ', self.points[5].x,' ',self.points[5].y)
+    print('INNER P6 - X,Y: ', self.points[6].x,' ',self.points[6].y)
+    print('INNER P7 - X,Y: ', self.points[7].x,' ',self.points[7].y)
+    print('INNER P8 - X,Y: ', self.points[8].x,' ',self.points[8].y)
+end
+
+function Button:displayDebug()
+    print('\n','IMAGE DISPLAY DEBUG ----------')
+    print('DISPLAY X: ',self.points[5].x)
+    print('DISPLAY y: ',self.points[5].y)
+    print('DISPLAY IMAGE WIDTH: ',self.display.image_dimensions.width)
+    print('DISPLAY IMAGE HEIGHT: ',self.display.image_dimensions.height)
+end
