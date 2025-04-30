@@ -24,6 +24,8 @@ spritesheet5 = love.graphics.newImage('img/Menu Border2.png')
 spritesheet5:setFilter('nearest','nearest')
 spritesheet6 = love.graphics.newImage('img/Menu Border3.png')
 spritesheet6:setFilter('nearest','nearest')
+spritesheet7 = love.graphics.newImage('img/Giraffe.png')
+spritesheet7:setFilter('nearest','nearest')
 
 gFrames = {
     ['menu'] = {
@@ -42,6 +44,7 @@ gFrames = {
     },
     ['button'] = {
         love.graphics.newQuad(6,6,20,20,spritesheet4:getDimensions()),
+        love.graphics.newQuad(1,1,500,500,spritesheet7:getDimensions()),
     },
     ['menu2'] = {
         love.graphics.newQuad(4,3,25,26,spritesheet5:getDimensions()),
@@ -117,7 +120,7 @@ menu1 = {
         ['panel1'] = {
             debug = false,
             panel_order = 1,
-            ['layout'] = {priority = 'cols', rows = {1,1,1}, cols = {2,3,3}},
+            ['layout'] = {priority = 'cols', rows = {1,1}, cols = {2,2}},
             ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=1,g=0,b=0},atlas = spritesheet6},
             ['frame'] = {
                 ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
@@ -153,7 +156,7 @@ menu1 = {
                     },
                     ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
                     ['callback'] = pressed_button,
-                    ['display'] = {atlas= spritesheet4, image = gFrames['button'][1]}
+                    ['display'] = {atlas= spritesheet7, image = gFrames['button'][2]}
                 },
                 ['button3'] = {
                     debug = false,
@@ -181,7 +184,7 @@ menu1 = {
                     },
                     ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
                     ['callback'] = pressed_button,
-                    ['display'] = {atlas= spritesheet4, image = gFrames['button'][1]}
+                    ['display'] = {atlas= spritesheet7, image = gFrames['button'][2]}
                 },
                 ['button5'] = {
                     debug = false,
