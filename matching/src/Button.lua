@@ -128,9 +128,12 @@ function Button:init(def)
     -- BUTTON SET UP 
     self.button_id = def.button_id
     self.button_number = def.button_number
+    self.button_val = def['components']['button_val']
+
     -- self.panel_state = def.panel_state
     self.button_state = false
     self.button_selected = false
+    self.button_clickable = true
 
     self.display = def['components']['display']
     self.display.image_dimensions = getImageDims(self.display.image)
@@ -172,6 +175,8 @@ function Button:buttonCallback(callback)
     if self.button_state then
         if mouse_pressed then
             self.button_selected = true
+            self.button_clickable = false
+            table.insert(comparing_buttons,self)
             for i,edge in pairs(self.edge_names) do
                 callback(self.position[edge], self.psystem)
             end
@@ -184,22 +189,26 @@ function Button:reset(dt)
     print('PANEL RESET')
     self.button_state = false
     self.button_selected = false
+    self.button_clickable = true
 end
 
 function Button:update(dt,panel_status)
     self.psystem:update(dt)
     local mx, my = love.mouse.getPosition()
     if mouse_pressed then
-        if mx > self.x and mx < self.x + self.width then
-            if my > self.y and my < self.y + self.height then
-                self.button_state = true
+        if self.button_clickable then
+            if mx > self.x and mx < self.x + self.width then
+                if my > self.y and my < self.y + self.height then
+                    self.button_state = true
+                    self:buttonCallback(self.callback)
+                else
+                    self.button_state = false
+                    -- self.button_selected = false
+                end
             else
                 self.button_state = false
-                self.button_selected = false
+                -- self.button_selected = false
             end
-        else
-            self.button_state = false
-            self.button_selected = false
         end
     end
 
@@ -235,34 +244,46 @@ end
 
 function Button:render()
 
-    self:buttonCallback(self.callback)
+
 
     if self.button_selected then
         love.graphics.setColor(1,0,0)
-        love.graphics.rectangle('fill',self.position['top'].x,self.position['top'].y,self.width,self.height)
+        if self.shape == 'square' then
+            sw,sh = math.min(self.width,self.height),math.min(self.width,self.height)
+        end
+        love.graphics.rectangle('fill',self.position['top'].x,self.position['top'].y,sw,sh)
         love.graphics.reset()  
+
+        if self.shape == 'square' then
+            sw,sh = math.min(self.display.scale.sw,self.display.scale.sh),math.min(self.display.scale.sw,self.display.scale.sh)
+        end
+
+        love.graphics.draw(
+            self.display.atlas,self.display.image
+            ,self.position['top'].x+5
+            ,self.position['top'].y+5
+            ,0
+            ,sw
+            ,sh
+        )
+
     else
         love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
-        love.graphics.rectangle('fill',self.position['top'].x,self.position['top'].y,self.width,self.height)
+        if self.shape == 'square' then
+            sw,sh = math.min(self.width,self.height),math.min(self.width,self.height)
+        end
+        love.graphics.rectangle('fill',self.position['top'].x,self.position['top'].y,sw,sh)
         love.graphics.reset()    
     end
     
     for i,edge in pairs(self.edge_names) do
-        love.graphics.draw(self.atlas,self.frame[edge].image,self.position[edge].x,self.position[edge].y,self.rotation,self.position[edge].sw,self.position[edge].sh)
+        if self.shape == 'square' then
+            sw,sh = math.min(self.position[edge].sw,self.position[edge].sh),math.min(self.position[edge].sw,self.position[edge].sh)
+        end
+        love.graphics.draw(self.atlas,self.frame[edge].image,self.position[edge].x,self.position[edge].y,self.rotation,sw,sh)
     end
-    for k, bubble in pairs(bubbles) do
-        love.graphics.circle('fill', bubble.bubblex, bubble.bubbley,bubble.size)
-    end
-    
-    love.graphics.draw(
-        self.display.atlas,self.display.image
-        ,self.position['top'].x+5
-        ,self.position['top'].y+5
-        ,0
-        ,self.display.scale.sw
-        ,self.display.scale.sh
-    )
 
+    
     -- for i, point in ipairs(self.points) do
     --     love.graphics.setColor(0.2,0.5,0.4)
     --     love.graphics.circle('fill',point.x,point.y,10)

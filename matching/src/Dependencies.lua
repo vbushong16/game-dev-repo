@@ -74,23 +74,17 @@ gTextures = {
     ['particle'] = love.graphics.newImage('img/particle.png')
 }
 
-
-
-
-
-
-
 graphics_value = {
     ['graphics'] = {shape = 'rectangle',render_type = 'image',rgb = {r=0,g=0,b=1},image = gFrames['fireframe']},
     ['position'] = {dimensions = {width = 22,height = 4}},
     ['anchor'] = {anchor_x = nil, anchor_y = 4},
 }
 
-bubbles = {}
+comparing_buttons = {}
+matched_buttons = {}
 
-pressed_button = function(arg,arg2)
-    print('a ui button is pressed')
-
+pressed_button = function(arg,arg2,arg3)
+    -- print('a ui button is pressed')
     Chain(
     function (go)
         Timer.tween(0.2, {
@@ -117,35 +111,12 @@ pressed_button = function(arg,arg2)
     function (go)
         arg2:emit(64)
         Timer.after(1, go)
-    end,
-    function (go)
-        print 'playing demo'
-        Timer.after(1, go)
     end
+    -- function (go)
+    --     print 'playing demo'
+    --     Timer.after(1, go)
+    -- end
     )()
-
-
-
-    -- Timer.tween(5, {
-    --     [arg] = { sw = 2}
-    -- })
-    -- Timer.tween(5, {
-    --     [arg] = { sw = 0.2}
-    -- })
-
-    -- table.insert(bubbles,{
-    --     bubble = true,
-    --     bubbley = arg.y,
-    --     bubblex = arg.x,
-    --     rate = 3,
-    --     size = 25,
-    -- }) 
-
-    -- for k, bubble in pairs(bubbles) do
-    --     Timer.tween(bubble.rate, {
-    --         [bubble] = { size = 10}
-    --     })
-    -- end   
 end
 
 menu_clickthrough = function()
@@ -160,51 +131,45 @@ button_list = {
         ['callback'] = pressed_button,
         ['display'] = 'test'
     },
-    -- ['button2'] = {
-    --     ['graphics'] = {shape = 'rectangle',render_type = 'rgb',rgb = {r=0,g=0,b=1},image = nil},
-    --     ['frame'] = {dimensions = {width = 10,height = 10}, rgb = {r=1,g=1,b = 1}, image = nil},
-    --     ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
-    --     ['callback'] = pressed_button,
-    --     ['display'] = nil
-    -- }
 }
 
 
 menu1 = {
     ['metadata'] = {name = 'Main Menu', debug = false},
     ['position'] = {x = 50, y=50},
-    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=0},atlas = spritesheet},
+    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=1,g=1,b=1},atlas = spritesheet},
     ['frame'] = {
         ['top'] = {dimensions = {width = nil, height =50},rgb = nil,image = gFrames['frame']['top']}
-        ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame']['bottom']}
-        ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame']['left']}
+        ,['bottom'] = {dimensions = {width = nil, height =50},rgb = nil,image = gFrames['frame']['bottom']}
+        ,['left'] = {dimensions = {width = 50, height =nil},rgb = nil,image = gFrames['frame']['left']}
         ,['right'] = {dimensions = {width = 50, height =nil},rgb = nil,image = gFrames['frame']['right']}
     },
-    ['size'] = {width = 450, height = 450},
-    ['components'] = {number_of_panels = 2},
+    ['size'] = {width = 900, height = 900},
+    ['components'] = {number_of_panels = 1},
     ['panels'] = {
         ['panel1'] = {
             debug = false,
             panel_order = 1,
-            ['layout'] = {priority = 'cols', rows = {1,1}, cols = {2,2}},
-            ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=0},atlas = spritesheet6},
+            ['layout'] = {priority = 'cols', rows = {1,1}, cols = {4,4}},
+            ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=1,g=1,b=1},atlas = spritesheet6},
             ['frame'] = {
-                ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
-                ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
-                ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
+                ['top'] = {dimensions = {width = nil, height =0},rgb = nil,image = gFrames['frame3']['top']}
+                ,['bottom'] = {dimensions = {width = nil, height =0},rgb = nil,image = gFrames['frame3']['bottom']}
+                ,['left'] = {dimensions = {width =0, height =nil},rgb = nil,image = gFrames['frame3']['left']}
+                ,['right'] = {dimensions = {width =0, height =nil},rgb = nil,image = gFrames['frame3']['right']}
             },
             ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
             ['buttons'] = {
                 ['button1'] = {
                     debug = false,
                     button_number = 1,
-                    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
+                    button_val = 2,
+                    ['graphics'] = {shape = 'square',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
                     ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
-                        ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
-                        ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                        ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
+                        ['top'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['top']}
+                        ,['bottom'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['bottom']}
+                        ,['left'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['left']}
+                        ,['right'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['right']}
                     },
                     ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
                     ['callback'] = pressed_button,
@@ -213,12 +178,13 @@ menu1 = {
                 ['button2'] = {
                     debug = false,
                     button_number = 2,
-                    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
+                    button_val = 1,
+                    ['graphics'] = {shape = 'square',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
                     ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
-                        ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
-                        ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                        ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
+                        ['top'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['top']}
+                        ,['bottom'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['bottom']}
+                        ,['left'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['left']}
+                        ,['right'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['right']}
                     },
                     ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
                     ['callback'] = pressed_button,
@@ -227,12 +193,13 @@ menu1 = {
                 ['button3'] = {
                     debug = false,
                     button_number = 3,
-                    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
+                    button_val = 2,
+                    ['graphics'] = {shape = 'square',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
                     ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
-                        ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
-                        ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                        ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
+                        ['top'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['top']}
+                        ,['bottom'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['bottom']}
+                        ,['left'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['left']}
+                        ,['right'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['right']}
                     },
                     ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
                     ['callback'] = pressed_button,
@@ -241,12 +208,73 @@ menu1 = {
                 ['button4'] = {
                     debug = false,
                     button_number = 4,
+                    button_val = 1,
+                    ['graphics'] = {shape = 'square',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
+                    ['frame'] = {
+                        ['top'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['top']}
+                        ,['bottom'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['bottom']}
+                        ,['left'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['left']}
+                        ,['right'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['right']}
+                    },
+                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
+                    ['callback'] = pressed_button,
+                    ['display'] = {atlas= spritesheet7, image = gFrames['button'][2]}
+                },
+                ['button5'] = {
+                    debug = false,
+                    button_number = 5,
+                    button_val = 3,
+                    ['graphics'] = {shape = 'square',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
+                    ['frame'] = {
+                        ['top'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['top']}
+                        ,['bottom'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['bottom']}
+                        ,['left'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['left']}
+                        ,['right'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['right']}
+                    },
+                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
+                    ['callback'] = pressed_button,
+                    ['display'] = {atlas= spritesheet7, image = gFrames['button'][2]}
+                },
+                ['button6'] = {
+                    debug = false,
+                    button_number = 6,
+                    button_val = 3,
+                    ['graphics'] = {shape = 'square',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
+                    ['frame'] = {
+                        ['top'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['top']}
+                        ,['bottom'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['bottom']}
+                        ,['left'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['left']}
+                        ,['right'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['right']}
+                    },
+                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
+                    ['callback'] = pressed_button,
+                    ['display'] = {atlas= spritesheet7, image = gFrames['button'][2]}
+                },
+                ['button7'] = {
+                    debug = false,
+                    button_number = 7,
+                    button_val = 4,
+                    ['graphics'] = {shape = 'square',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
+                    ['frame'] = {
+                        ['top'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['top']}
+                        ,['bottom'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['bottom']}
+                        ,['left'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['left']}
+                        ,['right'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['right']}
+                    },
+                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
+                    ['callback'] = pressed_button,
+                    ['display'] = {atlas= spritesheet7, image = gFrames['button'][2]}
+                },
+                ['button8'] = {
+                    debug = false,
+                    button_number = 8,
+                    button_val = 4,
                     ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
                     ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
-                        ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
-                        ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                        ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
+                        ['top'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['top']}
+                        ,['bottom'] = {dimensions = {width = nil, height =20},rgb = nil,image = gFrames['frame3']['bottom']}
+                        ,['left'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['left']}
+                        ,['right'] = {dimensions = {width = 20, height =nil},rgb = nil,image = gFrames['frame3']['right']}
                     },
                     ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
                     ['callback'] = pressed_button,
@@ -254,78 +282,6 @@ menu1 = {
                 },
             }
         },
-        ['panel2'] = {
-            debug = false,
-            panel_order = 2,
-            ['layout'] = {priority = 'rows', rows = {2,1}, cols = {1,1}},
-            ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=1,g=0,b=0},atlas = spritesheet6},
-            ['frame'] = {
-                ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
-                ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
-                ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
-            },
-            ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
-            ['buttons'] = {
-                ['button1'] = {
-                    debug = false,
-                    button_number = 1,
-                    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
-                    ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
-                        ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
-                        ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                        ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
-                    },
-                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
-                    ['callback'] = menu_clickthrough,
-                    ['display'] = {atlas= spritesheet4, image = gFrames['button'][1]}
-                },
-                ['button2'] = {
-                    debug = false,
-                    button_number = 2,
-                    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
-                    ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
-                        ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
-                        ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                        ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
-                    },
-                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
-                    ['callback'] = pressed_button,
-                    ['display'] = {atlas= spritesheet4, image = gFrames['button'][1]}
-                },
-                ['button3'] = {
-                    debug = false,
-                    button_number = 3,
-                    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
-                    ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
-                        ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
-                        ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                        ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
-                    },
-                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
-                    ['callback'] = menu_clickthrough,
-                    ['display'] = {atlas= spritesheet4, image = gFrames['button'][1]}
-                },
-                ['button4'] = {
-                    debug = false,
-                    button_number = 4,
-                    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=1},atlas = spritesheet6},
-                    ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
-                        ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
-                        ,['left'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['left']}
-                        ,['right'] = {dimensions = {width = 10, height =nil},rgb = nil,image = gFrames['frame3']['right']}
-                    },
-                    ['position'] = { offsets = {offset_x = 10, offset_y = 10}},
-                    ['callback'] = pressed_button,
-                    ['display'] = {atlas= spritesheet4, image = gFrames['button'][1]}
-                },
-            }
-
-        }
     }
 }
 
