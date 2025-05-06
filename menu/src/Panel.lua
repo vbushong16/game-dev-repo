@@ -124,7 +124,7 @@ function Panel:init(def)
 end
 
 function Panel:buttonDim(length,offset,divider,layout)
-    local spacing = ((length/layout)/divider) - offset
+    local spacing = ((length/layout)/divider) -- offset
     return (spacing)
 end
 
@@ -153,24 +153,28 @@ function Panel:layoutInit()
             end
         end 
 
-        local off_x = button_init.components.position.offsets.offset_x
-        local off_y = button_init.components.position.offsets.offset_y
+        local off_x = button_init.components.position.offsets.left + button_init.components.position.offsets.right
+        local off_y = button_init.components.position.offsets.top + button_init.components.position.offsets.bottom
         local button_width = nil
         local button_height = nil
+        local x_list = nil
+        local y_list = nil
 
         if priority == 'rows' then
             button_width = self:buttonDim(self.panel_width,off_x,layout.non_priority.p,layout.non_priority.dim)
             button_height = self:buttonDim(self.panel_height,off_y,layout.priority.p,layout.priority.dim)
+            x_list = self.panel_width / layout.non_priority.p
+            y_list = self.panel_height / layout.priority.dim  
         else
             button_width = self:buttonDim(self.panel_width,off_x,layout.priority.p,layout.priority.dim)
             button_height = self:buttonDim(self.panel_height,off_y,layout.non_priority.p,layout.non_priority.dim)
+            x_list = self.panel_width / layout.priority.dim
+            y_list = self.panel_height / layout.non_priority.p
         end
         button_init.size = {width = button_width,height = button_height}
 
         layout.button = {}
 
-        x_list = self.panel_width / layout.priority.dim
-        y_list = self.panel_height / layout.non_priority.p
 
 
         -- self.points[5].x,self.points[5].y
@@ -184,18 +188,18 @@ function Panel:layoutInit()
             if self.layout.priority == 'cols' then
                 if (self.panel_layout[k-1].button[1].x + self.panel_layout[k-1].button[1].width) >= self.panel_width then
                     button_init.position.x = (self.points[5].x)
-                    button_init.position.y = (self.points[5].y) - self.panel_layout[k-1].button[1].offset.offset_y + y_list
+                    button_init.position.y = (self.points[5].y) - self.panel_layout[k-1].button[1].offset.top + y_list
                 else
-                    button_init.position.x = self.panel_layout[k-1].button[1].x - self.panel_layout[k-1].button[1].offset.offset_x + x_list
-                    button_init.position.y = self.panel_layout[k-1].button[1].y - self.panel_layout[k-1].button[1].offset.offset_y
+                    button_init.position.x = self.panel_layout[k-1].button[1].x - self.panel_layout[k-1].button[1].offset.left + x_list
+                    button_init.position.y = self.panel_layout[k-1].button[1].y - self.panel_layout[k-1].button[1].offset.top
                 end
             else 
-                if (self.panel_layout[k-1].button[1].y + self.panel_layout[k-1].button[1].height - self.offset.offset_y) >= self.panel_height then
-                    button_init.position.x = (self.panel_layout[k-1].button[1].x )+(button_width) - self.panel_layout[k-1].button[1].offset.offset_x
+                if (self.panel_layout[k-1].button[1].y + self.panel_layout[k-1].button[1].height) >= self.panel_height then
+                    button_init.position.x = (self.points[5].x) - self.panel_layout[k-1].button[1].offset.left + x_list
                     button_init.position.y = (self.points[5].y)
                 else
-                    button_init.position.x = self.panel_layout[k-1].button[1].x - self.panel_layout[k-1].button[1].offset.offset_x
-                    button_init.position.y = self.panel_layout[k-1].button[1].y + button_height - self.panel_layout[k-1].button[1].offset.offset_y
+                    button_init.position.x = self.panel_layout[k-1].button[1].x - self.panel_layout[k-1].button[1].offset.left
+                    button_init.position.y = self.panel_layout[k-1].button[1].y - self.panel_layout[k-1].button[1].offset.top + y_list
                 end
             end
         else
@@ -314,8 +318,8 @@ function Panel:buttonPosition(k,layout,button)
     print('LAYOUT PRIORITY: '..layout.priority.p)
     print('LAYOUT NONPRIORITY DIM: '..layout.non_priority.dim)
     print('LAYOUT PRIORITY DIM: '..layout.priority.dim)
-    print('BUTTON '..k..' OFFSET X: '..button.components.position.offsets.offset_x)
-    print('BUTTON '..k..' OFFSET Y: '..button.components.position.offsets.offset_y)
+    print('BUTTON '..k..' OFFSET X: '..button.components.position.offsets.left)
+    print('BUTTON '..k..' OFFSET Y: '..button.components.position.offsets.top)
     print('BUTTON: '..k,'X: '..button.position.x)
     print('BUTTON: '..k,'y: '..button.position.y)
     print('BUTTON: '..k,'W: '..button.size.width)
