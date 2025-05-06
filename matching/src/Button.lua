@@ -62,11 +62,11 @@ function Button:init(def)
 
     -- BUTTON POSITION INIT
     self.offset = def['components']['position']['offsets']
-    self.x = def['position']['x'] + 1*self.offset.offset_x
-    self.y = def['position']['y'] + 1*self.offset.offset_y
+    self.x = def['position']['x'] + 1*self.offset.left
+    self.y = def['position']['y'] + 1*self.offset.top
     self.rotation = def.rotation or 0
-    self.width = def['size']['width'] - 1*self.offset.offset_x
-    self.height = def['size']['height'] - 1*self.offset.offset_y
+    self.width = def['size']['width'] - self.offset.left - self.offset.right
+    self.height = def['size']['height'] - self.offset.top - self.offset.bottom
 
     if self.debug then self:buttonDebug() end
 
@@ -250,12 +250,16 @@ function Button:render()
         love.graphics.setColor(1,0,0)
         if self.shape == 'square' then
             sw,sh = math.min(self.width,self.height),math.min(self.width,self.height)
+        else
+            sw,sh = self.width,self.height
         end
         love.graphics.rectangle('fill',self.position['top'].x,self.position['top'].y,sw,sh)
         love.graphics.reset()  
 
         if self.shape == 'square' then
             sw,sh = math.min(self.display.scale.sw,self.display.scale.sh),math.min(self.display.scale.sw,self.display.scale.sh)
+        else
+            sw,sh = self.display.scale.sw,self.display.scale.sh
         end
 
         love.graphics.draw(
@@ -271,6 +275,8 @@ function Button:render()
         love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
         if self.shape == 'square' then
             sw,sh = math.min(self.width,self.height),math.min(self.width,self.height)
+        else
+            sw,sh = self.width,self.height
         end
         love.graphics.rectangle('fill',self.position['top'].x,self.position['top'].y,sw,sh)
         love.graphics.reset()    
@@ -279,6 +285,8 @@ function Button:render()
     for i,edge in pairs(self.edge_names) do
         if self.shape == 'square' then
             sw,sh = math.min(self.position[edge].sw,self.position[edge].sh),math.min(self.position[edge].sw,self.position[edge].sh)
+        else
+            sw,sh = self.position[edge].sw,self.position[edge].sh
         end
         love.graphics.draw(self.atlas,self.frame[edge].image,self.position[edge].x,self.position[edge].y,self.rotation,sw,sh)
     end
@@ -293,8 +301,8 @@ function Button:render()
     love.graphics.reset()
     love.graphics.setColor(0,0,0)
     love.graphics.printf(tostring(self.button_number)
-    ,self.x + self.offset.offset_x
-    ,self.y + self.offset.offset_y,WINDOW_WIDTH)
+    ,self.x + self.offset.left
+    ,self.y + self.offset.top,WINDOW_WIDTH)
     love.graphics.reset()
 
     for i = self.points[3].x,self.points[4].x,10 do
@@ -314,8 +322,10 @@ function Button:buttonDebug()
     print('BUTTON y: ', self.y)
     print('BUTTON WIDTH: ', self.width)
     print('BUTTON HEIGHT: ', self.height)
-    print('BUTTON OFFSET X: ', self.offset.offset_x)
-    print('BUTTON OFFSET Y: ', self.offset.offset_y)
+    print('BUTTON OFFSET top: ', self.offset.top)
+    print('BUTTON OFFSET bottom: ', self.offset.bottom)
+    print('BUTTON OFFSET left: ', self.offset.left)
+    print('BUTTON OFFSET right: ', self.offset.right)
 end
 
 function Button:frameDebug(edge)
