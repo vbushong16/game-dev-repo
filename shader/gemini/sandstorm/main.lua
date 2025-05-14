@@ -108,8 +108,9 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.setShader(shader)
     love.graphics.draw(texture, 0, 0, 0, love.graphics.getWidth()/texture:getWidth(), love.graphics.getHeight()/texture:getHeight())
+
+    love.graphics.setShader(shader)
     love.graphics.draw(spritesheet4,0,0,0,10,10)
     love.graphics.setShader()
 end
