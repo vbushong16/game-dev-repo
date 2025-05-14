@@ -12,6 +12,8 @@ function love.load()
         love.event.quit()
     end
 
+    image = love.graphics.newImage('sword_item.png')
+
     -- Load noise texture
     local function createNoiseTexture(size)
         local img_data = love.image.newImageData(size, size)
@@ -57,10 +59,11 @@ function love.draw()
 
     -- Draw water
     love.graphics.setShader(water_shader)
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.rectangle("fill", 100, 300, 600, 200)
+    -- love.graphics.setColor(1, 1, 1)
+    -- love.graphics.rectangle("fill", 100, 300, 600, 200)
+    love.graphics.draw(image,100,300,0,5,5)
     love.graphics.setShader()
-
+    
     -- Draw UI
     love.graphics.setColor(1, 1, 1)
     love.graphics.print("Water Shader Demo", 10, 10)
