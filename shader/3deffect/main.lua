@@ -1,39 +1,14 @@
-
-
-
-WINDOW_WIDTH = 500
-WINDOW_HEIGHT = 500
-
 function love.load()
-    love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
     -- Load shader and image
-    effect3d = love.graphics.newShader("src/3deffect.glsl")
-    local shader_code = 'src/shader.glsl'
-    image = love.graphics.newImage("src/sword_item.png")
-    image:setFilter('nearest','nearest')
+    shader = love.graphics.newShader("shader.glsl")
+    image = love.graphics.newImage("sword_item.png")
     
-    -- Create the shader object.
-    shader = love.graphics.newShader(shader_code)
-    -- shader:send( "background",spritesheet4)
-    numCircles = 100
-    circles = {}
-    for i = 1, numCircles,1 do
-      circle = {math.random(0,500),math.random(0,500),math.random(5,10)}
-      -- circle.x = math.random(0,500)
-      -- circle.y = math.random(0,500)
-      -- circle.z = math.random(5,10)
-      table.insert(circles,circle)
-    end
-
-    shader:send( "circles",unpack(circles))
-
-
     -- Initial shader parameters
-    effect3d:send("fov", 90)
-    effect3d:send("cull_back", false)
-    effect3d:send("x_rot", 0)
-    effect3d:send("y_rot", 0)
-    effect3d:send("inset", 0.05) -- Small inset to prevent edge clipping
+    shader:send("fov", 90)
+    shader:send("cull_back", false)
+    shader:send("x_rot", 0)
+    shader:send("y_rot", 0)
+    shader:send("inset", 0.05) -- Small inset to prevent edge clipping
     
     -- Set texture size
     -- shader:send("texture_size", {image:getDimensions()})
@@ -45,12 +20,6 @@ function love.load()
     -- Max rotation in degrees (limit rotation to this range)
     maxRotation = 30 -- Adjust this value as desired
 end
-
-function love.keypressed(key)
-    if key == 'escape' then
-        love.event.quit()
-    end
-  end
 
 function love.update(dt)
     -- Get window dimensions
@@ -78,28 +47,20 @@ function love.update(dt)
     local x_rotation = relativeY * maxRotation
     
     -- Update shader parameters
-    effect3d:send("y_rot", y_rotation)
-    effect3d:send("x_rot", x_rotation)
+    shader:send("y_rot", y_rotation)
+    shader:send("x_rot", x_rotation)
 end
 
 function love.draw()
-
-    
+    -- Apply shader and draw image
     love.graphics.setShader(shader)
-    shader:send( "millis",love.timer.getTime(dt))
-    -- Draw a fullscreen quad.
-    love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-    -- love.graphics.draw(drawable,x,y,r,sx,sy,ox,oy)
-    love.graphics.setShader() --Unset the shader after drawing.
-
+    love.graphics.draw(image, imageX, imageY,0,15,15)
+    love.graphics.setShader()
+    
     -- Optional: Draw instructions
     love.graphics.setColor(1, 1, 1)
     love.graphics.print("Move mouse to rotate image", 10, 10)
+    
     -- Reset color
     love.graphics.reset()
-
-    -- Apply shader and draw image
-    love.graphics.setShader(effect3d)
-    love.graphics.draw(image, imageX, imageY,0,15,15)
-    love.graphics.setShader()
 end

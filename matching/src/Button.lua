@@ -18,6 +18,39 @@
 
 Button = Class{}
 
+paletteColors = {
+    -- blue
+    [1] = {
+        ['r'] = 99,
+        ['g'] = 155,
+        ['b'] = 255
+    },
+    -- green
+    [2] = {
+        ['r'] = 106,
+        ['g'] = 190,
+        ['b'] = 47
+    },
+    -- red
+    [3] = {
+        ['r'] = 217,
+        ['g'] = 87,
+        ['b'] = 99
+    },
+    -- purple
+    [4] = {
+        ['r'] = 215,
+        ['g'] = 123,
+        ['b'] = 186
+    },
+    -- gold
+    [5] = {
+        ['r'] = 251,
+        ['g'] = 242,
+        ['b'] = 54
+    }
+}
+
 function Button:init(def)
 
     -- BUTTON PRESETS
@@ -95,10 +128,12 @@ function Button:init(def)
     -- BUTTON SET UP 
     self.button_id = def.button_id
     self.button_number = def.button_number
+    self.button_val = def['components']['button_val']
+
     -- self.panel_state = def.panel_state
     self.button_state = false
     self.button_selected = false
-    self.callback = def['components']['callback']
+    self.button_clickable = true
 
     self.display = def['components']['display']
     self.display.image_dimensions = getImageDims(self.display.image)
@@ -108,6 +143,30 @@ function Button:init(def)
     )
 
     if self.debug then self:displayDebug() end 
+    self.callback = def['components']['callback']
+
+    -- particle system belonging to the brick, emitted on hit
+    self.psystem = love.graphics.newParticleSystem(gTextures['particle'], 64)
+    -- various behavior-determining functions for the particle system
+    -- https://love2d.org/wiki/ParticleSystem
+    -- lasts between 0.5-1 seconds seconds
+    self.psystem:setParticleLifetime(0.5, 1)
+    -- give it an acceleration of anywhere between X1,Y1 and X2,Y2 (0, 0) and (80, 80) here
+    -- gives generally downward 
+    self.psystem:setLinearAcceleration(-15, 0, 15, 80)
+    -- spread of particles; normal looks more natural than uniform
+    self.psystem:setEmissionArea('normal', 10, 10)
+
+    self.psystem:setColors(
+        paletteColors[1].r / 255,
+        paletteColors[1].g / 255,
+        paletteColors[1].b / 255,
+        55 * (0 + 1) / 255,
+        paletteColors[1].r / 255,
+        paletteColors[1].g / 255,
+        paletteColors[1].b / 255,
+        0
+    )
 
 end
 
@@ -116,7 +175,11 @@ function Button:buttonCallback(callback)
     if self.button_state then
         if mouse_pressed then
             self.button_selected = true
-            callback()
+            self.button_clickable = false
+            table.insert(comparing_buttons,self)
+            for i,edge in pairs(self.edge_names) do
+                callback(self.position[edge], self.psystem)
+            end
             mouse_pressed = nil
         end
     end
@@ -126,21 +189,26 @@ function Button:reset(dt)
     print('PANEL RESET')
     self.button_state = false
     self.button_selected = false
+    self.button_clickable = true
 end
 
 function Button:update(dt,panel_status)
+    self.psystem:update(dt)
     local mx, my = love.mouse.getPosition()
     if mouse_pressed then
-        if mx > self.x and mx < self.x + self.width then
-            if my > self.y and my < self.y + self.height then
-                self.button_state = true
+        if self.button_clickable then
+            if mx > self.x and mx < self.x + self.width then
+                if my > self.y and my < self.y + self.height then
+                    self.button_state = true
+                    self:buttonCallback(self.callback)
+                else
+                    self.button_state = false
+                    -- self.button_selected = false
+                end
             else
                 self.button_state = false
-                self.button_selected = false
+                -- self.button_selected = false
             end
-        else
-            self.button_state = false
-            self.button_selected = false
         end
     end
 
@@ -176,42 +244,64 @@ end
 
 function Button:render()
 
-    self:buttonCallback(self.callback)
-
-    love.graphics.setShader(shader)
+    -- love.graphics.setShader(shader)
+    love.graphics.setColor(0,0,0,0.5)
     love.graphics.rectangle('fill',self.x+5,self.y+5,self.width,self.height)
-    love.graphics.setShader()
+    love.graphics.reset()  
+
+    -- love.graphics.setShader()
 
     if self.button_selected then
         love.graphics.setColor(1,0,0)
-        love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+        if self.shape == 'square' then
+            sw,sh = math.min(self.width,self.height),math.min(self.width,self.height)
+        else
+            sw,sh = self.width,self.height
+        end
+        love.graphics.rectangle('fill',self.position['top'].x,self.position['top'].y,sw,sh)
         love.graphics.reset()  
+
+        if self.shape == 'square' then
+            sw,sh = math.min(self.display.scale.sw,self.display.scale.sh),math.min(self.display.scale.sw,self.display.scale.sh)
+        else
+            sw,sh = self.display.scale.sw,self.display.scale.sh
+        end
+
+        love.graphics.draw(
+            self.display.atlas,self.display.image
+            ,self.position['top'].x+5
+            ,self.position['top'].y+5
+            ,0
+            ,sw
+            ,sh
+        )
+
     else
         love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
-        love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
+        if self.shape == 'square' then
+            sw,sh = math.min(self.width,self.height),math.min(self.width,self.height)
+        else
+            sw,sh = self.width,self.height
+        end
+        love.graphics.rectangle('fill',self.position['top'].x,self.position['top'].y,sw,sh)
         love.graphics.reset()    
     end
     
     for i,edge in pairs(self.edge_names) do
-        love.graphics.draw(self.atlas,self.frame[edge].image,self.position[edge].x,self.position[edge].y,self.rotation,self.position[edge].sw,self.position[edge].sh)
+        if self.shape == 'square' then
+            sw,sh = math.min(self.position[edge].sw,self.position[edge].sh),math.min(self.position[edge].sw,self.position[edge].sh)
+        else
+            sw,sh = self.position[edge].sw,self.position[edge].sh
+        end
+        love.graphics.draw(self.atlas,self.frame[edge].image,self.position[edge].x,self.position[edge].y,self.rotation,sw,sh)
     end
-
 
     
-    love.graphics.draw(
-        self.display.atlas,self.display.image
-        ,self.points[5].x
-        ,self.points[5].y
-        ,0
-        ,self.display.scale.sw
-        ,self.display.scale.sh
-    )
-
-    for i, point in ipairs(self.points) do
-        love.graphics.setColor(0.2,0.5,0.4)
-        love.graphics.circle('fill',point.x,point.y,10)
-        love.graphics.reset()
-    end
+    -- for i, point in ipairs(self.points) do
+    --     love.graphics.setColor(0.2,0.5,0.4)
+    --     love.graphics.circle('fill',point.x,point.y,10)
+    --     love.graphics.reset()
+    -- end
 
     love.graphics.reset()
     love.graphics.setColor(0,0,0)
@@ -219,6 +309,14 @@ function Button:render()
     ,self.x + self.offset.left
     ,self.y + self.offset.top,WINDOW_WIDTH)
     love.graphics.reset()
+
+    for i = self.points[3].x,self.points[4].x,10 do
+        love.graphics.draw(self.psystem, i,self.position['bottom'].y)
+    end
+    for i = self.points[2].y,self.points[4].y,10 do
+        love.graphics.draw(self.psystem, self.position['right'].x,i)
+    end
+
 
 end
 
@@ -229,8 +327,10 @@ function Button:buttonDebug()
     print('BUTTON y: ', self.y)
     print('BUTTON WIDTH: ', self.width)
     print('BUTTON HEIGHT: ', self.height)
-    print('BUTTON OFFSET X: ', self.offset.offset_x)
-    print('BUTTON OFFSET Y: ', self.offset.offset_y)
+    print('BUTTON OFFSET top: ', self.offset.top)
+    print('BUTTON OFFSET bottom: ', self.offset.bottom)
+    print('BUTTON OFFSET left: ', self.offset.left)
+    print('BUTTON OFFSET right: ', self.offset.right)
 end
 
 function Button:frameDebug(edge)
