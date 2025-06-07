@@ -43,7 +43,7 @@ function love.load()
     imageX, imageY = 150, 150
     
     -- Max rotation in degrees (limit rotation to this range)
-    maxRotation = 30 -- Adjust this value as desired
+    maxRotation = 45 -- Adjust this value as desired
 end
 
 function love.keypressed(key)

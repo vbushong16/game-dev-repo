@@ -14,7 +14,7 @@ const float distortion_strength = 0.02;
 const float wave_speed = 2.0;
 const vec3 water_color = vec3(0.2, 0.4, 0.6);
 const float color_blend = 0.3;
-const float opacity = 0.8;
+const float opacity = 1;
 
 vec4 effect(vec4 color, Image texture, vec2 uv, vec2 screen_coords) {
     // Calculate noise texture coordinate scaling
@@ -37,7 +37,7 @@ vec4 effect(vec4 color, Image texture, vec2 uv, vec2 screen_coords) {
     ) * distortion_strength;
     
     // Apply distortion
-    vec4 tex_color = Texel(texture, uv + distortion);
+    vec4 tex_color = Texel(texture, uv+ distortion );
     
     // Water tint
     vec3 water_tint = water_color * (0.8 + sin(time * 2.0) * 0.2);

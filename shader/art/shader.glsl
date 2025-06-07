@@ -23,7 +23,7 @@ vec4 position(mat4 transform_projection, vec4 vertex_position) {
     // normalized_pos = (normalized_pos *2.)-1.;
     // normalized_pos = (normalized_pos +1.)/2;
     // pos.y = normalized_pos.y * screen_height;
-    vec4 transformed_position = pos;
+    vec4 transformed_position = vertex_position;
 
     return transform_projection * transformed_position;
 }
