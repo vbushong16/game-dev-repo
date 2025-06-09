@@ -40,7 +40,7 @@ vec4 effect(vec4 color, Image texture,vec2 texture_coords,vec2 screen_coords)
     vec2 uv0 = uv;
     vec3 finalColor = vec3(0.0);
 
-    for (float i = 0.0; i <4.0; i++ ){
+    for (float i = 0.0; i <2.0; i++ ){
         uv *= 1.5;
         uv = fract(uv );
         uv -=0.5;
