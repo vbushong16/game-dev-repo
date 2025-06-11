@@ -1,4 +1,5 @@
 
+
 uniform float time;
 
 vec3 palette(float t)
@@ -17,22 +18,23 @@ vec4 position(mat4 transform_projection, vec4 vertex_position)
 
 vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
 {
-    vec2 uv = (2*(screen_coords/love_ScreenSize.xy)-1)*love_ScreenSize.x/love_ScreenSize.y;
+        
 
+    vec2 uv = (2*(screen_coords/love_ScreenSize.xy)-1); 
     vec2 uv0 = uv;
+    vec3 finalColor = vec3(0);
 
-    uv = fract(uv*2)-0.5;
-
-    float d = length(uv);
-    vec3 col = palette(d+time);
+    for (float i = 0; i< 4; i++){
+        uv = fract(1.5*uv)-0.5;
+        float d = length(uv) * exp(-length(uv0));
+        vec3 col = palette(length(uv0) + i*0.6 + time*0.6);
+        d = sin(d*8 + time)/8;
+        d = abs(d);
+        d = pow(0.01/d,1.2);
+        finalColor += col * d;
+    }
     
-    d = sin(8*d + time)/8;
-    d = abs(d);
 
-    d = 0.02/d;
 
-    col *= d;
-
-    return vec4(col, 1) ;
-    
+    return vec4(finalColor,1);
 }
