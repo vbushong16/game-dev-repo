@@ -1,5 +1,5 @@
 
-
+require 'utils'
 require 'src/Dependencies'
 
 function love.load()

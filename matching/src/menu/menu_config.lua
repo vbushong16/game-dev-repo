@@ -1,3 +1,47 @@
+
+
+pressed_button = function(arg,arg2,arg3)
+    -- print('a ui button is pressed')
+    Chain(
+    function (go)
+        Timer.tween(0.2, {
+        [arg] = { 
+            x = arg.x - 5
+            ,y = arg.y - 5
+            -- ,sw = arg.sw+0.01
+
+        }
+    })
+        Timer.after(0.2, go)
+    end,
+    function (go)
+        Timer.tween(0.2, {
+            [arg] = { 
+                x = arg.x + 5
+                ,y = arg.y + 5
+                -- ,sw = arg.sw-0.01
+
+            }
+    })
+        Timer.after(0.2, go)
+    end,
+    function (go)
+        arg2:emit(64)
+        Timer.after(1, go)
+    end
+    -- function (go)
+    --     print 'playing demo'
+    --     Timer.after(1, go)
+    -- end
+    )()
+end
+
+menu_clickthrough = function()
+    menu1:navigation(-1)
+end
+
+
+
 menu1 = {
     ['metadata'] = {name = 'Main Menu', debug = false},
     ['position'] = {x = 50, y=50},
@@ -219,43 +263,3 @@ button_list = {
     },
 }
 
-
-pressed_button = function(arg,arg2,arg3)
-    -- print('a ui button is pressed')
-    Chain(
-    function (go)
-        Timer.tween(0.2, {
-        [arg] = { 
-            x = arg.x - 5
-            ,y = arg.y - 5
-            -- ,sw = arg.sw+0.01
-
-        }
-    })
-        Timer.after(0.2, go)
-    end,
-    function (go)
-        Timer.tween(0.2, {
-            [arg] = { 
-                x = arg.x + 5
-                ,y = arg.y + 5
-                -- ,sw = arg.sw-0.01
-
-            }
-    })
-        Timer.after(0.2, go)
-    end,
-    function (go)
-        arg2:emit(64)
-        Timer.after(1, go)
-    end
-    -- function (go)
-    --     print 'playing demo'
-    --     Timer.after(1, go)
-    -- end
-    )()
-end
-
-menu_clickthrough = function()
-    menu1:navigation(-1)
-end
