@@ -16,6 +16,7 @@ function love.load()
     shader8 = love.graphics.newShader('shader8.glsl')
     shader9 = love.graphics.newShader('shader9.glsl')
     shader10 = love.graphics.newShader('shader10.glsl')
+    shader01 = love.graphics.newShader('shader01.glsl')
 
     canvas1 = love.graphics.newCanvas(canvas_width,canvas_height)
     canvas2 = love.graphics.newCanvas(canvas_width,canvas_height)
@@ -27,6 +28,7 @@ function love.load()
     canvas8 = love.graphics.newCanvas(canvas_width,canvas_height)
     canvas9 = love.graphics.newCanvas(canvas_width,canvas_height)
     canvas10 = love.graphics.newCanvas(canvas_width,canvas_height)
+    canvas01 = love.graphics.newCanvas(canvas_width,canvas_height)
 end
 
 function love.keypressed(key)
@@ -114,6 +116,14 @@ function love.update(dt)
         love.graphics.setShader()
     end
     )
+    canvas01:renderTo(function()
+        love.graphics.clear()
+        love.graphics.setShader(shader01)
+        shader01:send('time',love.timer.getTime(dt))
+        love.graphics.rectangle('fill',0,0,canvas_width,canvas_height)
+        love.graphics.setShader()
+    end
+    )
 
 end
 
@@ -132,6 +142,7 @@ function love.draw()
     love.graphics.draw(canvas8,400,200)
     love.graphics.draw(canvas9,600,200)
     love.graphics.draw(canvas10,800,200)
+    love.graphics.draw(canvas01,0,400)
 
     -- love.graphics.draw(drawable,x,y,r,sx,sy,ox,oy)
 
