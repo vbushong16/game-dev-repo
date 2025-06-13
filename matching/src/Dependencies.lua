@@ -1,16 +1,5 @@
 
 
-Class = require 'src/class'
-Timer = require 'src/knife.timer'
-Chain = require 'src/knife.chain'
-
-require 'src/Animation'
-require 'src/menu/menu_utils'
-require 'src/menu/menu_config'
-require 'src/menu/Menu'
-require 'src/menu/Panel'
-require 'src/menu/Button'
-require 'src/menu/Graphics'
 
 
 WINDOW_HEIGHT = 1000
@@ -117,3 +106,15 @@ graphics_value = {
 
 comparing_buttons = {}
 matched_buttons = {}
+
+Class = require 'src/class'
+Timer = require 'src/knife.timer'
+Chain = require 'src/knife.chain'
+
+require 'src/Animation'
+require 'src/menu/menu_utils'
+require 'src/menu/menu_config'
+require 'src/menu/Menu'
+require 'src/menu/Panel'
+require 'src/menu/Button'
+require 'src/menu/Graphics'
