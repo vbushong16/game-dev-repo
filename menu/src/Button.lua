@@ -178,6 +178,10 @@ function Button:render()
 
     self:buttonCallback(self.callback)
 
+    love.graphics.setShader(shader)
+    love.graphics.rectangle('fill',self.x+5,self.y+5,self.width,self.height)
+    love.graphics.setShader()
+
     if self.button_selected then
         love.graphics.setColor(1,0,0)
         love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
@@ -191,6 +195,8 @@ function Button:render()
     for i,edge in pairs(self.edge_names) do
         love.graphics.draw(self.atlas,self.frame[edge].image,self.position[edge].x,self.position[edge].y,self.rotation,self.position[edge].sw,self.position[edge].sh)
     end
+
+
     
     love.graphics.draw(
         self.display.atlas,self.display.image
