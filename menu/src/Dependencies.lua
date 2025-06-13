@@ -8,6 +8,8 @@ require 'src/Panel'
 require 'src/Button'
 require 'src/Graphics'
 
+local vfx = 'VFX/shader.glsl'
+shader = love.graphics.newShader(vfx)
 
 WINDOW_HEIGHT = 1000
 WINDOW_WIDTH = 1000
@@ -120,7 +122,7 @@ button_list = {
 menu1 = {
     ['metadata'] = {name = 'Main Menu', debug = false},
     ['position'] = {x = 50, y=50},
-    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=0},atlas = spritesheet},
+    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=1,g=1,b=1},atlas = spritesheet},
     ['frame'] = {
         ['top'] = {dimensions = {width = nil, height =50},rgb = nil,image = gFrames['frame']['top']}
         ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame']['bottom']}
@@ -134,7 +136,7 @@ menu1 = {
             debug = true,
             panel_order = 1,
             ['layout'] = {priority = 'cols', rows = {1,1}, cols = {2,3}},
-            ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=0},atlas = spritesheet6},
+            ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=1,g=1,b=1},atlas = spritesheet6},
             ['frame'] = {
                 ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
                 ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
@@ -146,7 +148,7 @@ menu1 = {
                 ['button1'] = {
                     debug = false,
                     button_number = 1,
-                    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=0},atlas = spritesheet7},
+                    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=1,g=1,b=1},atlas = spritesheet7},
                     ['frame'] = {
                         ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame4']['top']}
                         ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame4']['bottom']}
@@ -160,7 +162,7 @@ menu1 = {
                 ['button2'] = {
                     debug = false,
                     button_number = 2,
-                    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=0,g=0,b=0},atlas = spritesheet6},
+                    ['graphics'] = {shape = 'rectangle',render_type = 'frame', rgb = {r=1,g=1,b=1},atlas = spritesheet6},
                     ['frame'] = {
                         ['top'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['top']}
                         ,['bottom'] = {dimensions = {width = nil, height =10},rgb = nil,image = gFrames['frame3']['bottom']}
