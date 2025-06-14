@@ -85,9 +85,10 @@ graphics_value = {
 
 Class = require 'src/class'
 require 'src/Animation'
+
 require 'src/menu/menu_config'
 require 'src/menu/menu_utils'
+require 'src/menu/Graphics'
 require 'src/menu/Menu'
 require 'src/menu/Panel'
 require 'src/menu/Button'
-require 'src/menu/Graphics'

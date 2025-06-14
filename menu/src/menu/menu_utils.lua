@@ -38,16 +38,20 @@ function objectCoord(x,y,width,height,frame_offsets)
     return points
 end
 
-function frameRender(edge,x,y,width,height,scale_width,scale_height,frame_adjustment)
+function frameRender(edge,width,height,scale_width,scale_height,frame_adjustment)
     local frame_table = {}
     if edge == 'top' then
-        frame_table = {x = x,y = y,sw = scale_width,sh = scale_height}
+        -- frame_table = {x = x,y = y,sw = scale_width,sh = scale_height}
+        frame_table = {x = 0,y = 0,sw = scale_width,sh = scale_height}
     elseif edge == 'bottom' then
-        frame_table = {x = x,y =y+height-frame_adjustment,sw = scale_width,sh = scale_height}
+        -- frame_table = {x = x,y =y+height-frame_adjustment,sw = scale_width,sh = scale_height}
+        frame_table = {x = 0,y =height-frame_adjustment,sw = scale_width,sh = scale_height}
     elseif edge == 'left' then
-        frame_table = {x = x,y = y,sw = scale_width,sh = scale_height}
+        -- frame_table = {x = x,y = y,sw = scale_width,sh = scale_height}
+        frame_table = {x = 0,y = 0,sw = scale_width,sh = scale_height}
     elseif edge == 'right' then
-        frame_table = {x = x + width - frame_adjustment,y = y,sw = scale_width,sh = scale_height}
+        -- frame_table = {x = x + width - frame_adjustment,y = y,sw = scale_width,sh = scale_height}
+        frame_table = {x = width - frame_adjustment,y = 0,sw = scale_width,sh = scale_height}
     end
     return frame_table
 end
