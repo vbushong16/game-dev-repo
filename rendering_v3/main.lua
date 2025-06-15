@@ -15,13 +15,13 @@ function love.load()
     for i = 1,5,1 do
         table.insert(entities,{
             quad = gFrames['animals'][i]
-            ,x = 250
-            ,y = 250
+            ,x = 0
+            ,y = 0
             ,r = 0 * 3.14/180
             ,sx = 1
             ,sy = 1
-            ,ox = 250
-            ,oy = 250
+            ,ox = 0
+            ,oy = 0
         })
     end
 

@@ -23,6 +23,9 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
     vec2 uv = (2*(screen_coords/love_ScreenSize.xy)-1); 
     vec2 uv0 = uv;
     vec3 finalColor = vec3(0);
+    vec4 texturecolor = Texel(texture, texture_coords);
+    // texturecolor = abs(1 - texturecolor);
+    vec4 uv2 = vec4(finalColor,1);
 
     for (float i = 0; i< 4; i++){
         uv = fract(1.5*uv)-0.5;
@@ -32,9 +35,10 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
         d = abs(d);
         d = pow(0.01/d,1.2);
         finalColor += col * d;
+        uv2 = vec4(finalColor,1);
     }
     
 
 
-    return vec4(finalColor,1);
+    return uv2*texturecolor;
 }
