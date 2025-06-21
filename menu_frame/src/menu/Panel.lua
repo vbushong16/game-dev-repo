@@ -2,13 +2,27 @@ Panel = Class{__includes = Graphics}
 
 function Panel:init(def)
 
+    
+
     Graphics.init(self,def)
     -- PANEL DEBUG
 
+    -- print('FOR BOTTOM EDGE '..'POSITION RESCALE X: '..self.position['bottom'].x)
+    -- print('FOR BOTTOM EDGE '..'POSITION RESCALE Y: '..self.position['bottom'].y)
+    -- print('FOR LEFT EDGE '..'POSITION RESCALE X: '..self.position['left'].x)
+    -- print('FOR LEFT EDGE '..'POSITION RESCALE Y: '..self.position['left'].y)
+    -- print('FOR TOP EDGE '..'POSITION RESCALE X: '..self.position['top'].x)
+    -- print('FOR TOP EDGE '..'POSITION RESCALE Y: '..self.position['top'].y)
+    -- print('FOR RIGHT EDGE '..'POSITION RESCALE X: '..self.position['right'].x)
+    -- print('FOR RIGHT EDGE '..'POSITION RESCALE Y: '..self.position['right'].y)
+    -- print('CANVAS WIDTH: '..self.width)
+    -- print('CANVAS HEIGHT: '..self.height)
+    -- print('CANVAS X: '..self.x)
+    -- print('CANVAS Y: '..self.y)
     -- if self.debug then self:panelDebug() end
     -- if self.debug then self:PositionDebug() end
     
-    -- PANEL SET UP 
+    -- -- PANEL SET UP 
     self.layout = def['layout']
     self.panel_id = def.panel_id
     self.panel_number = def.panel_number
@@ -40,6 +54,9 @@ function Panel:init(def)
     self.panel_width = self.points[6].x - self.points[5].x
     self.panel_height = self.points[7].y-self.points[5].y
     self:layoutInit()
+
+    -- print('PANEL WIDTH: ',self.panel_width)
+    -- print('PANEL HEIGHT: ',self.panel_height)
 end
 
 function Panel:buttonDim(length,offset,divider,layout)
@@ -53,6 +70,8 @@ function Panel:layoutInit()
     button_number = 1
     for k,layout in pairs(self.panel_layout) do
 
+        -- print('BUTTON NUMBER: '..button_number,' PRIORITY COL: '..layout.priority.dim)
+
         local button_init = {}
 
         for i, button in pairs(self.button_interface) do
@@ -61,7 +80,6 @@ function Panel:layoutInit()
                 break
             end
         end 
-
         local off_x = button_init.position.offsets.left + button_init.position.offsets.right
         local off_y = button_init.position.offsets.top + button_init.position.offsets.bottom
         local button_width = nil
@@ -74,6 +92,7 @@ function Panel:layoutInit()
             button_height = self:buttonDim(self.panel_height,off_y,layout.non_priority.p,layout.non_priority.dim)
             x_list = self.panel_width / layout.priority.dim
             y_list = self.panel_height / layout.non_priority.p
+            -- print('BUTTON WIDTH: '..button_width)
         else
             button_width = self:buttonDim(self.panel_width,off_x,layout.non_priority.p,layout.non_priority.dim)
             button_height = self:buttonDim(self.panel_height,off_y,layout.priority.p,layout.priority.dim)
@@ -95,7 +114,19 @@ function Panel:layoutInit()
 
         if k>1 then
             if self.layout.priority == 'cols' then
-                if (self.panel_layout[k-1].button[1].x + self.panel_layout[k-1].button[1].width) >= self.panel_width then
+
+                -- print('BUTTON NUMBER: '..k,' POSITION X: '..self.panel_layout[k-1].button[1].x)
+                -- -- print('BUTTON NUMBER: '..k,' POSITION Y: '..self.panel_layout[k-1].button[1].Y)
+                -- print('BUTTON NUMBER: '..k,' WIDTH: '..self.panel_layout[k-1].button[1].width)
+                -- print('BUTTON NUMBER: '..k,' DISPLACEMENT: '..self.panel_layout[k-1].button[1].x+self.panel_layout[k-1].button[1].width)
+                -- print('BUTTON NUMBER: '..k,' POSITION DISPLAC: '..x_list)
+
+                -- print('BUTTON NUMBER: '..k,' START X '..self.points[5].x)
+                -- print('BUTTON NUMBER: '..k,' PANEL WIDTH: '..self.panel_width)
+                -- print('BUTTON NUMBER: '..k,' MAX: '..self.points[5].x+self.panel_width)
+
+
+                if (self.panel_layout[k-1].button[1].x + self.panel_layout[k-1].button[1].width + math.abs(self.panel_layout[k-1].button[1].offset.left)+math.abs(self.panel_layout[k-1].button[1].offset.right)) >= self.points[5].x+self.panel_width then       
                     button_init.position.x = (self.points[5].x)
                     button_init.position.y = (self.points[5].y) + y_list
                 else
@@ -103,7 +134,7 @@ function Panel:layoutInit()
                     button_init.position.y = self.panel_layout[k-1].button[1].y - self.panel_layout[k-1].button[1].offset.top
                 end
             else 
-                if (self.panel_layout[k-1].button[1].y + self.panel_layout[k-1].button[1].height) >= self.panel_height then
+                if (self.panel_layout[k-1].button[1].y + self.panel_layout[k-1].button[1].height+ self.panel_layout[k-1].button[1].offset.top+self.panel_layout[k-1].button[1].offset.bottom) >= self.points[5].y+self.panel_height then
                     button_init.position.x = (self.points[5].x) + x_list
                     button_init.position.y = (self.points[5].y)
                 else
@@ -114,6 +145,7 @@ function Panel:layoutInit()
         else
             button_init.position.x = (self.points[5].x)
             button_init.position.y = (self.points[5].y)
+            -- print('FIRST BUTTON POSITION X: '..self.points[5].x)
         end
 
         button_init.button_number = button_number
@@ -123,11 +155,6 @@ function Panel:layoutInit()
 
         button_number = button_number + 1  
         table.insert(layout.button ,Button(button_init))
-
-
-
-
-
         -- if self.debug then self:buttonPosition(k,layout,button_init) end
         
     end
@@ -144,10 +171,10 @@ function Panel:update(dt)
 end
 
 function Panel:resetButton()
-    for k,layout in pairs(self.panel_layout) do
-        layout.button[1].button_selected = false
-        layout.button[1].button_state = false
-    end
+    -- for k,layout in pairs(self.panel_layout) do
+    --     layout.button[1].button_selected = false
+    --     layout.button[1].button_state = false
+    -- end
 end
 
 function Panel:addButton()
@@ -166,9 +193,13 @@ function Panel:render()
         -- love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
         -- love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
         -- love.graphics.reset()
+        -- love.graphics.setColor(0,0,0)
+        -- love.graphics.rectangle('fill',65,105,self.width,self.height)
+        -- love.graphics.reset()
+
 
         Graphics.renderFrame(self)
-        
+        Graphics.renderPoints(self)
         for k,layout in pairs(self.panel_layout) do
             layout.button[1]:render()
         end   
@@ -179,10 +210,10 @@ function Panel:render()
         --     love.graphics.reset()
         -- end
 
-        love.graphics.setColor(0,0,0)
-        love.graphics.printf('This is Panel:' .. tostring(self.panel_number)
-        ,self.x + self.offset.left+ self.offset.right
-        ,self.y + self.offset.top+ self.offset.bottom,WINDOW_WIDTH)
-        love.graphics.reset()
+        -- love.graphics.setColor(0,0,0)
+        -- love.graphics.printf('This is Panel:' .. tostring(self.panel_number)
+        -- ,self.x + self.offset.left+ self.offset.right
+        -- ,self.y + self.offset.top+ self.offset.bottom,WINDOW_WIDTH)
+        -- love.graphics.reset()
     end
 end

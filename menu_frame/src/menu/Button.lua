@@ -19,12 +19,18 @@ function Button:init(def)
 
 
     self.display = def['display']
-    self.display.image_dimensions = getImageDims(self.display.image[1])
-    self.display.scale = scaleXY(self.points[6].x-self.points[5].x,self.points[7].y-self.points[5].y
+    print('DISPLAY: '..self.display.display)
+    print('animal: '..self.display.image)
+    self.image_unit = images_catalog[self.display.display][self.display.image].row*5
+    print('ROW * 5: '..self.image_unit)
+    print('VIEWPORT QUERY: '..select(1,gFrames[self.display.display][self.image_unit]:getViewport()))
+    self.display.image_dimensions = getImageDims(gFrames[self.display.display][self.image_unit])
+    self.display.scale = scaleWH(self.points[6].x-self.points[5].x,self.points[7].y-self.points[5].y
         ,self.display.image_dimensions.width
         ,self.display.image_dimensions.height
     )
-    Graphics.setImage(self,def['display']['image'],self.display.scale.sw,self.display.scale.sh)
+    print('IMAGE SCALE: '..self.display.scale.sw)
+    Graphics.setImage(self,self.display.display,self.display.scale.sw,self.display.scale.sh,self.image_unit-4,self.image_unit)
 
 
     -- if self.debug then self:displayDebug() end 
@@ -114,7 +120,7 @@ function Button:render()
     Graphics.renderForeground(self)
 
     Graphics.renderFrame(self)
-
+    Graphics.renderPoints(self)
 
     
 

@@ -2,11 +2,11 @@
 // Original by Hei under MIT License, converted for LÖVE2D
 
 // External variables - these will be set from Lua code
-extern number fov = 90;  // Camera FOV (1-179)
-extern bool cull_back = false;  // Whether to cull back faces
-extern number y_rot = 0;  // Y rotation (-180 to 180)
-extern number x_rot = 0;  // X rotation (-180 to 180)
-extern number inset = 0;  // Inset to prevent clipping (0-1)
+uniform number fov = 90;  // Camera FOV (1-179)
+uniform bool cull_back = false;  // Whether to cull back faces
+uniform number y_rot = 0;  // Y rotation (-180 to 180)
+uniform number x_rot = 0;  // X rotation (-180 to 180)
+uniform number inset = 0;  // Inset to prevent clipping (0-1)
 
 // Additional uniforms for passing data to fragment shader
 // extern vec2 texture_size;  // Width and height of texture in pixels

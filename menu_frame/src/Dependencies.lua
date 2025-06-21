@@ -54,7 +54,9 @@ gTextures = {
     ,['frame3'] = love.graphics.newImage('img/Menu Border3.png')
     ,['frame4'] = love.graphics.newImage('img/Menu Border4.png')
     ,['frame5'] = love.graphics.newImage('img/Menu Border5.png')
-    ,['frame6'] = love.graphics.newImage('img/Menu Border6.png')
+    ,['frame6'] = love.graphics.newImage('img/Menu Border7.png')
+    ,['frame8'] = love.graphics.newImage('img/Menu Border8.png')
+    ,['animals'] = love.graphics.newImage('img/Sprite-0001.png')
 }
 
 gTextures['frame']:setFilter('nearest','nearest')
@@ -66,6 +68,8 @@ gTextures['frame3']:setFilter('nearest','nearest')
 gTextures['frame4']:setFilter('nearest','nearest')
 gTextures['frame5']:setFilter('nearest','nearest')
 gTextures['frame6']:setFilter('nearest','nearest')
+gTextures['frame8']:setFilter('nearest','nearest')
+gTextures['animals']:setFilter('nearest','nearest')
 
 gFrames = {
     ['menu'] = {
@@ -116,11 +120,13 @@ gFrames = {
         ['right'] = love.graphics.newQuad(417,35,14,391,gTextures['frame5']:getDimensions()),
     },
     ['frame6'] = generateQuads(gTextures['frame6'],32,32)
+    ,['frame8'] = generateQuads(gTextures['frame8'],32,32)
+    ,['animals'] = generateQuads(gTextures['animals'],500,500)
 }
 
 
 swordBatch = love.graphics.newSpriteBatch(gTextures['sword'])
-
+spriteBatch = love.graphics.newSpriteBatch(gTextures['animals'])
 
 
 graphics_value = {

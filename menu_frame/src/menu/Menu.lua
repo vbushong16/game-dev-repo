@@ -24,7 +24,8 @@ function Menu:init(def)
         })
         end
     end
-    -- sort = function(a,b) return a.panel_number<b.panel_number end
+
+    sort = function(a,b) return a.panel_number<b.panel_number end
     table.sort(self.panels,function(a,b) return a.panel_number<b.panel_number end)
         
     -- MENU LOGIC INIT0
@@ -62,6 +63,7 @@ function Menu:render()
         -- love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
         -- love.graphics.reset()
         Graphics.renderFrame(self)
+        -- Graphics.renderPoints(self)
         if #self.panels > 0 then 
             self.panels[self.current_panel]['panel']:render()
         end
@@ -74,49 +76,49 @@ function Menu:update(dt)
     if #self.panels > 0 then 
         self.panels[self.current_panel]['panel']:update(dt)
     end
-    if #self.panels >= 2 then
-        self.scrollabe_status = true
-        -- self.scrollabe_direction = 'horizontal'
-        self:scroller()
-    else
-        self.scrollabe_status = false
-    end
+    -- if #self.panels >= 2 then
+    --     self.scrollabe_status = true
+    --     -- self.scrollabe_direction = 'horizontal'
+    --     self:scroller()
+    -- else
+    --     self.scrollabe_status = false
+    -- end
 end
 
 -- NEED TO REFACTOR
-function Menu:addPanel(panel_input)
-    --THIS WILL NEED TO BE UPDATED
-    local panel_id = #self.panels+1
-    self.panel_init.components = panel_input
-    self.panel_init.panel_id = panel_id
-    self.panel_init.panel_number = panel_id 
-    table.insert(self.panels,{id = panel_id,panel_number = panel_id, panel = Panel(self.panel_init)})
-    if #self.panels == 1 then
-        self.panels[1].panel.panel_state = true
-    end
-end
+-- function Menu:addPanel(panel_input)
+--     --THIS WILL NEED TO BE UPDATED
+--     local panel_id = #self.panels+1
+--     self.panel_init.components = panel_input
+--     self.panel_init.panel_id = panel_id
+--     self.panel_init.panel_number = panel_id 
+--     table.insert(self.panels,{id = panel_id,panel_number = panel_id, panel = Panel(self.panel_init)})
+--     if #self.panels == 1 then
+--         self.panels[1].panel.panel_state = true
+--     end
+-- end
 
-function Menu:removePanel(current_panel_value)
-    local panel_id = self.panels[current_panel_value]['id']
-    for i,panel in pairs(self.panels) do
-        if panel.id == panel_id then
-            table.remove(self.panels,i)
-            if self.current_panel > 1 then
-                self.current_panel = self.current_panel-1
-                self.panels[self.current_panel]['panel'].panel_state = true
-            else
-                self.current_panel = 1
-                self.panels[self.current_panel]['panel'].panel_state = true
-            end
-        end
-    end
-end
+-- function Menu:removePanel(current_panel_value)
+--     local panel_id = self.panels[current_panel_value]['id']
+--     for i,panel in pairs(self.panels) do
+--         if panel.id == panel_id then
+--             table.remove(self.panels,i)
+--             if self.current_panel > 1 then
+--                 self.current_panel = self.current_panel-1
+--                 self.panels[self.current_panel]['panel'].panel_state = true
+--             else
+--                 self.current_panel = 1
+--                 self.panels[self.current_panel]['panel'].panel_state = true
+--             end
+--         end
+--     end
+-- end
 
-function Menu:updatePanelsOrder(old_panel_position, new_panel_position)
-    local panel_to_reorder = self.panels[new_panel_position]
-    self.panels[new_panel_position] = self.panels[old_panel_position]
-    self.panels[old_panel_position] = panel_to_reorder
-end
+-- function Menu:updatePanelsOrder(old_panel_position, new_panel_position)
+--     local panel_to_reorder = self.panels[new_panel_position]
+--     self.panels[new_panel_position] = self.panels[old_panel_position]
+--     self.panels[old_panel_position] = panel_to_reorder
+-- end
 
 function Menu:openClose()
     if self.menu_state then
@@ -148,15 +150,15 @@ function Menu:updateScroller()
     end
 end
 
-function Menu:navigation(input)
-    -- print('current panel: '.. self.current_panel)
-    -- print('number of panels: ' .. #self.panels)
-    if self.current_panel+input > 0 and self.current_panel+input <= #self.panels then
-        self.panels[self.current_panel]['panel'].panel_state = false
-        self.panels[self.current_panel]['panel']:resetButton()
-        -- print('OLD PANEL:' .. self.current_panel,'IS:'.. tostring(self.panels[self.current_panel]['panel'].panel_state))
-        self.current_panel = self.current_panel + input
-        self.panels[self.current_panel]['panel'].panel_state = true
-        -- print('NEW PANEL:' .. self.current_panel,'IS:'..tostring(self.panels[self.current_panel]['panel'].panel_state))
-    end
-end
+-- function Menu:navigation(input)
+--     -- print('current panel: '.. self.current_panel)
+--     -- print('number of panels: ' .. #self.panels)
+--     if self.current_panel+input > 0 and self.current_panel+input <= #self.panels then
+--         self.panels[self.current_panel]['panel'].panel_state = false
+--         self.panels[self.current_panel]['panel']:resetButton()
+--         -- print('OLD PANEL:' .. self.current_panel,'IS:'.. tostring(self.panels[self.current_panel]['panel'].panel_state))
+--         self.current_panel = self.current_panel + input
+--         self.panels[self.current_panel]['panel'].panel_state = true
+--         -- print('NEW PANEL:' .. self.current_panel,'IS:'..tostring(self.panels[self.current_panel]['panel'].panel_state))
+--     end
+-- end

@@ -30,7 +30,7 @@ canvases = {
 
 gTextures = {
     ['animals'] = love.graphics.newImage('img/Sprite-0001.png')
-    ,['frame'] = love.graphics.newImage('img/Menu Border7.png')
+    ,['frame'] = love.graphics.newImage('img/Menu Border8.png')
 }
 gTextures['animals']:setFilter('nearest','nearest')
 gTextures['frame']:setFilter('nearest','nearest')

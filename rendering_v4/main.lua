@@ -4,6 +4,8 @@ require 'src/Dependencies'
 
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
+
+    print(gFrames['frame'][1]:getPixel(0,0))
     
     love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
 
@@ -34,6 +36,8 @@ function love.load()
             ,oy = 0
         })
     end
+
+    -- frames[1].sy = 5
 
 end
 

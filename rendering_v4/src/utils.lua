@@ -31,6 +31,9 @@ function renderImagePrep(sprite_batch,images,batch_start,batch_length)
             , math.floor(image.oy) )
         end
     end
+
+    print(sprite_batch:getPixel(0,0))
+
     -- Finally, draw the sprite batch to the screen.
     love.graphics.draw(sprite_batch)
 end

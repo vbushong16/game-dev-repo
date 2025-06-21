@@ -1,5 +1,12 @@
 
 
+function getFrameTranslation(image,border,images)
+
+    return images[image][border].dimensions
+
+end
+
+
 function getImageDims(value)
     local image_dimensions = {
         x = select(1,value:getViewport())
@@ -10,7 +17,7 @@ function getImageDims(value)
     return image_dimensions
 end
 
-function scaleXY(width,height,graphics_width,graphics_height)
+function scaleWH(width,height,graphics_width,graphics_height)
     local scale_table = {sw = width/graphics_width, sh = height/graphics_height}
    return scale_table
 end
@@ -38,20 +45,16 @@ function objectCoord(x,y,width,height,frame_offsets)
     return points
 end
 
-function frameRender(edge,width,height,scale_width,scale_height,frame_adjustment)
+function frameRender(edge,scale_width,scale_height,frame_adj,coord_adj)
     local frame_table = {}
     if edge == 'top' then
-        -- frame_table = {x = x,y = y,sw = scale_width,sh = scale_height}
-        frame_table = {x = 0,y = 0,sw = scale_width,sh = scale_height}
+        frame_table = {x = 0,y =coord_adj,sw = scale_width,sh = scale_height}
     elseif edge == 'bottom' then
-        -- frame_table = {x = x,y =y+height-frame_adjustment,sw = scale_width,sh = scale_height}
-        frame_table = {x = 0,y =height-frame_adjustment,sw = scale_width,sh = scale_height}
+        frame_table = {x = 0,y =coord_adj+frame_adj,sw = scale_width,sh = scale_height}
     elseif edge == 'left' then
-        -- frame_table = {x = x,y = y,sw = scale_width,sh = scale_height}
-        frame_table = {x = 0,y = 0,sw = scale_width,sh = scale_height}
+        frame_table = {x = coord_adj,y = 0,sw = scale_width,sh = scale_height}
     elseif edge == 'right' then
-        -- frame_table = {x = x + width - frame_adjustment,y = y,sw = scale_width,sh = scale_height}
-        frame_table = {x = width - frame_adjustment,y = 0,sw = scale_width,sh = scale_height}
+        frame_table = {x = coord_adj+frame_adj,y = 0,sw = scale_width,sh = scale_height}
     end
     return frame_table
 end
@@ -75,7 +78,23 @@ function imageSelection()
 end
 
     
-
+function renderImagePrep(sprite_batch,images,batch_start,batch_length)
+    sprite_batch:clear()
+    for i, image in ipairs(images) do
+        -- if i <= batch_length and i >= batch_start then  
+            sprite_batch:add(image.quad
+            , math.floor(image.x)
+            , math.floor(image.y)
+            , (image.r)
+            , (image.sx)
+            , (image.sy)
+            , math.floor(image.ox)
+            , math.floor(image.oy) )
+        -- end
+    end
+    -- Finally, draw the sprite batch to the screen.
+    love.graphics.draw(sprite_batch)
+end
 
 
 

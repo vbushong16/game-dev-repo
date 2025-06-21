@@ -18,13 +18,13 @@ function love.keypressed(key)
     if key == 'p' then
         menu1:openClose()
     end
-        if key == 'w' then
-        print('changing')
-        menu1:navigation(1)
-    end
-    if key == 'q' then
-        menu1:navigation(-1)
-    end
+    --     if key == 'w' then
+    --     print('changing')
+    --     menu1:navigation(1)
+    -- end
+    -- if key == 'q' then
+    --     menu1:navigation(-1)
+    -- end
 
 end
 
