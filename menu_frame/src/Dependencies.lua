@@ -19,6 +19,19 @@ function generateQuads(atlas,tileheight,tilewidth)
 end
 
 
+Class = require 'src/class'
+require 'src/Animation'
+
+require 'src/menu/menu_config'
+require 'src/menu/menu_utils'
+require 'src/menu/Graphics'
+require 'src/menu/Menu'
+require 'src/menu/Panel'
+require 'src/menu/Button'
+
+
+mainfont = love.graphics.newFont('fonts/font.ttf',64)
+
 
 local vfx = 'VFX/shader.glsl'
 shader = love.graphics.newShader(vfx)
@@ -135,12 +148,3 @@ graphics_value = {
     ['anchor'] = {anchor_x = nil, anchor_y = 4},
 }
 
-Class = require 'src/class'
-require 'src/Animation'
-
-require 'src/menu/menu_config'
-require 'src/menu/menu_utils'
-require 'src/menu/Graphics'
-require 'src/menu/Menu'
-require 'src/menu/Panel'
-require 'src/menu/Button'

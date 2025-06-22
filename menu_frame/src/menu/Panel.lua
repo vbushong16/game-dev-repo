@@ -54,7 +54,6 @@ function Panel:layoutInit()
 
     button_number = 1
     for k,layout in pairs(self.panel_layout) do
-        print(k)
         local button_init = {}
         for i, button in pairs(self.button_interface) do
             if button.button_number == button_number then

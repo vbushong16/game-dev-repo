@@ -39,7 +39,7 @@ function Graphics:init(def)
     self.canvas_frame = def['graphics']['frame']
     self.background = def['graphics']['background']
     self.foreground = def['graphics']['foreground']
-    self.display = def['graphics']['display']
+    self.graphics_type = def['graphics']['type']
     self.stickers = def['graphics']['stickers']
     -- FRAME RENDERING INIT
     self.frame = def['frame']
@@ -136,6 +136,7 @@ function Graphics:init(def)
     self.foreground_canvas = love.graphics.newCanvas(self.width,self.height)
 
     self.image = {}
+    self.text = nil
 end
 
 
@@ -154,9 +155,9 @@ function Graphics:setImage(display,sw,sh,first_sprite,last_sprit)
     end
 end
 
--- function Button:setText()
-
--- end
+function Graphics:setText(display)
+    self.text = display
+end
 
 
 
@@ -200,16 +201,24 @@ function Graphics:update(dt)
 
     self.background_canvas:renderTo(function()
         love.graphics.clear()
-        love.graphics.setShader(shader)
-        shader:send('time',love.timer.getTime(dt))
+        -- love.graphics.setShader(shader)
+        -- shader:send('time',love.timer.getTime(dt))
+        love.graphics.setColor(0.37,0.61,0.54,1.0)
         love.graphics.rectangle('fill',0,0,self.width,self.height)
-        love.graphics.setShader()
+        love.graphics.reset()
+        -- love.graphics.setShader()
     end
     )
 
     self.foreground_canvas:renderTo(function()
         love.graphics.clear()
-        renderImagePrep(spriteBatch,self.image,1,5)
+        if self.text ~= nil then
+            love.graphics.setFont(mainfont) 
+            -- love.graphics.printf(text,x,y,limit,align)
+            love.graphics.printf(self.text, 0, 20, self.width, 'center')
+        else
+            renderImagePrep(spriteBatch,self.image,1,5)
+        end
     end
     )
 end

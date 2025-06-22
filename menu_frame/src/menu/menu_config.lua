@@ -143,7 +143,7 @@ image_list = {
 menu1 = {
     ['metadata'] = {name = 'Main Menu', debug = false},
     ['position'] = {x = 50, y=50, offsets = {top = 0, bottom = 0, left = 0, right = 0}},
-    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, display = nil, stickers = nil},
+    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = nil, stickers = nil},
     ['frame'] = {
         ['top'] = {dimensions = {width = nil, height =10}}
         ,['bottom'] = {dimensions = {width = nil, height =10}}
@@ -154,10 +154,10 @@ menu1 = {
     ['components'] = {number_of_panels = 1},
     ['panels'] = {
         ['panel1'] = {
-            ['metadata'] = {debug = true},
+            ['metadata'] = {debug = false},
             panel_order = 1,
             ['layout'] = {priority = 'cols', rows = {1,1,1,1}, cols = {1,1,1,1}},
-            ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, display = nil, stickers = nil},
+            ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = nil, stickers = nil},
             ['frame'] = {
                 ['top'] = {dimensions = {width = nil, height =0}}
                 ,['bottom'] = {dimensions = {width = nil, height =0}}
@@ -169,7 +169,7 @@ menu1 = {
                 ['button1'] = {
                     ['metadata'] = {debug = false},
                     button_number = 1,
-                    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, display = 'sword', stickers = nil},
+                    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = 'text', stickers = nil},
                     ['frame'] = {
                         ['top'] = {dimensions = {width = nil, height =10}}
                         ,['bottom'] = {dimensions = {width = nil, height =10}}
@@ -178,12 +178,12 @@ menu1 = {
                     },
                     ['position'] = { offsets = {top = 10, bottom = 10, left = 50, right = 50}},
                     ['callback'] = pressed_button,
-                    ['display'] = {display = 'animals',image = 'elephant'}
+                    ['display'] = {display = nil,image = nil,text = 'Play'}
                 },
                 ['button2'] = {
                     ['metadata'] = {debug = false},
                     button_number = 2,
-                    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, display = 'sword', stickers = nil},
+                    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = 'text', stickers = nil},
                     ['frame'] = {
                         ['top'] = {dimensions = {width = nil, height =10}}
                         ,['bottom'] = {dimensions = {width = nil, height =10}}
@@ -192,12 +192,12 @@ menu1 = {
                     },
                     ['position'] = { offsets = {top = 10, bottom = 10, left = 50, right = 50}},
                     ['callback'] = pressed_button,
-                    ['display'] = {display = 'animals',image = 'elephant'}
+                    ['display'] = {display = nil,image = nil,text = 'Load'}
                 },
                 ['button3'] = {
                     ['metadata'] = {debug = false},
                     button_number = 3,
-                    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, display = 'sword', stickers = nil},
+                    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = 'text', stickers = nil},
                     ['frame'] = {
                         ['top'] = {dimensions = {width = nil, height =10}}
                         ,['bottom'] = {dimensions = {width = nil, height =10}}
@@ -206,12 +206,12 @@ menu1 = {
                     },
                     ['position'] = { offsets = {top = 10, bottom = 10, left = 50, right = 50}},
                     ['callback'] = pressed_button,
-                    ['display'] = {display = 'animals',image = 'elephant'}
+                    ['display'] = {display = nil,image = nil,text = 'HighScore'}
                 },
                 ['button4'] = {
                     ['metadata'] = {debug = false},
                     button_number = 4,
-                    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, display = 'sword', stickers = nil},
+                    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = 'image', stickers = nil},
                     ['frame'] = {
                         ['top'] = {dimensions = {width = nil, height =10}}
                         ,['bottom'] = {dimensions = {width = nil, height =10}}
