@@ -1,6 +1,9 @@
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 500
 
+VIRTUAL_WIDTH = 1080
+VIRTUAL_HEIGHT = 540
+
 entities = {}
 frames = {}
 
@@ -20,6 +23,8 @@ shaders = {
     ,love.graphics.newShader('shaders/shader9.glsl')
     ,love.graphics.newShader('shaders/shader10.glsl')
 }
+
+
 
 canvases = {
     ['animal1'] = love.graphics.newCanvas(500,500)

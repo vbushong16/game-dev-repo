@@ -3,38 +3,31 @@ Button = Class{__includes = Graphics}
 function Button:init(def)
 
     Graphics.init(self,def)
+    -- GRAPHICS DEBUG
+    if self.debug then 
+        Graphics.metadataDebug(self,'BUTTON')
+        Graphics.frameDebug(self,'BUTTON')
+        Graphics.positionDebug(self,'BUTTON')
+    end  
     -- BUTTON POSITIONS
-   
     -- self.button_middle = middleXY(self.x,self.y,self.width,self.height)
-    
-    -- if self.debug then self:positionDebug() end
-    
     -- BUTTON SET UP 
     self.button_id = def.button_id
     self.button_number = def.button_number
-    -- self.panel_state = def.panel_state
     self.button_state = false
     self.button_selected = false
     self.callback = def['callback']
 
-
     self.display = def['display']
-    print('DISPLAY: '..self.display.display)
-    print('animal: '..self.display.image)
     self.image_unit = images_catalog[self.display.display][self.display.image].row*5
-    print('ROW * 5: '..self.image_unit)
-    print('VIEWPORT QUERY: '..select(1,gFrames[self.display.display][self.image_unit]:getViewport()))
     self.display.image_dimensions = getImageDims(gFrames[self.display.display][self.image_unit])
     self.display.scale = scaleWH(self.points[6].x-self.points[5].x,self.points[7].y-self.points[5].y
         ,self.display.image_dimensions.width
         ,self.display.image_dimensions.height
     )
-    print('IMAGE SCALE: '..self.display.scale.sw)
     Graphics.setImage(self,self.display.display,self.display.scale.sw,self.display.scale.sh,self.image_unit-4,self.image_unit)
 
-
     -- if self.debug then self:displayDebug() end 
-
 end
 
 
@@ -70,65 +63,40 @@ function Button:update(dt,panel_status)
             self.button_selected = false
         end
     end
-
 end
 
--- function Button:changeImage()
+function Button:changeImage(new_image)
+    self.image = {}
+    self.display = new_image
+    self.image_unit = images_catalog[self.display.display][self.display.image].row*5
+    self.display.image_dimensions = getImageDims(gFrames[self.display.display][self.image_unit])
+    self.display.scale = scaleWH(self.points[6].x-self.points[5].x,self.points[7].y-self.points[5].y
+        ,self.display.image_dimensions.width
+        ,self.display.image_dimensions.height
+    )
+    Graphics.setImage(self,self.display.display,self.display.scale.sw,self.display.scale.sh,self.image_unit-4,self.image_unit)
+end
 
--- end
-
--- function Button:setImage()
-
--- end
 
 -- function Button:changeText()
 
 -- end
 
--- function Button:setText()
-
--- end
 
 -- function Button:changeShape()
 
 -- end
 
--- function Button:setShape()
 
--- end
-
--- function Button:selection()
-
--- end
 
 function Button:render()
 
     self:buttonCallback(self.callback)
 
-    Graphics.renderBackground(self)
-
-    -- if self.button_selected then
-    --     love.graphics.setColor(1,0,0)
-    --     love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
-    --     love.graphics.reset()  
-    -- else
-    --     love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
-    --     love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
-    --     love.graphics.reset()    
-    -- end
-    
+    Graphics.renderBackground(self)    
     Graphics.renderForeground(self)
-
     Graphics.renderFrame(self)
     Graphics.renderPoints(self)
-
-    
-
-    -- for i, point in ipairs(self.points) do
-    --     love.graphics.setColor(0.2,0.5,0.4)
-    --     love.graphics.circle('fill',point.x,point.y,10)
-    --     love.graphics.reset()
-    -- end
 
     love.graphics.reset()
     love.graphics.setColor(0,0,0)
@@ -138,3 +106,18 @@ function Button:render()
     love.graphics.reset()
 
 end
+
+-- function Button:displayDebug()
+--     print('\n','IMAGE DISPLAY DEBUG ----------')
+--     print('DISPLAY X: ',self.points[5].x)
+--     print('DISPLAY y: ',self.points[5].y)
+--     print('DISPLAY IMAGE WIDTH: ',self.display.image_dimensions.width)
+--     print('DISPLAY IMAGE HEIGHT: ',self.display.image_dimensions.height)
+-- end
+
+
+        -- print('DISPLAY: '..self.display.display)
+    -- print('animal: '..self.display.image)
+        -- print('ROW * 5: '..self.image_unit)
+    -- print('VIEWPORT QUERY: '..select(1,gFrames[self.display.display][self.image_unit]:getViewport()))
+        -- print('IMAGE SCALE: '..self.display.scale.sw)

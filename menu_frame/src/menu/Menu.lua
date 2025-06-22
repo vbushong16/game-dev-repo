@@ -1,8 +1,13 @@
 Menu = Class{__includes = Graphics}
 
 function Menu:init(def)
-    Graphics.init(self,def)
 
+    Graphics.init(self,def)
+    if self.debug then 
+        Graphics.metadataDebug(self,'MENU')
+        Graphics.frameDebug(self,'MENU')
+        Graphics.positionDebug(self,'MENU')
+    end
     local menu_name = self.menu_name
     local points = self.points
 
@@ -10,7 +15,6 @@ function Menu:init(def)
     self.panels = {}
     self.panels_to_build = def['components']['number_of_panels']
     self.panel_init = {}
-
     if self.panels_to_build >= 1 then
         for i,interface in pairs(def['panels']) do 
             self.panel_init = interface
@@ -24,16 +28,11 @@ function Menu:init(def)
         })
         end
     end
-
     sort = function(a,b) return a.panel_number<b.panel_number end
     table.sort(self.panels,function(a,b) return a.panel_number<b.panel_number end)
         
     -- MENU LOGIC INIT0
     self.menu_state = false
-
-    -- for i,panel in pairs(self.panels) do
-    --     print('PANEL: ',panel.id,' STATE',panel.panel.panel_state)
-    -- end
     
     self.current_panel = 1
     if #self.panels > 0 then 
@@ -55,13 +54,7 @@ function Menu:init(def)
 end
 
 function Menu:render()
-    -- love.graphics.rectangle(mode,x,y,width,height)
-    -- love.graphics.circle(mode,x,y,radius)
-    -- love.graphics.draw(drawable,x,y,r,sx,sy,ox,oy)
     if self.menu_state then
-        -- love.graphics.setColor(self.rgb.r,self.rgb.g,self.rgb.b)
-        -- love.graphics.rectangle('fill',self.x,self.y,self.width,self.height)
-        -- love.graphics.reset()
         Graphics.renderFrame(self)
         -- Graphics.renderPoints(self)
         if #self.panels > 0 then 

@@ -18,7 +18,14 @@ function love.keypressed(key)
     if key == 'p' then
         menu1:openClose()
     end
-    --     if key == 'w' then
+    if key == 'd' then
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id)
+        menu1.panels[1]['panel'].panel_layout[1].button[1]:changeImage(image_list['platypus'])
+    end
+    
+
+    
+    -- if key == 'w' then
     --     print('changing')
     --     menu1:navigation(1)
     -- end
