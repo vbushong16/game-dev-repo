@@ -25,9 +25,11 @@ function Graphics:init(def)
     -- OBJECT PRESETS
     self.scale = {}
     self.position={}
+    self.edge_names = {'bottom','left','top','right'}
     -- OBJECT DEBUG
     self.debug = def['metadata']['debug']
     self.menu_name = def['metadata']['name']
+
     -- OBJECT POSITION INIT 
     self.offset = def['position']['offsets']
     self.x = def['position']['x'] + 1*self.offset.left
@@ -37,76 +39,38 @@ function Graphics:init(def)
     self.height = def['size']['height'] - self.offset.top - self.offset.bottom    
     -- OBJECT GRAPHICS INIT
     self.canvas_frame = def['graphics']['frame']
+    self.canvas_frame_quad = images_catalog[self.canvas_frame].image_quad
     self.background = def['graphics']['background']
     self.foreground = def['graphics']['foreground']
     self.graphics_type = def['graphics']['type']
     self.stickers = def['graphics']['stickers']
     -- FRAME RENDERING INIT
     self.frame = def['frame']
-    self.edge_names = {'bottom','left','top','right'}
-    -- local w,h = nil, nil
-    for i,edge in pairs(self.edge_names) do
-        -- self.frame[edge].image_dimensions = getImageDims(gFrames[self.canvas_frame][edge])
-        self.frame[edge].image_dimensions = getFrameTranslation(self.canvas_frame,edge,images_catalog)
 
-        local w,h = nil,nil
-        if edge == 'top' then
-            w,h = self.width,self.frame[edge].dimensions.height
-        elseif edge == 'bottom' then
-            w,h = self.width,self.frame[edge].dimensions.height
-        elseif edge == 'left' then
-            w,h = self.frame[edge].dimensions.width,self.height
-        elseif edge == 'right' then
-            w,h = self.frame[edge].dimensions.width,self.height
-        end
-
-        self.scale[edge] = scaleWH(
-            w
-            ,h
-            ,self.frame[edge].image_dimensions.width
-            ,self.frame[edge].image_dimensions.height
-        )
-
-        local frame_adjustment = nil
-        if edge == 'bottom' then
-            frame_adjustment = (self.frame[edge].image_dimensions.height *self.height/32) - (self.frame[edge].image_dimensions.height *self.scale[edge].sh) 
-        elseif edge == 'top' then
-            frame_adjustment = (self.frame[edge].image_dimensions.height *self.height/32) - (self.frame[edge].image_dimensions.height *self.scale[edge].sh)
-        elseif edge == 'left' then
-            frame_adjustment = (self.frame[edge].image_dimensions.width *self.width/32) - (self.frame[edge].image_dimensions.width *self.scale[edge].sw)
-        elseif edge == 'right' then
-            frame_adjustment = (self.frame[edge].image_dimensions.width *self.width/32) - (self.frame[edge].image_dimensions.width *self.scale[edge].sw)
-        else
-            frame_adjustment = nil
-        end
-
-        local coord_adjustment = nil
-        if edge == 'bottom' then
-            coord_adjustment = (self.frame[edge].image_dimensions.y *self.height/32) - (self.frame[edge].image_dimensions.y *self.scale[edge].sh)
-        elseif edge == 'top' then
-            coord_adjustment = (self.frame[edge].image_dimensions.y *self.height/32) - (self.frame[edge].image_dimensions.y *self.scale[edge].sh)
-        elseif edge == 'left' then
-            coord_adjustment = (self.frame[edge].image_dimensions.x *self.width/32) - (self.frame[edge].image_dimensions.x *self.scale[edge].sw)
-        elseif edge == 'right' then
-            coord_adjustment = (self.frame[edge].image_dimensions.x *self.width/32) - (self.frame[edge].image_dimensions.x *self.scale[edge].sw)
-        end
-
-        self.position[edge] = frameRender(edge,self.scale[edge].sw,self.scale[edge].sh,frame_adjustment,coord_adjustment)
-
- 
-    end
-    self.x_point = self.x + self.frame['left'].image_dimensions.x * self.width/32
-    self.y_point = self.y
-    self.width_point = (self.frame['right'].image_dimensions.x  - self.frame['left'].image_dimensions.x + 2) * self.width/32
-    self.height_point = (self.frame['bottom'].image_dimensions.y  - self.frame['top'].image_dimensions.y + 2) * self.height/32
-    -- -- OBJECT POSITIONS
-    local frame_offsets = {
-        ['top'] = self.frame.top.dimensions.height
-        ,['bottom'] = self.frame.bottom.dimensions.height
-        ,['left'] = self.frame.left.dimensions.width
-        ,['right'] = self.frame.right.dimensions.width
+    self.graphics_defs = {
+        -- OBJECT POSITION INIT 
+        offsets = self.offset
+        ,x = self.x
+        ,y = self.y
+        ,rotation = self.rotation
+        ,width = self.width
+        ,height = self.height  
+        -- OBJECT GRAPHICS INIT
+        ,canvas_frame = self.canvas_frame
+        ,canvas_frame_quad = self.canvas_frame_quad
+        ,background = self.background
+        ,foreground = self.foreground
+        ,graphics_type = self.graphics_type
+        ,stickers = self.stickers
+        -- FRAME RENDERING
+        ,frame = self.frame
     }
 
+
+    self:frameUnpacking()
+    self:framePositionCalc()
+
+    
     -- self.graphics = {}
     -- self.graphics.shape = def.graphics_value['graphics']['shape']
     -- self.graphics.render_type = def.graphics_value['graphics']['render_type']
@@ -129,23 +93,47 @@ function Graphics:init(def)
     -- end
 
     -- graphic_anim = Animation{frames = {1, 2, 3},interval = 0.4}
-    self.points = objectCoord(self.x_point,self.y_point,self.width_point,self.height_point,frame_offsets)
 
-    self.frame_canvas = love.graphics.newCanvas(self.width,self.height)
-    self.background_canvas = love.graphics.newCanvas(self.width,self.height)
-    self.foreground_canvas = love.graphics.newCanvas(self.width,self.height)
+
+
+    Push:setupCanvas({
+        {name = 'foreground_canvas'}
+        ,{name = 'frame_canvas'}
+        ,{name = 'background_canvas'}
+
+    })
 
     self.image = {}
     self.text = nil
 end
 
+function Graphics:setGraphics(graphics_defs)
+    self.scale = {}
+    self.position={}
+    self.offset = graphics_defs.offsets
+    self.x = graphics_defs.x
+    self.y = graphics_defs.y
+    self.rotation = graphics_defs.rotation
+    self.width = graphics_defs.width
+    self.height = graphics_defs.height
+    -- OBJECT GRAPHICS
+    -- self.canvas_frame = graphics_defs.canvas_frame
+    -- self.canvas_frame_quad = graphics_defs.canvas_frame_quad
+    self.background = graphics_defs.background
+    self.foreground = graphics_defs.foreground
+    self.graphics_type = graphics_defs.graphics_type
+    self.stickers = graphics_defs.stickers
+    -- FRAME RENDERING
+    -- self.frame = graphics_defs.frame
+end
 
 function Graphics:setImage(display,sw,sh,first_sprite,last_sprit)
+    self.text = nil
     for i = first_sprite,last_sprit,1 do
         table.insert(self.image,{
             quad = gFrames[display][i]
-            ,x = 0
-            ,y = 0
+            ,x = self.points[1].x
+            ,y = self.points[1].y
             ,r = 0 * 3.14/180
             ,sx = sw
             ,sy = sh
@@ -159,6 +147,55 @@ function Graphics:setText(display)
     self.text = display
 end
 
+function Graphics:framePositionCalc()
+    self.x_point = self.x + self.frame['left'].image_dimensions.x * self.width/self.canvas_frame_quad
+    self.y_point = self.y
+    self.width_point = (self.frame['right'].image_dimensions.x  - self.frame['left'].image_dimensions.x + self.frame['right'].image_dimensions.width) * self.width/self.canvas_frame_quad
+    self.height_point = (self.frame['bottom'].image_dimensions.y  - self.frame['top'].image_dimensions.y + self.frame['bottom'].image_dimensions.height) * self.height/self.canvas_frame_quad
+    -- -- OBJECT POSITIONS
+    local frame_offsets = {
+        ['top'] = self.frame.top.dimensions.height
+        ,['bottom'] = self.frame.bottom.dimensions.height
+        ,['left'] = self.frame.left.dimensions.width
+        ,['right'] = self.frame.right.dimensions.width
+    }
+    self.points = objectCoord(self.x_point,self.y_point,self.width_point,self.height_point,frame_offsets)
+end
+
+function Graphics:frameUnpacking()
+
+        for i,edge in pairs(self.edge_names) do
+            -- self.frame[edge].image_dimensions = getImageDims(gFrames[self.canvas_frame][edge])
+            self.frame[edge].image_dimensions = getFrameTranslation(self.canvas_frame,edge,images_catalog)
+        
+            local w,h = nil,nil
+            if edge == 'top' then
+                w,h = self.width,self.frame[edge].dimensions.height
+            elseif edge == 'bottom' then
+                w,h = self.width,self.frame[edge].dimensions.height
+            elseif edge == 'left' then
+                w,h = self.frame[edge].dimensions.width,self.height
+            elseif edge == 'right' then
+                w,h = self.frame[edge].dimensions.width,self.height
+            end
+        
+            self.scale[edge] = scaleWH(w,h,self.frame[edge].image_dimensions.width,self.frame[edge].image_dimensions.height)
+        
+            local frame_adjustment = nil
+            local coord_adjustment = nil
+            if edge == 'bottom' or edge == 'top' then
+                frame_adjustment = (self.frame[edge].image_dimensions.height *self.height/self.canvas_frame_quad) - (self.frame[edge].image_dimensions.height *self.scale[edge].sh) 
+                coord_adjustment = (self.frame[edge].image_dimensions.y *self.height/self.canvas_frame_quad) - (self.frame[edge].image_dimensions.y *self.scale[edge].sh)
+            elseif edge == 'left' or edge == 'right' then
+                frame_adjustment = (self.frame[edge].image_dimensions.width *self.width/self.canvas_frame_quad) - (self.frame[edge].image_dimensions.width *self.scale[edge].sw)
+                coord_adjustment = (self.frame[edge].image_dimensions.x *self.width/self.canvas_frame_quad) - (self.frame[edge].image_dimensions.x *self.scale[edge].sw)
+            else
+                frame_adjustment = nil
+            end
+        
+            self.position[edge] = frameRender(edge,self.x,self.y,self.scale[edge].sw,self.scale[edge].sh,frame_adjustment,coord_adjustment)
+        end
+end
 
 
 -- function Graphics:positionGraphics(dimensions)
@@ -191,62 +228,48 @@ end
 -- end
 
 function Graphics:update(dt)
-    self.frame_canvas:renderTo(function()
-        love.graphics.clear()
-        for i,edge in pairs(self.edge_names) do
-            love.graphics.draw(gTextures[self.canvas_frame],gFrames[self.canvas_frame][i],self.position[edge].x,self.position[edge].y,self.rotation,self.position[edge].sw,self.position[edge].sh)
-        end
-    end
-    )
 
-    self.background_canvas:renderTo(function()
-        love.graphics.clear()
-        -- love.graphics.setShader(shader)
-        -- shader:send('time',love.timer.getTime(dt))
-        love.graphics.setColor(0.37,0.61,0.54,1.0)
-        love.graphics.rectangle('fill',0,0,self.width,self.height)
-        love.graphics.reset()
-        -- love.graphics.setShader()
-    end
-    )
-
-    self.foreground_canvas:renderTo(function()
-        love.graphics.clear()
-        if self.text ~= nil then
-            love.graphics.setFont(mainfont) 
-            -- love.graphics.printf(text,x,y,limit,align)
-            love.graphics.printf(self.text, 0, 20, self.width, 'center')
-        else
-            renderImagePrep(spriteBatch,self.image,1,5)
-        end
-    end
-    )
 end
 
 function Graphics:renderPoints()
     for i, point in ipairs(self.points) do
         love.graphics.setColor(1,0,0)
         love.graphics.circle('fill',point.x,point.y,10)
-        love.graphics.reset()
         love.graphics.setColor(0,0,0)
         love.graphics.printf(tostring(i)
         ,point.x
         ,point.y
-        ,WINDOW_WIDTH)
-        love.graphics.reset()
+        ,VIRTUAL_WIDTH)
     end
+    love.graphics.reset()
 end
  
 function Graphics:renderBackground()
-    love.graphics.draw(self.background_canvas,self.x,self.y)
+    Push:setCanvas('background_canvas')
+    if self.text ~= nil then
+        love.graphics.setFont(currentFont) 
+        local x_pos = middleX(self.points[1].x,self.points[2].x)
+        local y_pos = middleX(self.points[1].y,self.points[3].y)-currentFont:getHeight()/2
+        love.graphics.printf(self.text,self.points[1].x,y_pos,self.width,'center')
+    else
+        renderImagePrep(spriteBatch,self.image,1,5)
+    end
+    love.graphics.reset()
 end
 
 function Graphics:renderForeground()
-    love.graphics.draw(self.foreground_canvas,self.x,self.y)
+    Push:setCanvas('foreground_canvas')
+    love.graphics.setColor(0.37,0.61,0.54,1.0)
+    love.graphics.rectangle('fill',self.points[1].x,self.points[1].y,self.width,self.height)
+    love.graphics.reset()
 end
 
 function Graphics:renderFrame()
-    love.graphics.draw(self.frame_canvas,self.x,self.y)
+    Push:setCanvas('frame_canvas')
+    for i,edge in pairs(self.edge_names) do
+        love.graphics.draw(gTextures[self.canvas_frame],gFrames[self.canvas_frame][i],self.position[edge].x,self.position[edge].y,self.rotation,self.position[edge].sw,self.position[edge].sh)
+    end
+    love.graphics.reset()
 end
 
 -- function Graphics:render()
@@ -296,30 +319,30 @@ function Graphics:frameDebug(component)
     print('\n',component..' FRAME DEBUG ------------------------------------------')
     for i, edge in pairs(self.edge_names) do
         print('ACTUAL VALUES ========================================')
-        print('FOR EDGE '..edge,'POSITION image width: '..image_quad)
-        print('FOR EDGE '..edge,'POSITION image height: '..image_quad)
+        print('FOR EDGE '..edge,'POSITION image width: '..self.canvas_frame_quad)
+        print('FOR EDGE '..edge,'POSITION image height: '..self.canvas_frame_quad)
         print('FOR EDGE '..edge,'POSITION drawing width: '..self.frame[edge].image_dimensions.width)
         print('FOR EDGE '..edge,'POSITION drawing height: '..self.frame[edge].image_dimensions.height)
         print('FOR EDGE '..edge,'POSITION image X: '..self.frame[edge].image_dimensions.x)
         print('FOR EDGE '..edge,'POSITION image Y: '..self.frame[edge].image_dimensions.y)
         print('FOR EDGE '..edge,'POSITION canvas WIDTH: '..self.width)
         print('FOR EDGE '..edge,'POSITION canvas HEIGHT: '..self.height)
-        print('FOR EDGE '..edge,'POSITION SCALE R WIDTH: '..self.width/image_quad)
-        print('FOR EDGE '..edge,'POSITION SCALE R HEIGHT: '..self.height/image_quad)
+        print('FOR EDGE '..edge,'POSITION SCALE R WIDTH: '..self.width/self.canvas_frame_quad)
+        print('FOR EDGE '..edge,'POSITION SCALE R HEIGHT: '..self.height/self.canvas_frame_quad)
         print('FOR EDGE '..edge,'POSITION SCALE D WIDTH: '..self.scale[edge].sw)
         print('FOR EDGE '..edge,'POSITION SCALE D HEIGHT: '..self.scale[edge].sh)
-        print('FOR EDGE '..edge,'POSITION X R: '..self.frame[edge].image_dimensions.x * self.width/image_quad)
-        print('FOR EDGE '..edge,'POSITION Y R: '..self.frame[edge].image_dimensions.y * self.height/image_quad)
+        print('FOR EDGE '..edge,'POSITION X R: '..self.frame[edge].image_dimensions.x * self.width/self.canvas_frame_quad)
+        print('FOR EDGE '..edge,'POSITION Y R: '..self.frame[edge].image_dimensions.y * self.height/self.canvas_frame_quad)
         print('FOR EDGE '..edge,'POSITION X D: '..self.frame[edge].image_dimensions.x * self.scale[edge].sw)
         print('FOR EDGE '..edge,'POSITION Y D: '..self.frame[edge].image_dimensions.y * self.scale[edge].sh)
-        print('FOR EDGE '..edge,'FRAME ADJ W R: '..self.frame[edge].image_dimensions.width * self.width/image_quad)
-        print('FOR EDGE '..edge,'FRAME ADJ H R: '..self.frame[edge].image_dimensions.height * self.height/image_quad)
+        print('FOR EDGE '..edge,'FRAME ADJ W R: '..self.frame[edge].image_dimensions.width * self.width/self.canvas_frame_quad)
+        print('FOR EDGE '..edge,'FRAME ADJ H R: '..self.frame[edge].image_dimensions.height * self.height/self.canvas_frame_quad)
         print('FOR EDGE '..edge,'FRAME ADJ W D: '..self.frame[edge].image_dimensions.width * self.scale[edge].sw)
         print('FOR EDGE '..edge,'FRAME ADJ H D: '..self.frame[edge].image_dimensions.height * self.scale[edge].sh)
-        x_adj = (self.frame[edge].image_dimensions.x * self.width/image_quad) - (self.frame[edge].image_dimensions.x * self.scale[edge].sw)
-        y_adj = (self.frame[edge].image_dimensions.y * self.height/image_quad) - (self.frame[edge].image_dimensions.y * self.scale[edge].sh)
-        frame_w_adj = (self.frame[edge].image_dimensions.width * self.width/image_quad) - (self.frame[edge].image_dimensions.width * self.scale[edge].sw)
-        frame_h_adj = (self.frame[edge].image_dimensions.height * self.height/image_quad) - (self.frame[edge].image_dimensions.height * self.scale[edge].sh)
+        x_adj = (self.frame[edge].image_dimensions.x * self.width/self.canvas_frame_quad) - (self.frame[edge].image_dimensions.x * self.scale[edge].sw)
+        y_adj = (self.frame[edge].image_dimensions.y * self.height/self.canvas_frame_quad) - (self.frame[edge].image_dimensions.y * self.scale[edge].sh)
+        frame_w_adj = (self.frame[edge].image_dimensions.width * self.width/self.canvas_frame_quad) - (self.frame[edge].image_dimensions.width * self.scale[edge].sw)
+        frame_h_adj = (self.frame[edge].image_dimensions.height * self.height/self.canvas_frame_quad) - (self.frame[edge].image_dimensions.height * self.scale[edge].sh)
         print('APPLIED ADJUSTMENTS ================================')
         print('FOR EDGE '..edge,'POSITION X ADJ: '..x_adj + frame_w_adj)
         print('FOR EDGE '..edge,'POSITION Y ADJ: '..y_adj + frame_h_adj)

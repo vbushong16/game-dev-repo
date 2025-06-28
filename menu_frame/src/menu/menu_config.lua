@@ -9,21 +9,29 @@ end
 menu_clickthrough = function()
     menu1:navigation(-1)
 end
-image_quad = 32
 
 images_catalog = {
 
     ['frame8'] = {
-        ['top'] = {dimensions = {x = 0, y = 0, width = 32, height =5}}
+        image_quad = 32
+        ,['top'] = {dimensions = {x = 0, y = 0, width = 32, height =5}}
         ,['bottom'] = {dimensions = {x = 5, y = 30, width = 32, height =2}}
         ,['left'] = {dimensions = {x = 5, y = 0, width = 2, height =32}}
         ,['right'] = {dimensions = {x = 25, y = 0, width = 2, height =32}}
     }
     ,['frame6'] = {
-        ['top'] = {dimensions = {x = 0, y = 0, width = 32, height =2}}
+        image_quad = 32
+        ,['top'] = {dimensions = {x = 0, y = 0, width = 32, height =2}}
         ,['bottom'] = {dimensions = {x = 0, y = 30, width = 32, height =2}}
         ,['left'] = {dimensions = {x = 0, y = 0, width = 2, height =32}}
         ,['right'] = {dimensions = {x = 30, y = 0, width = 2, height =32}}
+    }
+    ,['frame9'] = {
+        image_quad = 64
+        ,['top'] = {dimensions = {x = 0, y = 0, width = 64, height =4}}
+        ,['bottom'] = {dimensions = {x = 0, y = 60, width = 64, height =4}}
+        ,['left'] = {dimensions = {x = 0, y = 0, width = 4, height =64}}
+        ,['right'] = {dimensions = {x = 60, y = 0, width = 4, height =64}}
     }
     ,['animals'] = {
         ['platypus'] = {row = 1}
@@ -141,42 +149,44 @@ image_list = {
 
 
 menu1 = {
-    ['metadata'] = {name = 'Main Menu', debug = false},
+    ['metadata'] = {name = 'Main Menu', debug = true},
     ['position'] = {x = 50, y=50, offsets = {top = 0, bottom = 0, left = 0, right = 0}},
     ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = nil, stickers = nil},
     ['frame'] = {
-        ['top'] = {dimensions = {width = nil, height =10}}
-        ,['bottom'] = {dimensions = {width = nil, height =10}}
-        ,['left'] = {dimensions = {width = 10, height =nil}}
-        ,['right'] = {dimensions = {width = 10, height =nil}}
+        ['top'] = {dimensions = {width = nil, height =20}}
+        ,['bottom'] = {dimensions = {width = nil, height =20}}
+        ,['left'] = {dimensions = {width = 20, height =nil}}
+        ,['right'] = {dimensions = {width = 20, height =nil}}
     },
-    ['size'] = {width = 800, height = 600},
+    ['size'] = {width = 900, height = 900},
     ['components'] = {number_of_panels = 1},
+    ['display'] = {display = nil,image = nil,text = 'Play'},
     ['panels'] = {
         ['panel1'] = {
             ['metadata'] = {debug = false},
             panel_order = 1,
-            ['layout'] = {priority = 'cols', rows = {1,1,1,1}, cols = {1,1,1,1}},
+            ['layout'] = {priority = 'cols', rows = {1,1,1}, cols = {2,2,2}},
             ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = nil, stickers = nil},
             ['frame'] = {
-                ['top'] = {dimensions = {width = nil, height =0}}
-                ,['bottom'] = {dimensions = {width = nil, height =0}}
-                ,['left'] = {dimensions = {width = 0, height =nil}}
-                ,['right'] = {dimensions = {width = 0, height =nil}}
+                ['top'] = {dimensions = {width = nil, height =5}}
+                ,['bottom'] = {dimensions = {width = nil, height =5}}
+                ,['left'] = {dimensions = {width = 5, height =nil}}
+                ,['right'] = {dimensions = {width = 5, height =nil}}
             },        
-            ['position'] = { offsets = {top = 5, bottom = 5, left = 5, right = 5}},
+            ['position'] = { offsets = {top = 10, bottom = 10, left = 10, right = 10}},
+            ['display'] = {display = nil,image = nil,text = 'Play'},
             ['buttons'] = {
                 ['button1'] = {
                     ['metadata'] = {debug = false},
                     button_number = 1,
                     ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = 'text', stickers = nil},
                     ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10}}
-                        ,['bottom'] = {dimensions = {width = nil, height =10}}
-                        ,['left'] = {dimensions = {width = 10, height =nil}}
-                        ,['right'] = {dimensions = {width = 10, height =nil}}
+                        ['top'] = {dimensions = {width = nil, height =5}}
+                        ,['bottom'] = {dimensions = {width = nil, height =5}}
+                        ,['left'] = {dimensions = {width = 5, height =nil}}
+                        ,['right'] = {dimensions = {width = 5, height =nil}}
                     },
-                    ['position'] = { offsets = {top = 10, bottom = 10, left = 50, right = 50}},
+                    ['position'] = { offsets = {top = 5, bottom = 5, left = 5, right = 5}},
                     ['callback'] = pressed_button,
                     ['display'] = {display = nil,image = nil,text = 'Play'}
                 },
@@ -185,40 +195,68 @@ menu1 = {
                     button_number = 2,
                     ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = 'text', stickers = nil},
                     ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10}}
-                        ,['bottom'] = {dimensions = {width = nil, height =10}}
-                        ,['left'] = {dimensions = {width = 10, height =nil}}
-                        ,['right'] = {dimensions = {width = 10, height =nil}}
+                        ['top'] = {dimensions = {width = nil, height =5}}
+                        ,['bottom'] = {dimensions = {width = nil, height =5}}
+                        ,['left'] = {dimensions = {width = 5, height =nil}}
+                        ,['right'] = {dimensions = {width = 5, height =nil}}
                     },
-                    ['position'] = { offsets = {top = 10, bottom = 10, left = 50, right = 50}},
+                    ['position'] = { offsets = {top = 5, bottom = 5, left = 5, right = 5}},
                     ['callback'] = pressed_button,
                     ['display'] = {display = nil,image = nil,text = 'Load'}
                 },
                 ['button3'] = {
                     ['metadata'] = {debug = false},
                     button_number = 3,
-                    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = 'text', stickers = nil},
+                    ['graphics'] = {frame = 'frame9',background = nil, foreground = nil, type = 'text', stickers = nil},
                     ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10}}
-                        ,['bottom'] = {dimensions = {width = nil, height =10}}
-                        ,['left'] = {dimensions = {width = 10, height =nil}}
-                        ,['right'] = {dimensions = {width = 10, height =nil}}
+                        ['top'] = {dimensions = {width = nil, height =5}}
+                        ,['bottom'] = {dimensions = {width = nil, height =5}}
+                        ,['left'] = {dimensions = {width = 5, height =nil}}
+                        ,['right'] = {dimensions = {width = 5, height =nil}}
                     },
-                    ['position'] = { offsets = {top = 10, bottom = 10, left = 50, right = 50}},
+                    ['position'] = { offsets = {top = 5, bottom = 5, left = 5, right = 5}},
                     ['callback'] = pressed_button,
                     ['display'] = {display = nil,image = nil,text = 'HighScore'}
                 },
                 ['button4'] = {
                     ['metadata'] = {debug = false},
                     button_number = 4,
-                    ['graphics'] = {frame = 'frame6',background = nil, foreground = nil, type = 'image', stickers = nil},
+                    ['graphics'] = {frame = 'frame9',background = nil, foreground = nil, type = 'image', stickers = nil},
                     ['frame'] = {
-                        ['top'] = {dimensions = {width = nil, height =10}}
-                        ,['bottom'] = {dimensions = {width = nil, height =10}}
-                        ,['left'] = {dimensions = {width = 10, height =nil}}
-                        ,['right'] = {dimensions = {width = 10, height =nil}}
+                        ['top'] = {dimensions = {width = nil, height =5}}
+                        ,['bottom'] = {dimensions = {width = nil, height =5}}
+                        ,['left'] = {dimensions = {width = 5, height =nil}}
+                        ,['right'] = {dimensions = {width = 5, height =nil}}
                     },
-                    ['position'] = { offsets = {top = 10, bottom = 10, left = 50, right = 50}},
+                    ['position'] = { offsets = {top = 5, bottom = 5, left = 5, right = 5}},
+                    ['callback'] = pressed_button,
+                    ['display'] = {display = 'animals',image = 'elephant'}
+                },
+                ['button5'] = {
+                    ['metadata'] = {debug = false},
+                    button_number = 5,
+                    ['graphics'] = {frame = 'frame9',background = nil, foreground = nil, type = 'text', stickers = nil},
+                    ['frame'] = {
+                        ['top'] = {dimensions = {width = nil, height =5}}
+                        ,['bottom'] = {dimensions = {width = nil, height =5}}
+                        ,['left'] = {dimensions = {width = 5, height =nil}}
+                        ,['right'] = {dimensions = {width = 5, height =nil}}
+                    },
+                    ['position'] = { offsets = {top = 5, bottom = 5, left = 5, right = 5}},
+                    ['callback'] = pressed_button,
+                    ['display'] = {display = nil,image = nil,text = 'HighScore'}
+                },
+                ['button6'] = {
+                    ['metadata'] = {debug = false},
+                    button_number = 6,
+                    ['graphics'] = {frame = 'frame9',background = nil, foreground = nil, type = 'image', stickers = nil},
+                    ['frame'] = {
+                        ['top'] = {dimensions = {width = nil, height =5}}
+                        ,['bottom'] = {dimensions = {width = nil, height =5}}
+                        ,['left'] = {dimensions = {width = 5, height =nil}}
+                        ,['right'] = {dimensions = {width = 5, height =nil}}
+                    },
+                    ['position'] = { offsets = {top = 5, bottom = 5, left = 5, right = 5}},
                     ['callback'] = pressed_button,
                     ['display'] = {display = 'animals',image = 'elephant'}
                 },

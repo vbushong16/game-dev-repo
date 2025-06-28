@@ -36,7 +36,7 @@ function Panel:init(def)
     end
     
     self.panel_width = self.points[6].x - self.points[5].x
-    self.panel_height = self.points[7].y-self.points[5].y
+    self.panel_height = self.points[7].y - self.points[5].y
 
     -- PANEL LAYOUT DEBUG
     if self.debug then self:panelLayout() end
@@ -86,16 +86,16 @@ function Panel:layoutInit()
         if k>1 then
             if self.layout.priority == 'cols' then
                 if (self.panel_layout[k-1].button[1].x + self.panel_layout[k-1].button[1].width + math.abs(self.panel_layout[k-1].button[1].offset.left)+math.abs(self.panel_layout[k-1].button[1].offset.right)) >= self.points[5].x+self.panel_width then       
-                    button_init.position.x = (self.panel_layout[k-1].button[1].x) - self.panel_layout[k-1].button[1].offset.left
-                    button_init.position.y = (self.panel_layout[k-1].button[1].y) + y_list - self.panel_layout[k-1].button[1].offset.top
+                    button_init.position.x = (self.panel_layout[k-2].button[1].x) - self.panel_layout[k-2].button[1].offset.left
+                    button_init.position.y = (self.panel_layout[k-2].button[1].y) + y_list - self.panel_layout[k-2].button[1].offset.top
                 else
                     button_init.position.x = self.panel_layout[k-1].button[1].x - self.panel_layout[k-1].button[1].offset.left + x_list
                     button_init.position.y = self.panel_layout[k-1].button[1].y - self.panel_layout[k-1].button[1].offset.top
                 end
             else 
                 if (self.panel_layout[k-1].button[1].y + self.panel_layout[k-1].button[1].height+ self.panel_layout[k-1].button[1].offset.top+self.panel_layout[k-1].button[1].offset.bottom) >= self.points[5].y+self.panel_height then
-                    button_init.position.x = (self.panel_layout[k-1].button[1].x) + x_list - self.panel_layout[k-1].button[1].offset.left
-                    button_init.position.y = (self.panel_layout[k-1].button[1].y) - self.panel_layout[k-1].button[1].offset.top
+                    button_init.position.x = (self.panel_layout[k-2].button[1].x) + x_list - self.panel_layout[k-2].button[1].offset.left
+                    button_init.position.y = (self.panel_layout[k-2].button[1].y) - self.panel_layout[k-2].button[1].offset.top
                 else
                     button_init.position.x = self.panel_layout[k-1].button[1].x - self.panel_layout[k-1].button[1].offset.left
                     button_init.position.y = self.panel_layout[k-1].button[1].y - self.panel_layout[k-1].button[1].offset.top + y_list
@@ -138,14 +138,18 @@ function Panel:addButton()
 end
 
 
-function Panel:organizeButtons()
-
+function Panel:organizeButtons_Panel(button1, button2)
+    local new_button = button1.graphics_defs
+    button1.graphics_defs = button2.graphics_defs
+    button2.graphics_defs = new_button
+    button1:organizeButtons_Button(button1.graphics_defs)
+    button2:organizeButtons_Button(button2.graphics_defs)
 end
 
 function Panel:render()
     if self.panel_state then
         Graphics.renderFrame(self)
-        Graphics.renderPoints(self)
+        -- Graphics.renderPoints(self)
         for k,layout in pairs(self.panel_layout) do
             layout.button[1]:render()
         end   

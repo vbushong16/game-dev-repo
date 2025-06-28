@@ -45,16 +45,16 @@ function objectCoord(x,y,width,height,frame_offsets)
     return points
 end
 
-function frameRender(edge,scale_width,scale_height,frame_adj,coord_adj)
+function frameRender(edge,x,y,scale_width,scale_height,frame_adj,coord_adj)
     local frame_table = {}
     if edge == 'top' then
-        frame_table = {x = 0,y =coord_adj,sw = scale_width,sh = scale_height}
+        frame_table = {x = x,y =y+coord_adj,sw = scale_width,sh = scale_height}
     elseif edge == 'bottom' then
-        frame_table = {x = 0,y =coord_adj+frame_adj,sw = scale_width,sh = scale_height}
+        frame_table = {x = x,y =y+coord_adj+frame_adj,sw = scale_width,sh = scale_height}
     elseif edge == 'left' then
-        frame_table = {x = coord_adj,y = 0,sw = scale_width,sh = scale_height}
+        frame_table = {x = x+coord_adj,y = y,sw = scale_width,sh = scale_height}
     elseif edge == 'right' then
-        frame_table = {x = coord_adj+frame_adj,y = 0,sw = scale_width,sh = scale_height}
+        frame_table = {x = x+coord_adj+frame_adj,y = y,sw = scale_width,sh = scale_height}
     end
     return frame_table
 end
@@ -70,7 +70,7 @@ end
 function imageSelection()
 
     -- take a spritesheet
-    -- finds the sprite
+    -- finds the sprite 
     -- find the images
 
     -- return a table of images
@@ -97,8 +97,29 @@ function renderImagePrep(sprite_batch,images,batch_start,batch_length)
     -- return(sprite_batch)
 end
 
+-- function updateFontSize(windowWidth, windowHeight)
+--     -- Calculate scaling factor (example: based on height ratio)
+--     local scaleFactor = windowHeight / VIRTUAL_HEIGHT
+  
+--     -- Determine dynamic font size
+--     local baseFontSize = 24  -- starting font size
+--     local dynamicFontSize = baseFontSize * scaleFactor
+  
+--     -- Create or select font (only if size changes)
+--     if currentFont == nil or currentFont:getSize() ~= dynamicFontSize then
+--       currentFont = love.graphics.newFont("'fonts/font.ttf'", dynamicFontSize) --
+--     end
+--   end
 
 
+function middleX(x,x1)
+    local x_val = (x+x1)/2
+    return x_val
+end
 
+function middleX(y,y1)
+    local y_val = (y+y1)/2
+    return y_val
+end
 
 

@@ -20,6 +20,7 @@ end
 
 
 Class = require 'src/class'
+Push = require 'src/push'
 require 'src/Animation'
 
 require 'src/menu/menu_config'
@@ -30,7 +31,7 @@ require 'src/menu/Panel'
 require 'src/menu/Button'
 
 
-mainfont = love.graphics.newFont('fonts/font.ttf',64)
+currentFont = love.graphics.newFont('fonts/font.ttf',24)
 
 
 local vfx = 'VFX/shader.glsl'
@@ -40,6 +41,8 @@ effect3d = love.graphics.newShader(vfx_1)
 
 WINDOW_HEIGHT = 1000
 WINDOW_WIDTH = 1000
+VIRTUAL_HEIGHT = 1000 
+VIRTUAL_WIDTH = 1000
 
 -- spritesheet = love.graphics.newImage('img/Menu Border.png')
 -- spritesheet:setFilter('nearest','nearest')
@@ -69,6 +72,7 @@ gTextures = {
     ,['frame5'] = love.graphics.newImage('img/Menu Border5.png')
     ,['frame6'] = love.graphics.newImage('img/Menu Border7.png')
     ,['frame8'] = love.graphics.newImage('img/Menu Border8.png')
+    ,['frame9'] = love.graphics.newImage('img/Menu Border9.png')
     ,['animals'] = love.graphics.newImage('img/Sprite-0001.png')
 }
 
@@ -82,6 +86,7 @@ gTextures['frame4']:setFilter('nearest','nearest')
 gTextures['frame5']:setFilter('nearest','nearest')
 gTextures['frame6']:setFilter('nearest','nearest')
 gTextures['frame8']:setFilter('nearest','nearest')
+gTextures['frame9']:setFilter('nearest','nearest')
 gTextures['animals']:setFilter('nearest','nearest')
 
 gFrames = {
@@ -134,6 +139,7 @@ gFrames = {
     },
     ['frame6'] = generateQuads(gTextures['frame6'],32,32)
     ,['frame8'] = generateQuads(gTextures['frame8'],32,32)
+    ,['frame9'] = generateQuads(gTextures['frame9'],64,64)
     ,['animals'] = generateQuads(gTextures['animals'],500,500)
 }
 

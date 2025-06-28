@@ -4,10 +4,24 @@ require 'src/Dependencies'
 
 function love.load()
 
-    love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
+    -- love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
+
+    love.graphics.setDefaultFilter('nearest', 'nearest')
+    Push:setupScreen(VIRTUAL_WIDTH,VIRTUAL_HEIGHT,WINDOW_WIDTH,WINDOW_HEIGHT, {
+        fullscreen = false,
+        resizable = true,
+        highdpi = true,
+        -- canvas = true
+      })
+
 
     menu1 = Menu(menu1)
 
+end
+
+function love.resize(w, h)
+    Push:resize(w, h)
+    -- updateFontSize(w, h)
 end
 
 function love.keypressed(key)
@@ -19,10 +33,26 @@ function love.keypressed(key)
         menu1:openClose()
     end
     if key == 'd' then
-        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id)
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' HAS A NEW IMAGE')
         menu1.panels[1]['panel'].panel_layout[1].button[1]:changeImage(image_list['platypus'])
     end
-    
+    if key == 'a' then
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' HAS A NEW TEXT')
+        menu1.panels[1]['panel'].panel_layout[1].button[1]:changeText('NEWMESSAGE')
+    end
+
+    if key == 's' then
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' HAS SWITCHED')
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[4].button[1].button_id..' HAS SWITCHED')
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' OLD X POS '..menu1.panels[1]['panel'].panel_layout[1].button[1].x)
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' OLD TOP FRAME X POS '..menu1.panels[1]['panel'].panel_layout[1].button[1].position['top'].x)
+        old_loc_button = menu1.panels[1]['panel'].panel_layout[1].button[1]
+        new_loc_button = menu1.panels[1]['panel'].panel_layout[4].button[1]
+        menu1.panels[1]['panel']:organizeButtons_Panel(old_loc_button,new_loc_button)
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' NEW X POS '..menu1.panels[1]['panel'].panel_layout[1].button[1].x)
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' NEW TOP FRAME X POS '..menu1.panels[1]['panel'].panel_layout[1].button[1].position['top'].x)
+    end
+
 
     
     -- if key == 'w' then
@@ -44,11 +74,17 @@ function love.update(dt)
 end
 
 function love.draw()
+    
+    Push:apply("start")
     -- love.graphics.rectangle(mode,x,y,width,height)
-    love.graphics.setColor(1,1,1)
-    love.graphics.rectangle('fill',0,0,WINDOW_WIDTH,WINDOW_HEIGHT)
+
+    -- love.graphics.setColor(1,1,1)
+    -- love.graphics.rectangle('fill',0,0,WINDOW_WIDTH,WINDOW_HEIGHT)
+    -- love.graphics.reset()
     menu1:render()
-    love.graphics.reset()
+
+    Push:apply("end")
+
 end
 
 

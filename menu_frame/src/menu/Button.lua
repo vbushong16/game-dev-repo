@@ -9,8 +9,6 @@ function Button:init(def)
         Graphics.frameDebug(self,'BUTTON')
         Graphics.positionDebug(self,'BUTTON')
     end  
-    -- BUTTON POSITIONS
-    -- self.button_middle = middleXY(self.x,self.y,self.width,self.height)
     -- BUTTON SET UP 
     self.button_id = def.button_id
     self.button_number = def.button_number
@@ -82,17 +80,15 @@ function Button:changeImage(new_image)
     Graphics.setImage(self,self.display.display,self.display.scale.sw,self.display.scale.sh,self.image_unit-4,self.image_unit)
 end
 
+function Button:changeText(newText)
+    Graphics.setText(self,newText)
+end
 
--- function Button:changeText()
-
--- end
-
-
--- function Button:changeShape()
-
--- end
-
-
+function Button:organizeButtons_Button(graphics_defs)
+    Graphics.setGraphics(self,graphics_defs)
+    Graphics.frameUnpacking(self)
+    Graphics.framePositionCalc(self)
+end
 
 function Button:render()
 
@@ -100,15 +96,17 @@ function Button:render()
 
     Graphics.renderBackground(self)    
     Graphics.renderForeground(self)
-    Graphics.renderFrame(self)
-    Graphics.renderPoints(self)
 
+    -- if self.button_number == 1 then
+        Graphics.renderFrame(self)
+        Graphics.renderPoints(self)
+    -- end
     -- love.graphics.reset()
-    -- love.graphics.setColor(0,0,0)
-    -- love.graphics.printf(tostring(self.button_number)
-    -- ,self.x + self.offset.left
-    -- ,self.y + self.offset.top,WINDOW_WIDTH)
-    -- love.graphics.reset()
+    love.graphics.setColor(0,0,0)
+    love.graphics.printf(tostring(self.button_number)
+    ,self.x + self.offset.left
+    ,self.y + self.offset.top,WINDOW_WIDTH)
+    love.graphics.reset()
 
 end
 
