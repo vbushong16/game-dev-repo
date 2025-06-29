@@ -14,9 +14,27 @@ function Panel:init(def)
     self.panel_id = def.panel_id
     self.panel_number = def.panel_number
     self.panel_state = false
-
     self.button_interface = def['buttons']
+    
+    self:layoutMetadataPrep()
+    self.panel_width = self.points[6].x - self.points[5].x
+    self.panel_height = self.points[7].y - self.points[5].y
+
+    -- PANEL LAYOUT DEBUG
+    if self.debug then self:panelLayout() end
+
+    self:layoutInit()
+end
+
+function Panel:buttonDim(length,offset,divider,layout)
+    local spacing = ((length/layout)/divider)
+    return (spacing)
+end
+
+
+function Panel:layoutMetadataPrep()
     self.panel_layout = {}
+    local priority,secondary = nil, nil
     if self.layout.priority == 'rows' then
         priority = 'rows'
         secondary = 'cols'
@@ -34,19 +52,6 @@ function Panel:init(def)
             k = k + 1
         end
     end
-    
-    self.panel_width = self.points[6].x - self.points[5].x
-    self.panel_height = self.points[7].y - self.points[5].y
-
-    -- PANEL LAYOUT DEBUG
-    if self.debug then self:panelLayout() end
-
-    self:layoutInit()
-end
-
-function Panel:buttonDim(length,offset,divider,layout)
-    local spacing = ((length/layout)/divider)
-    return (spacing)
 end
 
 
@@ -82,23 +87,24 @@ function Panel:layoutInit()
 
         button_init.size = {width = button_width,height = button_height}
         layout.button = {}
-
+        print('VALUE OF K: '..k)
         if k>1 then
+            print('PRINT K-1 BUTTON: '..self.panel_layout[k-1].button_number)
             if self.layout.priority == 'cols' then
-                if (self.panel_layout[k-1].button[1].x + self.panel_layout[k-1].button[1].width + math.abs(self.panel_layout[k-1].button[1].offset.left)+math.abs(self.panel_layout[k-1].button[1].offset.right)) >= self.points[5].x+self.panel_width then       
-                    button_init.position.x = (self.panel_layout[k-2].button[1].x) - self.panel_layout[k-2].button[1].offset.left
-                    button_init.position.y = (self.panel_layout[k-2].button[1].y) + y_list - self.panel_layout[k-2].button[1].offset.top
+                if (self.panel_layout[k-1].button.x + self.panel_layout[k-1].button.width + math.abs(self.panel_layout[k-1].button.offset.left)+math.abs(self.panel_layout[k-1].button.offset.right)) >= self.points[5].x+self.panel_width then       
+                    button_init.position.x = (self.panel_layout[k-2].button.x) - self.panel_layout[k-2].button.offset.left
+                    button_init.position.y = (self.panel_layout[k-2].button.y) + y_list - self.panel_layout[k-2].button.offset.top
                 else
-                    button_init.position.x = self.panel_layout[k-1].button[1].x - self.panel_layout[k-1].button[1].offset.left + x_list
-                    button_init.position.y = self.panel_layout[k-1].button[1].y - self.panel_layout[k-1].button[1].offset.top
+                    button_init.position.x = self.panel_layout[k-1].button.x - self.panel_layout[k-1].button.offset.left + x_list
+                    button_init.position.y = self.panel_layout[k-1].button.y - self.panel_layout[k-1].button.offset.top
                 end
             else 
-                if (self.panel_layout[k-1].button[1].y + self.panel_layout[k-1].button[1].height+ self.panel_layout[k-1].button[1].offset.top+self.panel_layout[k-1].button[1].offset.bottom) >= self.points[5].y+self.panel_height then
-                    button_init.position.x = (self.panel_layout[k-2].button[1].x) + x_list - self.panel_layout[k-2].button[1].offset.left
-                    button_init.position.y = (self.panel_layout[k-2].button[1].y) - self.panel_layout[k-2].button[1].offset.top
+                if (self.panel_layout[k-1].button.y + self.panel_layout[k-1].button.height+ self.panel_layout[k-1].button.offset.top+self.panel_layout[k-1].button.offset.bottom) >= self.points[5].y+self.panel_height then
+                    button_init.position.x = (self.panel_layout[k-2].button.x) + x_list - self.panel_layout[k-2].button.offset.left
+                    button_init.position.y = (self.panel_layout[k-2].button.y) - self.panel_layout[k-2].button.offset.top
                 else
-                    button_init.position.x = self.panel_layout[k-1].button[1].x - self.panel_layout[k-1].button[1].offset.left
-                    button_init.position.y = self.panel_layout[k-1].button[1].y - self.panel_layout[k-1].button[1].offset.top + y_list
+                    button_init.position.x = self.panel_layout[k-1].button.x - self.panel_layout[k-1].button.offset.left
+                    button_init.position.y = self.panel_layout[k-1].button.y - self.panel_layout[k-1].button.offset.top + y_list
                 end
             end
         else
@@ -109,9 +115,10 @@ function Panel:layoutInit()
         button_init.button_number = button_number
         button_init.button_id = button_number
         button_init.metadata.name = self.menu_name
-
+        -- table.insert(layout ,{button_number = button_number,button = Button(button_init)})
+        layout.button_number = button_number
+        layout.button = Button(button_init)
         button_number = button_number + 1  
-        table.insert(layout.button ,Button(button_init))
         if self.debug then self:buttonPosition(k,button_init) end       
     end
 end
@@ -121,7 +128,7 @@ function Panel:update(dt)
 
     if self.panel_state then
         for k,layout in pairs(self.panel_layout) do
-            layout.button[1]:update(dt)
+            layout.button:update(dt)
         end            
     end
 end
@@ -133,9 +140,45 @@ function Panel:resetButton()
     -- end
 end
 
-function Panel:addButton()
-
+function Panel:addButton(count)
+    if self.layout.priority == 'rows' then
+        priority = 'rows'
+        secondary = 'cols'
+    else
+        priority = 'cols'
+        secondary = 'rows'
+    end
+    table.insert(self.layout[priority],count)
+    table.insert(self.layout[secondary],1)
+    self:layoutMetadataPrep()
+    self:layoutInit()
 end
+
+function Panel:removeButton()
+    if self.layout.priority == 'rows' then
+        priority = 'rows'
+        secondary = 'cols'
+    else
+        priority = 'cols'
+        secondary = 'rows'
+    end
+    table.remove(self.layout[priority])
+    table.remove(self.layout[secondary])
+    self:layoutMetadataPrep()
+    self:layoutInit()
+end
+
+function Panel:removeSepecifcButton(button_id)
+    table.remove(self.panel_layout,button_id)
+    sort = function(a,b) return a.button_number<b.button_number end
+    table.sort(self.panel_layout,function(a,b) return a.button_number<b.button_number end)
+end
+
+
+
+function Panel:modifyPanelLayout()
+end
+
 
 
 function Panel:organizeButtons_Panel(button1, button2)
@@ -148,10 +191,10 @@ end
 
 function Panel:render()
     if self.panel_state then
-        Graphics.renderFrame(self)
+        Graphics.render(self)
         -- Graphics.renderPoints(self)
         for k,layout in pairs(self.panel_layout) do
-            layout.button[1]:render()
+            layout.button:render()
         end   
     end
 end

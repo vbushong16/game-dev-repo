@@ -56,9 +56,8 @@ end
 function Menu:render()
     if self.menu_state then
 
-        -- Graphics.renderForeground(self)
-        Graphics.renderFrame(self)
-        Graphics.renderBackground(self)
+        Graphics.render(self)
+ 
         Graphics.renderPoints(self)
         if #self.panels > 0 then 
             self.panels[self.current_panel]['panel']:render()

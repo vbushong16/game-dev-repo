@@ -26,6 +26,9 @@ function Graphics:init(def)
     self.scale = {}
     self.position={}
     self.edge_names = {'bottom','left','top','right'}
+    self.image = {}
+    self.text = nil
+    self.rgba = {}
     -- OBJECT DEBUG
     self.debug = def['metadata']['debug']
     self.menu_name = def['metadata']['name']
@@ -42,8 +45,9 @@ function Graphics:init(def)
     self.canvas_frame_quad = images_catalog[self.canvas_frame].image_quad
     self.background = def['graphics']['background']
     self.foreground = def['graphics']['foreground']
-    self.graphics_type = def['graphics']['type']
+    self.display_type = def['graphics']['display_type']
     self.stickers = def['graphics']['stickers']
+    self.display = def['display']
     -- FRAME RENDERING INIT
     self.frame = def['frame']
 
@@ -60,7 +64,7 @@ function Graphics:init(def)
         ,canvas_frame_quad = self.canvas_frame_quad
         ,background = self.background
         ,foreground = self.foreground
-        ,graphics_type = self.graphics_type
+        ,display_type = self.display_type
         ,stickers = self.stickers
         -- FRAME RENDERING
         ,frame = self.frame
@@ -69,6 +73,7 @@ function Graphics:init(def)
 
     self:frameUnpacking()
     self:framePositionCalc()
+    self:displayConfig()
 
     
     -- self.graphics = {}
@@ -97,15 +102,37 @@ function Graphics:init(def)
 
 
     Push:setupCanvas({
-        {name = 'foreground_canvas'}
+        {name = 'background_canvas'}
         ,{name = 'frame_canvas'}
-        ,{name = 'background_canvas'}
+        ,{name = 'foreground_canvas'}
+  
 
     })
-
-    self.image = {}
-    self.text = nil
 end
+
+function Graphics:changeImage(new_image)
+    self.display_type = 'image'
+    self.image = {}
+    self.display = new_image
+    self.image_unit = images_catalog[self.display.display][self.display.image].row*5
+    self.display.image_dimensions = getImageDims(gFrames[self.display.display][self.image_unit])
+    self.display.scale = scaleWH(self.points[6].x-self.points[5].x,self.points[7].y-self.points[5].y
+        ,self.display.image_dimensions.width
+        ,self.display.image_dimensions.height
+    )
+    self:setImage(self.display.display,self.display.scale.sw,self.display.scale.sh,self.image_unit-4,self.image_unit)
+end
+
+function Graphics:changeText(new_Text)
+    self.display_type = 'text'
+    self:setText(new_Text)
+end
+
+function Graphics:changeRGBA(new_RGBA)
+    self.display_type = 'rgba'
+    self:setRGBA(new_RGBA)
+end
+
 
 function Graphics:setGraphics(graphics_defs)
     self.scale = {}
@@ -129,6 +156,7 @@ end
 
 function Graphics:setImage(display,sw,sh,first_sprite,last_sprit)
     self.text = nil
+    self.rgba = {}
     for i = first_sprite,last_sprit,1 do
         table.insert(self.image,{
             quad = gFrames[display][i]
@@ -144,7 +172,31 @@ function Graphics:setImage(display,sw,sh,first_sprite,last_sprit)
 end
 
 function Graphics:setText(display)
+    self.rgba = {}
+    self.image = {}
     self.text = display
+end
+
+function Graphics:setRGBA(display)
+    self.text = nil
+    self.image = {}
+    self.rgba = display
+end
+
+function Graphics:displayConfig()
+    if self.display_type == 'image' then        
+        self.image_unit = images_catalog[self.display.display][self.display.image].row*5
+        self.display.image_dimensions = getImageDims(gFrames[self.display.display][self.image_unit])
+        self.display.scale = scaleWH(self.points[6].x-self.points[5].x,self.points[7].y-self.points[5].y
+            ,self.display.image_dimensions.width
+            ,self.display.image_dimensions.height
+        )
+        self:setImage(self.display.display,self.display.scale.sw,self.display.scale.sh,self.image_unit-4,self.image_unit)
+    elseif self.display_type == 'text' then
+        self:setText(self.display.text) 
+    elseif self.display_type == 'rgba' then 
+        self:setRGBA(self.display.rgba)         
+    end
 end
 
 function Graphics:framePositionCalc()
@@ -198,6 +250,7 @@ function Graphics:frameUnpacking()
 end
 
 
+
 -- function Graphics:positionGraphics(dimensions)
 
 --     x= dimensions.x + self.frame_render.top.sw - self.scale.top.sw * 22
@@ -232,6 +285,7 @@ function Graphics:update(dt)
 end
 
 function Graphics:renderPoints()
+    love.graphics.clear()
     for i, point in ipairs(self.points) do
         love.graphics.setColor(1,0,0)
         love.graphics.circle('fill',point.x,point.y,10)
@@ -244,32 +298,44 @@ function Graphics:renderPoints()
     love.graphics.reset()
 end
  
-function Graphics:renderBackground()
-    Push:setCanvas('background_canvas')
-    if self.text ~= nil then
+function Graphics:renderForeground()
+    love.graphics.clear()
+    Push:setCanvas('foreground_canvas')
+    if self.display_type == 'text' then
         love.graphics.setFont(currentFont) 
         local x_pos = middleX(self.points[1].x,self.points[2].x)
         local y_pos = middleX(self.points[1].y,self.points[3].y)-currentFont:getHeight()/2
         love.graphics.printf(self.text,self.points[1].x,y_pos,self.width,'center')
-    else
+    elseif self.display_type == 'image' then
         renderImagePrep(spriteBatch,self.image,1,5)
+    elseif self.display_type == 'rgba' then
+        love.graphics.setColor(self.rgba.r,self.rgba.g,self.rgba.b,self.rgba.a)
+        love.graphics.rectangle('fill',self.points[1].x,self.points[1].y,self.width,self.height)
     end
     love.graphics.reset()
 end
 
-function Graphics:renderForeground()
-    Push:setCanvas('foreground_canvas')
+function Graphics:renderBackground()
+    love.graphics.clear()
+    Push:setCanvas('background_canvas')
     love.graphics.setColor(0.37,0.61,0.54,1.0)
     love.graphics.rectangle('fill',self.points[1].x,self.points[1].y,self.width,self.height)
     love.graphics.reset()
 end
 
 function Graphics:renderFrame()
+    love.graphics.clear()
     Push:setCanvas('frame_canvas')
     for i,edge in pairs(self.edge_names) do
         love.graphics.draw(gTextures[self.canvas_frame],gFrames[self.canvas_frame][i],self.position[edge].x,self.position[edge].y,self.rotation,self.position[edge].sw,self.position[edge].sh)
     end
     love.graphics.reset()
+end
+
+function Graphics:render()
+    self:renderBackground()
+    self:renderForeground()
+    self:renderFrame()
 end
 
 -- function Graphics:render()

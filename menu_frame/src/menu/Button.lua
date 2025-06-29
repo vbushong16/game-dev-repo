@@ -16,20 +16,6 @@ function Button:init(def)
     self.button_selected = false
     self.callback = def['callback']
 
-    if self.graphics_type == 'image' then
-        self.display = def['display']
-        self.image_unit = images_catalog[self.display.display][self.display.image].row*5
-        self.display.image_dimensions = getImageDims(gFrames[self.display.display][self.image_unit])
-        self.display.scale = scaleWH(self.points[6].x-self.points[5].x,self.points[7].y-self.points[5].y
-            ,self.display.image_dimensions.width
-            ,self.display.image_dimensions.height
-        )
-        Graphics.setImage(self,self.display.display,self.display.scale.sw,self.display.scale.sh,self.image_unit-4,self.image_unit)
-    elseif self.graphics_type == 'text' then
-        self.display = def['display']
-        self.text_to_render = self.display.text
-        Graphics.setText(self,self.text_to_render)
-    end
     -- if self.debug then self:displayDebug() end 
 end
 
@@ -68,22 +54,6 @@ function Button:update(dt,panel_status)
     end
 end
 
-function Button:changeImage(new_image)
-    self.image = {}
-    self.display = new_image
-    self.image_unit = images_catalog[self.display.display][self.display.image].row*5
-    self.display.image_dimensions = getImageDims(gFrames[self.display.display][self.image_unit])
-    self.display.scale = scaleWH(self.points[6].x-self.points[5].x,self.points[7].y-self.points[5].y
-        ,self.display.image_dimensions.width
-        ,self.display.image_dimensions.height
-    )
-    Graphics.setImage(self,self.display.display,self.display.scale.sw,self.display.scale.sh,self.image_unit-4,self.image_unit)
-end
-
-function Button:changeText(newText)
-    Graphics.setText(self,newText)
-end
-
 function Button:organizeButtons_Button(graphics_defs)
     Graphics.setGraphics(self,graphics_defs)
     Graphics.frameUnpacking(self)
@@ -94,14 +64,10 @@ function Button:render()
 
     self:buttonCallback(self.callback)
 
-    Graphics.renderBackground(self)    
-    Graphics.renderForeground(self)
-
+    Graphics.render(self)
     -- if self.button_number == 1 then
-        Graphics.renderFrame(self)
-        Graphics.renderPoints(self)
+    Graphics.renderPoints(self)
     -- end
-    -- love.graphics.reset()
     love.graphics.setColor(0,0,0)
     love.graphics.printf(tostring(self.button_number)
     ,self.x + self.offset.left

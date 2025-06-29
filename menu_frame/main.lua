@@ -32,27 +32,50 @@ function love.keypressed(key)
     if key == 'p' then
         menu1:openClose()
     end
+    if key == 'q' then
+        print('MENU: HAS A NEW IMAGE')
+        menu1:changeImage(image_list['platypus'])
+    end
+    if key == 'w' then
+        print('MENU: HAS A RGBA')
+        menu1:changeRGBA({r = 0.37,g = 0.61,b = 0.54,a = 1.0})
+    end
     if key == 'd' then
-        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' HAS A NEW IMAGE')
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button.button_id..' HAS A NEW IMAGE')
         menu1.panels[1]['panel'].panel_layout[1].button[1]:changeImage(image_list['platypus'])
     end
     if key == 'a' then
-        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' HAS A NEW TEXT')
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button.button_id..' HAS A NEW TEXT')
         menu1.panels[1]['panel'].panel_layout[1].button[1]:changeText('NEWMESSAGE')
     end
-
     if key == 's' then
-        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' HAS SWITCHED')
-        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[4].button[1].button_id..' HAS SWITCHED')
-        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' OLD X POS '..menu1.panels[1]['panel'].panel_layout[1].button[1].x)
-        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' OLD TOP FRAME X POS '..menu1.panels[1]['panel'].panel_layout[1].button[1].position['top'].x)
-        old_loc_button = menu1.panels[1]['panel'].panel_layout[1].button[1]
-        new_loc_button = menu1.panels[1]['panel'].panel_layout[4].button[1]
-        menu1.panels[1]['panel']:organizeButtons_Panel(old_loc_button,new_loc_button)
-        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' NEW X POS '..menu1.panels[1]['panel'].panel_layout[1].button[1].x)
-        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button[1].button_id..' NEW TOP FRAME X POS '..menu1.panels[1]['panel'].panel_layout[1].button[1].position['top'].x)
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button.button_id..' HAS A NEW RGBA')
+        menu1.panels[1]['panel'].panel_layout[1].button[1]:changeRGBA({r = 1,g = 0,b = 0,a = 1.0})
     end
-
+    if key == 'f' then
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button.button_id..' HAS SWITCHED')
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[4].button.button_id..' HAS SWITCHED')
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button.button_id..' OLD X POS '..menu1.panels[1]['panel'].panel_layout[1].button.x)
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button.button_id..' OLD TOP FRAME X POS '..menu1.panels[1]['panel'].panel_layout[1].button.position['top'].x)
+        old_loc_button = menu1.panels[1]['panel'].panel_layout[1].button
+        new_loc_button = menu1.panels[1]['panel'].panel_layout[4].button
+        menu1.panels[1]['panel']:organizeButtons_Panel(old_loc_button,new_loc_button)
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button.button_id..' NEW X POS '..menu1.panels[1]['panel'].panel_layout[1].button.x)
+        print('BUTTON NUMBER: '..menu1.panels[1]['panel'].panel_layout[1].button.button_id..' NEW TOP FRAME X POS '..menu1.panels[1]['panel'].panel_layout[1].button.position['top'].x)
+    end
+    if key == 'g' then
+        print('ADDING 2 NEW BUTTON')
+        menu1.panels[1]['panel']:addButton(2)    
+    end
+    if key == 'h' then
+        print('remove NEW BUTTON')
+        menu1.panels[1]['panel']:removeButton()    
+    end
+    if key == 'j' then
+        print('remove BUTTON 2')
+        menu1.panels[1]['panel']:removeSepecifcButton(4)
+    end
+    
 
     
     -- if key == 'w' then
